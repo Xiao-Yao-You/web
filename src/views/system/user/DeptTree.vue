@@ -22,42 +22,42 @@
 </template>
 
 <script lang="ts" setup>
-import { ElTree } from 'element-plus'
-import * as DeptApi from '@/api/system/dept'
-import { defaultProps, handleTree } from '@/utils/tree'
+import { ElTree } from "element-plus";
+import * as DeptApi from "@/api/system/dept";
+import { defaultProps, handleTree } from "@/utils/tree";
 
-defineOptions({ name: 'SystemUserDeptTree' })
+defineOptions({ name: "SystemUserDeptTree" });
 
-const deptName = ref('')
-const deptList = ref<Tree[]>([]) // 树形结构
-const treeRef = ref<InstanceType<typeof ElTree>>()
+const deptName = ref("");
+const deptList = ref<Tree[]>([]); // 树形结构
+const treeRef = ref<InstanceType<typeof ElTree>>();
 
 /** 获得部门树 */
 const getTree = async () => {
-  const res = await DeptApi.getSimpleDeptList()
-  deptList.value = []
-  deptList.value.push(...handleTree(res))
-}
+  const res = await DeptApi.getSimpleDeptList();
+  deptList.value = [];
+  deptList.value.push(...handleTree(res));
+};
 
 /** 基于名字过滤 */
 const filterNode = (name: string, data: Tree) => {
-  if (!name) return true
-  return data.name.includes(name)
-}
+  if (!name) return true;
+  return data.name.includes(name);
+};
 
 /** 处理部门被点击 */
 const handleNodeClick = async (row: { [key: string]: any }) => {
-  emits('node-click', row)
-}
-const emits = defineEmits(['node-click'])
+  emits("node-click", row);
+};
+const emits = defineEmits(["node-click"]);
 
 /** 监听deptName */
 watch(deptName, (val) => {
-  treeRef.value!.filter(val)
-})
+  treeRef.value!.filter(val);
+});
 
 /** 初始化 */
 onMounted(async () => {
-  await getTree()
-})
+  await getTree();
+});
 </script>
