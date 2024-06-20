@@ -4,6 +4,7 @@
   "editor.tabSize": 2,
   "prettier.printWidth": 100, // 超过最大值换行
   "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
   "files.eol": "\n",
   "search.exclude": {
     "**/node_modules": true,
@@ -54,7 +55,14 @@
     "**/yarn.lock": true
   },
   "stylelint.enable": true,
-  "stylelint.validate": ["css", "less", "postcss", "scss", "vue", "sass"],
+  "stylelint.validate": [
+    "css",
+    "less",
+    "postcss",
+    "scss",
+    "vue",
+    "sass"
+  ],
   "path-intellisense.mappings": {
     "@/": "${workspaceRoot}/src"
   },
@@ -86,16 +94,23 @@
     "source.fixAll.eslint": "explicit"
   },
   "[vue]": {
-    "editor.defaultFormatter": "Wscats.vue"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "i18n-ally.localesPaths": ["src/locales"],
+  "i18n-ally.localesPaths": [
+    "src/locales"
+  ],
   "i18n-ally.keystyle": "nested",
   "i18n-ally.sortKeys": true,
   "i18n-ally.namespace": false,
-  "i18n-ally.enabledParsers": ["ts"],
+  "i18n-ally.enabledParsers": [
+    "ts"
+  ],
   "i18n-ally.sourceLanguage": "en",
   "i18n-ally.displayLanguage": "zh-CN",
-  "i18n-ally.enabledFrameworks": ["vue", "react"],
+  "i18n-ally.enabledFrameworks": [
+    "vue",
+    "react"
+  ],
   "cSpell.words": [
     "brotli",
     "browserslist",
