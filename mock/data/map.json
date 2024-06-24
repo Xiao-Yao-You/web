@@ -1,0 +1,515 @@
+{
+  "list": [
+    {
+      "id": 63,
+      "zoneType": "00",
+      "type": "00",
+      "description": "成品仓库(K)",
+      "image": null,
+      "longitude": 120.6635808093608200,
+      "latitude": 32.0195302647343000,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 64,
+      "zoneType": "00",
+      "type": "00",
+      "description": "成品仓库(L)",
+      "image": null,
+      "longitude": 120.6601283191638500,
+      "latitude": 32.0243433169328000,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 65,
+      "zoneType": "00",
+      "type": "00",
+      "description": "成品仓库(M)",
+      "image": null,
+      "longitude": 120.6618925293357700,
+      "latitude": 32.0205252763907200,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 66,
+      "zoneType": "00",
+      "type": "00",
+      "description": "成品仓库(N)",
+      "image": null,
+      "longitude": 120.6742924159792500,
+      "latitude": 32.0228088641494000,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 67,
+      "zoneType": "00",
+      "type": "00",
+      "description": "成品仓库(N3)",
+      "image": null,
+      "longitude": 120.6610255508043700,
+      "latitude": 32.0221079417334400,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 68,
+      "zoneType": "00",
+      "type": "00",
+      "description": "成品仓库(N6)",
+      "image": null,
+      "longitude": 120.6615685195113000,
+      "latitude": 32.0196585980552100,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 69,
+      "zoneType": "00",
+      "type": "00",
+      "description": "成品仓库(R)",
+      "image": null,
+      "longitude": 120.6594283836047200,
+      "latitude": 32.0249919701225400,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 70,
+      "zoneType": "00",
+      "type": "00",
+      "description": "成品仓库(加弹5)",
+      "image": null,
+      "longitude": 120.6718448996240000,
+      "latitude": 32.0282310107375000,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 71,
+      "zoneType": "00",
+      "type": "00",
+      "description": "成品仓库(加弹6)",
+      "image": null,
+      "longitude": 120.6614875911656100,
+      "latitude": 32.0125762846628500,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 72,
+      "zoneType": "00",
+      "type": "00",
+      "description": "成品仓库(六)",
+      "image": null,
+      "longitude": 120.6614875911656100,
+      "latitude": 32.0125762846628500,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 73,
+      "zoneType": "00",
+      "type": "01",
+      "description": "立库八",
+      "image": null,
+      "longitude": 120.6587937935562400,
+      "latitude": 32.0119910733337960,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 74,
+      "zoneType": "00",
+      "type": "01",
+      "description": "立库二",
+      "image": null,
+      "longitude": 120.6630368326273000,
+      "latitude": 32.0270968656315560,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 75,
+      "zoneType": "00",
+      "type": "01",
+      "description": "立库九",
+      "image": null,
+      "longitude": 120.6601283191638500,
+      "latitude": 32.0243433169328000,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 76,
+      "zoneType": "00",
+      "type": "01",
+      "description": "立库六",
+      "image": null,
+      "longitude": 120.6632452669764700,
+      "latitude": 32.0129031962182900,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 77,
+      "zoneType": "00",
+      "type": "01",
+      "description": "立库三",
+      "image": null,
+      "longitude": 120.6647477091442000,
+      "latitude": 32.0273887574010800,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 78,
+      "zoneType": "00",
+      "type": "01",
+      "description": "立库十",
+      "image": null,
+      "longitude": 120.6610255508043700,
+      "latitude": 32.0221079417334400,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 79,
+      "zoneType": "00",
+      "type": "01",
+      "description": "立库四",
+      "image": null,
+      "longitude": 120.6685441208972200,
+      "latitude": 32.0280154186758350,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 80,
+      "zoneType": "00",
+      "type": "01",
+      "description": "立库一",
+      "image": null,
+      "longitude": 120.6614768303914900,
+      "latitude": 32.0268922688726600,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 81,
+      "zoneType": "00",
+      "type": "02",
+      "description": "期货八仓库",
+      "image": null,
+      "longitude": 120.6645756602714700,
+      "latitude": 32.0147780663323800,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 82,
+      "zoneType": "00",
+      "type": "02",
+      "description": "期货二仓库",
+      "image": null,
+      "longitude": 120.6735199522217100,
+      "latitude": 32.0165595693168700,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 83,
+      "zoneType": "00",
+      "type": "02",
+      "description": "期货二十仓库",
+      "image": null,
+      "longitude": 120.6682686447727800,
+      "latitude": 32.0128168676474100,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 84,
+      "zoneType": "00",
+      "type": "02",
+      "description": "期货二十二仓库",
+      "image": null,
+      "longitude": 120.6653108429685200,
+      "latitude": 32.0122662873536750,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 85,
+      "zoneType": "00",
+      "type": "02",
+      "description": "期货二十三",
+      "image": null,
+      "longitude": 120.6632452669764700,
+      "latitude": 32.0129031962182900,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 86,
+      "zoneType": "00",
+      "type": "02",
+      "description": "期货二十四",
+      "image": null,
+      "longitude": 120.6614875911656100,
+      "latitude": 32.0125762846628500,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 87,
+      "zoneType": "00",
+      "type": "02",
+      "description": "期货二十五",
+      "image": null,
+      "longitude": 120.6587937935562400,
+      "latitude": 32.0119910733337960,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 88,
+      "zoneType": "00",
+      "type": "02",
+      "description": "期货二十一仓库",
+      "image": null,
+      "longitude": 120.6668539735259900,
+      "latitude": 32.0125537047248500,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 89,
+      "zoneType": "00",
+      "type": "02",
+      "description": "期货九仓库",
+      "image": null,
+      "longitude": 120.6685940803580800,
+      "latitude": 32.0132788963314800,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 90,
+      "zoneType": "00",
+      "type": "02",
+      "description": "期货六仓库",
+      "image": null,
+      "longitude": 120.6667810137924600,
+      "latitude": 32.0152864966693200,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 91,
+      "zoneType": "00",
+      "type": "02",
+      "description": "期货七仓库",
+      "image": null,
+      "longitude": 120.6659195237800000,
+      "latitude": 32.0151115169317900,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 92,
+      "zoneType": "00",
+      "type": "02",
+      "description": "期货三仓库",
+      "image": null,
+      "longitude": 120.6716520991784400,
+      "latitude": 32.0161334150403900,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 93,
+      "zoneType": "00",
+      "type": "02",
+      "description": "期货十八仓库",
+      "image": null,
+      "longitude": 120.6738580372829300,
+      "latitude": 32.0131976747271600,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 94,
+      "zoneType": "00",
+      "type": "02",
+      "description": "期货十仓库",
+      "image": null,
+      "longitude": 120.6682686447727800,
+      "latitude": 32.0128168676474100,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 95,
+      "zoneType": "00",
+      "type": "02",
+      "description": "期货十二仓库",
+      "image": null,
+      "longitude": 120.6653108429685200,
+      "latitude": 32.0122662873536750,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 96,
+      "zoneType": "00",
+      "type": "02",
+      "description": "期货十九仓库",
+      "image": null,
+      "longitude": 120.6691935541593000,
+      "latitude": 32.0116754063778500,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 97,
+      "zoneType": "00",
+      "type": "02",
+      "description": "期货十六仓库",
+      "image": null,
+      "longitude": 120.6738930540203400,
+      "latitude": 32.0140636798744800,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 98,
+      "zoneType": "00",
+      "type": "02",
+      "description": "期货十七仓库",
+      "image": null,
+      "longitude": 120.6738930540203400,
+      "latitude": 32.0140636798744800,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 99,
+      "zoneType": "00",
+      "type": "02",
+      "description": "期货十三仓库",
+      "image": null,
+      "longitude": 120.6762575282546700,
+      "latitude": 32.0144759738473500,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 100,
+      "zoneType": "00",
+      "type": "02",
+      "description": "期货十四仓库",
+      "image": null,
+      "longitude": 120.6762575282546700,
+      "latitude": 32.0144759738473500,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 101,
+      "zoneType": "00",
+      "type": "02",
+      "description": "期货十五车间",
+      "image": null,
+      "longitude": 120.6747894203167100,
+      "latitude": 32.0133525979044200,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 102,
+      "zoneType": "00",
+      "type": "02",
+      "description": "期货十一仓库",
+      "image": null,
+      "longitude": 120.6668539735259900,
+      "latitude": 32.0125537047248500,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 103,
+      "zoneType": "00",
+      "type": "02",
+      "description": "期货四仓库",
+      "image": null,
+      "longitude": 120.6703728374364000,
+      "latitude": 32.0158945934180900,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 104,
+      "zoneType": "00",
+      "type": "02",
+      "description": "期货五仓库",
+      "image": null,
+      "longitude": 120.6683100617470000,
+      "latitude": 32.0144382741813000,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 105,
+      "zoneType": "00",
+      "type": "02",
+      "description": "期货一仓库",
+      "image": null,
+      "longitude": 120.6747707897457200,
+      "latitude": 32.0166901594472400,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 106,
+      "zoneType": "00",
+      "type": "03",
+      "description": "切片 H",
+      "image": null,
+      "longitude": 120.6684875430763200,
+      "latitude": 32.0170220504388100,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 107,
+      "zoneType": "00",
+      "type": "03",
+      "description": "切片 K",
+      "image": null,
+      "longitude": 120.6675976692952800,
+      "latitude": 32.0201803897380660,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 108,
+      "zoneType": "00",
+      "type": "03",
+      "description": "切片 L",
+      "image": null,
+      "longitude": 120.6554798013277600,
+      "latitude": 32.0215308665031800,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 109,
+      "zoneType": "00",
+      "type": "03",
+      "description": "切片 M",
+      "image": null,
+      "longitude": 120.6668101354489100,
+      "latitude": 32.0225922135361200,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 110,
+      "zoneType": "00",
+      "type": "03",
+      "description": "切片 N",
+      "image": null,
+      "longitude": 120.6710338648108000,
+      "latitude": 32.0223797849021800,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 111,
+      "zoneType": "00",
+      "type": "03",
+      "description": "切片 N3",
+      "image": null,
+      "longitude": 120.6559364426523300,
+      "latitude": 32.0198755943588860,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 112,
+      "zoneType": "00",
+      "type": "03",
+      "description": "切片 N6",
+      "image": null,
+      "longitude": 120.6559364426523300,
+      "latitude": 32.0198755943588860,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 113,
+      "zoneType": "00",
+      "type": "03",
+      "description": "切片 聚酯T1,T2",
+      "image": null,
+      "longitude": 120.6532956196499100,
+      "latitude": 32.0221558115519500,
+      "createTime": 1718349506000
+    }
+  ],
+  "total": 51
+}

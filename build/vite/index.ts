@@ -15,8 +15,9 @@ import topLevelAwait from 'vite-plugin-top-level-await'
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import UnoCSS from 'unocss/vite'
+import { viteMockServe } from 'vite-plugin-mock';
 
-export function createVitePlugins() {
+export function createVitePlugins(command: string) {
   const root = process.cwd()
 
   // 路径查找
@@ -26,6 +27,11 @@ export function createVitePlugins() {
 
   return [
     Vue(),
+    viteMockServe({
+      mockPath: 'mock',
+      // enable: command === 'serve',
+      enable: false,
+    }),
     VueJsx(),
     UnoCSS(),
     progress(),

@@ -82,7 +82,9 @@
         mode="pop"
         @success="handleLogin"
       />
-      <el-col :span="24" style="padding-right: 10px; padding-left: 10px">
+
+      <!-- 暂时隐藏 -->
+      <!-- <el-col :span="24" style="padding-right: 10px; padding-left: 10px">
         <el-form-item>
           <el-row :gutter="5" justify="space-between" style="width: 100%">
             <el-col :span="8">
@@ -139,7 +141,7 @@
             </el-link>
           </div>
         </el-form-item>
-      </el-col>
+      </el-col> -->
     </el-row>
   </el-form>
 </template>
@@ -158,13 +160,13 @@ import { LoginStateEnum, useFormValid, useLoginState } from './useLogin'
 defineOptions({ name: 'LoginForm' })
 
 const { t } = useI18n()
-const message = useMessage()
+// const message = useMessage()
 const iconHouse = useIcon({ icon: 'ep:house' })
 const iconAvatar = useIcon({ icon: 'ep:avatar' })
 const iconLock = useIcon({ icon: 'ep:lock' })
 const formLogin = ref()
 const { validForm } = useFormValid(formLogin)
-const { setLoginState, getLoginState } = useLoginState()
+const { /* setLoginState, */ getLoginState } = useLoginState()
 const { currentRoute, push } = useRouter()
 const permissionStore = usePermissionStore()
 const redirect = ref<string>('')
@@ -192,12 +194,14 @@ const loginData = reactive({
   }
 })
 
-const socialList = [
-  { icon: 'ant-design:wechat-filled', type: 30 },
-  { icon: 'ant-design:dingtalk-circle-filled', type: 20 },
-  { icon: 'ant-design:github-filled', type: 0 },
-  { icon: 'ant-design:alipay-circle-filled', type: 0 }
-]
+// #region 三方登录方式
+// const socialList = [
+//   { icon: 'ant-design:wechat-filled', type: 30 },
+//   { icon: 'ant-design:dingtalk-circle-filled', type: 20 },
+//   { icon: 'ant-design:github-filled', type: 0 },
+//   { icon: 'ant-design:alipay-circle-filled', type: 0 }
+// ]
+// #endregion
 
 // 获取验证码
 const getCode = async () => {
@@ -280,42 +284,44 @@ const handleLogin = async (params) => {
   }
 }
 
-// 社交登录
-const doSocialLogin = async (type: number) => {
-  if (type === 0) {
-    message.error('此方式未配置')
-  } else {
-    loginLoading.value = true
-    if (loginData.tenantEnable === 'true') {
-      // 尝试先通过 tenantName 获取租户
-      await getTenantId()
-      // 如果获取不到，则需要弹出提示，进行处理
-      if (!authUtil.getTenantId()) {
-        try {
-          const data = await message.prompt('请输入租户名称', t('common.reminder'))
-          if (data?.action !== 'confirm') throw 'cancel'
-          const res = await LoginApi.getTenantIdByName(data.value)
-          authUtil.setTenantId(res)
-        } catch (error) {
-          if (error === 'cancel') return
-        } finally {
-          loginLoading.value = false
-        }
-      }
-    }
-    // 计算 redirectUri
-    // tricky: type、redirect需要先encode一次，否则钉钉回调会丢失。
-    // 配合 Login/SocialLogin.vue#getUrlValue() 使用
-    const redirectUri =
-      location.origin +
-      '/social-login?' +
-      encodeURIComponent(`type=${type}&redirect=${redirect.value || '/'}`)
+//#region 社交登录
+// const doSocialLogin = async (type: number) => {
+//   if (type === 0) {
+//     message.error('此方式未配置')
+//   } else {
+//     loginLoading.value = true
+//     if (loginData.tenantEnable === 'true') {
+//       // 尝试先通过 tenantName 获取租户
+//       await getTenantId()
+//       // 如果获取不到，则需要弹出提示，进行处理
+//       if (!authUtil.getTenantId()) {
+//         try {
+//           const data = await message.prompt('请输入租户名称', t('common.reminder'))
+//           if (data?.action !== 'confirm') throw 'cancel'
+//           const res = await LoginApi.getTenantIdByName(data.value)
+//           authUtil.setTenantId(res)
+//         } catch (error) {
+//           if (error === 'cancel') return
+//         } finally {
+//           loginLoading.value = false
+//         }
+//       }
+//     }
+//     // 计算 redirectUri
+//     // tricky: type、redirect需要先encode一次，否则钉钉回调会丢失。
+//     // 配合 Login/SocialLogin.vue#getUrlValue() 使用
+//     const redirectUri =
+//       location.origin +
+//       '/social-login?' +
+//       encodeURIComponent(`type=${type}&redirect=${redirect.value || '/'}`)
 
-    // 进行跳转
-    const res = await LoginApi.socialAuthRedirect(type, encodeURIComponent(redirectUri))
-    window.location.href = res
-  }
-}
+//     // 进行跳转
+//     const res = await LoginApi.socialAuthRedirect(type, encodeURIComponent(redirectUri))
+//     window.location.href = res
+//   }
+// }
+//#endregion 社交登录
+
 watch(
   () => currentRoute.value,
   (route: RouteLocationNormalizedLoaded) => {
