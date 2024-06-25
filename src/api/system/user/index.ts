@@ -4,17 +4,18 @@ export interface UserVO {
   id: number
   username: string
   nickname: string
-  deptId: number
+  deptList: Array<{ id: number; [key: string]: any }>
   postIds: string[]
   email: string
   mobile: string
-  sex: number
-  avatar: string
-  loginIp: string
+  sex: number | undefined
   status: number
   remark: string
-  loginDate: Date
-  createTime: Date
+  avatar?: string
+  loginDate?: Date
+  createTime?: Date
+  loginIp?: string
+  password?: string
 }
 
 // 查询用户管理列表
@@ -29,7 +30,7 @@ export const getAllUser = () => {
 
 // 查询用户详情
 export const getUser = (id: number) => {
-  return request.get({ url: '/system/user/get?id=' + id })
+  return request.get<UserVO>({ url: '/system/user/get?id=' + id })
 }
 
 // 新增用户

@@ -167,8 +167,13 @@ const resetForm = () => {
 const getTree = async () => {
   deptTree.value = []
   const data = await DeptApi.getSimpleDeptList()
-  let dept: Tree = { id: 0, name: '顶级部门', children: [] }
-  dept.children = handleTree(data)
+  const children = handleTree(data)
+  let dept: Tree = {
+    id: 0,
+    name: '顶级部门',
+    children,
+    disabled: !!children.length // 目前暂定顶级部门只允许添加一个
+  }
   deptTree.value.push(dept)
 }
 </script>

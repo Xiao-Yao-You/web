@@ -49,5 +49,6 @@ declare global {
     id: number
     name: string
     children?: Tree[] | any[]
+    disabled?: boolean
   }
 }

@@ -14,12 +14,13 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="归属部门" prop="deptId">
+          <el-form-item label="归属部门" prop="deptList">
             <el-tree-select
-              v-model="formData.deptId"
+              v-model="formData.deptList"
               :data="deptList"
               :props="defaultProps"
               check-strictly
+              multiple
               node-key="id"
               placeholder="请选择归属部门"
             />
@@ -57,7 +58,7 @@
       </el-row>
       <el-row>
         <el-col :span="12">
-          <el-form-item label="用户性别">
+          <el-form-item label="用户性别" prop="sex">
             <el-select v-model="formData.sex" placeholder="请选择">
               <el-option
                 v-for="dict in getIntDictOptions(DICT_TYPE.SYSTEM_USER_SEX)"
@@ -69,7 +70,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="岗位">
+          <el-form-item label="岗位" prop="postIds">
             <el-select v-model="formData.postIds" multiple placeholder="请选择">
               <el-option
                 v-for="item in postList"
@@ -83,7 +84,7 @@
       </el-row>
       <el-row>
         <el-col :span="24">
-          <el-form-item label="备注">
+          <el-form-item label="备注" prop="remark">
             <el-input v-model="formData.remark" placeholder="请输入内容" type="textarea" />
           </el-form-item>
         </el-col>
@@ -103,8 +104,14 @@ import * as PostApi from '@/api/system/post'
 import * as DeptApi from '@/api/system/dept'
 import * as UserApi from '@/api/system/user'
 import { FormRules } from 'element-plus'
+import { UserVO } from '@/api/system/user'
 
 defineOptions({ name: 'SystemUserForm' })
+
+interface FormData extends Omit<UserVO, 'deptList' | 'id'> {
+  id: number | undefined
+  deptList: (number | never)[]
+}
 
 const { t } = useI18n() // 国际化
 const message = useMessage() // 消息弹窗
@@ -113,9 +120,9 @@ const dialogVisible = ref(false) // 弹窗的是否展示
 const dialogTitle = ref('') // 弹窗的标题
 const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
 const formType = ref('') // 表单的类型：create - 新增；update - 修改
-const formData = ref({
+const formData = ref<FormData>({
   nickname: '',
-  deptId: '',
+  deptList: [],
   mobile: '',
   email: '',
   id: undefined,
@@ -124,8 +131,7 @@ const formData = ref({
   sex: undefined,
   postIds: [],
   remark: '',
-  status: CommonStatusEnum.ENABLE,
-  roleIds: []
+  status: CommonStatusEnum.ENABLE
 })
 const formRules = reactive<FormRules>({
   username: [{ required: true, message: '用户名称不能为空', trigger: 'blur' }],
@@ -160,7 +166,12 @@ const open = async (type: string, id?: number) => {
   if (id) {
     formLoading.value = true
     try {
-      formData.value = await UserApi.getUser(id)
+      const { deptList, sex, ...rest } = await UserApi.getUser(id)
+      formData.value = {
+        ...rest,
+        deptList: deptList.map((item) => item?.id),
+        sex: sex || undefined
+      }
     } finally {
       formLoading.value = false
     }
@@ -182,7 +193,11 @@ const submitForm = async () => {
   // 提交请求
   formLoading.value = true
   try {
-    const data = formData.value as unknown as UserApi.UserVO
+    let deptList = formData.value.deptList.map((id) => ({ id }))
+    const data = {
+      ...formData.value,
+      deptList
+    } as UserVO
     if (formType.value === 'create') {
       await UserApi.createUser(data)
       message.success(t('common.createSuccess'))
@@ -202,7 +217,7 @@ const submitForm = async () => {
 const resetForm = () => {
   formData.value = {
     nickname: '',
-    deptId: '',
+    deptList: [],
     mobile: '',
     email: '',
     id: undefined,
@@ -211,8 +226,7 @@ const resetForm = () => {
     sex: undefined,
     postIds: [],
     remark: '',
-    status: CommonStatusEnum.ENABLE,
-    roleIds: []
+    status: CommonStatusEnum.ENABLE
   }
   formRef.value?.resetFields()
 }

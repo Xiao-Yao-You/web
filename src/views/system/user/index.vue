@@ -96,28 +96,16 @@
       </ContentWrap>
       <ContentWrap>
         <el-table v-loading="loading" :data="list">
-          <el-table-column label="用户编号" align="center" key="id" prop="id" />
-          <el-table-column
-            label="用户名称"
-            align="center"
-            prop="username"
-            :show-overflow-tooltip="true"
-          />
-          <el-table-column
-            label="用户昵称"
-            align="center"
-            prop="nickname"
-            :show-overflow-tooltip="true"
-          />
-          <el-table-column
-            label="部门"
-            align="center"
-            key="deptName"
-            prop="deptName"
-            :show-overflow-tooltip="true"
-          />
+          <el-table-column label="用户编号" align="center" prop="id" />
+          <el-table-column label="用户名称" align="center" prop="username" show-overflow-tooltip />
+          <el-table-column label="用户昵称" align="center" prop="nickname" show-overflow-tooltip />
+          <el-table-column label="部门" align="center" prop="deptName" show-overflow-tooltip>
+            <template #default="{ row }">
+              {{ row.deptList.map((d) => d.name || '').join('、') }}
+            </template>
+          </el-table-column>
           <el-table-column label="手机号码" align="center" prop="mobile" width="120" />
-          <el-table-column label="状态" key="status">
+          <el-table-column label="状态" prop="status">
             <template #default="scope">
               <el-switch
                 v-model="scope.row.status"
@@ -255,7 +243,8 @@ const resetQuery = () => {
 
 /** 处理部门被点击 */
 const handleDeptNodeClick = async (row) => {
-  queryParams.deptId = row.id
+  // 顶级部门查询全量列表
+  queryParams.deptId = row.parentId ? row.id : undefined
   await getList()
 }
 
