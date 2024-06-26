@@ -94,9 +94,11 @@
           </el-form-item>
         </el-form>
       </ContentWrap>
+
+      <!-- 用户 Table -->
       <ContentWrap>
         <el-table v-loading="loading" :data="list">
-          <el-table-column label="用户编号" align="center" prop="id" />
+          <el-table-column label="用户编号" align="center" prop="id" width="80" />
           <el-table-column label="用户名称" align="center" prop="username" show-overflow-tooltip />
           <el-table-column label="用户昵称" align="center" prop="nickname" show-overflow-tooltip />
           <el-table-column label="部门" align="center" prop="deptName" show-overflow-tooltip>
@@ -105,7 +107,7 @@
             </template>
           </el-table-column>
           <el-table-column label="手机号码" align="center" prop="mobile" width="120" />
-          <el-table-column label="状态" prop="status">
+          <el-table-column label="状态" prop="status" align="center" width="80">
             <template #default="scope">
               <el-switch
                 v-model="scope.row.status"
@@ -122,7 +124,7 @@
             :formatter="dateFormatter"
             width="180"
           />
-          <el-table-column label="操作" align="center" width="160">
+          <el-table-column label="操作" align="center" fixed="right" width="160">
             <template #default="scope">
               <div class="flex items-center justify-center">
                 <el-button
@@ -138,7 +140,8 @@
                   v-hasPermi="[
                     'system:user:delete',
                     'system:user:update-password',
-                    'system:permission:assign-user-role'
+                    'system:permission:assign-user-role',
+                    'system:user:bind-tenant'
                   ]"
                 >
                   <el-button type="primary" link><Icon icon="ep:d-arrow-right" /> 更多</el-button>
@@ -161,6 +164,12 @@
                         v-if="checkPermi(['system:permission:assign-user-role'])"
                       >
                         <Icon icon="ep:circle-check" />分配角色
+                      </el-dropdown-item>
+                      <el-dropdown-item
+                        command="handleTenant"
+                        v-if="checkPermi(['system:user:bind-tenant'])"
+                      >
+                        <Icon icon="ep:office-building" />绑定租户
                       </el-dropdown-item>
                     </el-dropdown-menu>
                   </template>
@@ -185,6 +194,8 @@
   <UserImportForm ref="importFormRef" @success="getList" />
   <!-- 分配角色 -->
   <UserAssignRoleForm ref="assignRoleFormRef" @success="getList" />
+  <!-- 绑定租户 -->
+  <UserBindTenantForm ref="tenantRef" @success="getList" />
 </template>
 <script lang="ts" setup>
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
@@ -196,6 +207,7 @@ import * as UserApi from '@/api/system/user'
 import UserForm from './UserForm.vue'
 import UserImportForm from './UserImportForm.vue'
 import UserAssignRoleForm from './UserAssignRoleForm.vue'
+import UserBindTenantForm from './UserBindTenantForm.vue'
 import DeptTree from './DeptTree.vue'
 
 defineOptions({ name: 'SystemUser' })
@@ -305,6 +317,9 @@ const handleCommand = (command: string, row: UserApi.UserVO) => {
     case 'handleRole':
       handleRole(row)
       break
+    case 'handleTenant':
+      handleTenant(row)
+      break
     default:
       break
   }
@@ -342,6 +357,12 @@ const handleResetPwd = async (row: UserApi.UserVO) => {
 const assignRoleFormRef = ref()
 const handleRole = (row: UserApi.UserVO) => {
   assignRoleFormRef.value.open(row)
+}
+
+/** 绑定租户 */
+const tenantRef = ref()
+const handleTenant = (row: UserApi.UserVO) => {
+  tenantRef.value?.open(row)
 }
 
 /** 初始化 */
