@@ -5,7 +5,7 @@ import { config } from './config'
 const { default_headers } = config
 
 const request = (option: any) => {
-  const { url, method, params, data, headersType, responseType, ...config } = option
+  const { url, method, params, data, responseType, headers, headersType, ...config } = option
   return service({
     url: url,
     method,
@@ -13,9 +13,12 @@ const request = (option: any) => {
     data,
     ...config,
     responseType: responseType,
-    headers: {
-      'Content-Type': headersType || default_headers
-    }
+    headers: Object.assign(
+      {
+        'Content-Type': headersType || default_headers
+      },
+      headers
+    )
   })
 }
 export default {

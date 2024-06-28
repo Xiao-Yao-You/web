@@ -40,7 +40,7 @@ const service: AxiosInstance = axios.create({
   withCredentials: false // 禁用 Cookie 等信息
 })
 
-// request拦截器
+// request 拦截器
 service.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // 是否需要设置 token
@@ -95,6 +95,7 @@ service.interceptors.response.use(
       throw new Error()
     }
     const { t } = useI18n()
+
     // 未设置状态码则默认成功状态
     // 二进制数据则直接返回，例如说 Excel 导出
     if (
@@ -107,8 +108,9 @@ service.interceptors.response.use(
       }
       data = await new Response(response.data).json()
     }
-    const code = data.code || result_code
+
     // 获取错误信息
+    const code = data.code || result_code
     const msg = data.msg || errorCode[code] || errorCode['default']
     if (ignoreMsgs.indexOf(msg) !== -1) {
       // 如果是忽略的错误码，直接返回 msg 异常
@@ -171,14 +173,21 @@ service.interceptors.response.use(
       })
       return Promise.reject(new Error(msg))
     } else if (code !== 200) {
+      // 表明不走统一的报错提示，返回完整的 data 供页面自行处理
+      if (config.headers['X-Response-Handler']) {
+        return Promise.reject(data)
+      }
+
       if (msg === '无效的刷新令牌') {
         // hard coding：忽略这个提示，直接登出
         console.log(msg)
       } else {
+        // 统一的报错提示
         ElNotification.error({ title: msg })
       }
       return Promise.reject('error')
     } else {
+      // 成功
       return data
     }
   },

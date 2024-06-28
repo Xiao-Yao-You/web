@@ -45,7 +45,7 @@ const open = async (row: UserApi.UserVO) => {
   formLoading.value = true
   try {
     formData.value.userId = row.id
-    const { tenantDOList: list } = await TenantApi.queryUserTenant({ userId: row.id })
+    const { tenantDOList: list } = await TenantApi.queryUserTenantById({ userId: row.id })
     formData.value.tenantIdList = list.map((item) => item.tenantId)
   } finally {
     formLoading.value = false

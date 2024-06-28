@@ -79,15 +79,29 @@ export const exportTenant = (params: TenantExportReqVO) => {
   return request.download({ url: '/system/tenant/export-excel', params })
 }
 
-// 查询用户的租户信息
-export const queryUserTenant = (params: { userId: number }) => {
+// 根据用户 ID 查询租户信息
+export const queryUserTenantById = (params: { userId: number }) => {
   return request.get<{ tenantDOList: TenantUserItem[] }>({
     url: '/system/user/profile/queryUserTenant',
     params
   })
 }
 
+// 根据用户名查询租户信息
+export const queryUserTenantByName = (params: { userName: string }) => {
+  return request.get<{ tenantDOList: TenantUserItem[] }>({
+    url: '/system/user/queryUserTenantByName',
+    params,
+    headers: { 'X-Response-Handler': true }
+  })
+}
+
 // 修改用户的租户信息
 export const updateUserTenant = (data: TenantUpdateReqVO) => {
   return request.put({ url: '/system/user/ignoreTenant/updateUserTenant', data })
+}
+
+// 切换租户（换取token）
+export const switchUserTenant = (params: { tenantId: number }) => {
+  return request.get({ url: '/system/user/profile/modifyTenant', params })
 }

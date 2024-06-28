@@ -7,6 +7,7 @@ import { Screenfull } from '@/layout/components/Screenfull'
 import { Breadcrumb } from '@/layout/components/Breadcrumb'
 import { SizeDropdown } from '@/layout/components/SizeDropdown'
 import { LocaleDropdown } from '@/layout/components/LocaleDropdown'
+import { TenantSwitch } from '@/layout/components/TenantSwitch'
 import RouterSearch from '@/components/RouterSearch/index.vue'
 import { useAppStore } from '@/store/modules/app'
 import { useDesign } from '@/hooks/web/useDesign'
@@ -75,9 +76,8 @@ export default defineComponent({
               color="var(--top-header-text-color)"
             ></LocaleDropdown>
           ) : undefined}
-          {message.value ? (
-            <Message class="custom-hover" color="var(--top-header-text-color)"></Message>
-          ) : undefined}
+          {message.value ? <Message class="custom-hover"></Message> : undefined}
+          <TenantSwitch class="custom-hover" color="var(--top-header-text-color)" />
           <UserInfo></UserInfo>
         </div>
       </div>

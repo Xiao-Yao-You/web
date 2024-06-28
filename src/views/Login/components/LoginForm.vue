@@ -16,18 +16,7 @@
         </el-form-item>
       </el-col>
       <el-col :span="24" style="padding-right: 10px; padding-left: 10px">
-        <el-form-item v-if="loginData.tenantEnable === 'true'" prop="tenantName">
-          <el-input
-            v-model="loginData.loginForm.tenantName"
-            :placeholder="t('login.tenantNamePlaceholder')"
-            :prefix-icon="iconHouse"
-            link
-            type="primary"
-          />
-        </el-form-item>
-      </el-col>
-      <el-col :span="24" style="padding-right: 10px; padding-left: 10px">
-        <el-form-item prop="username">
+        <el-form-item prop="username" :error="invalidName">
           <el-input
             v-model="loginData.loginForm.username"
             :placeholder="t('login.usernamePlaceholder')"
@@ -47,9 +36,33 @@
           />
         </el-form-item>
       </el-col>
+      <el-col :span="24" style="padding-right: 10px; padding-left: 10px">
+        <el-form-item v-if="loginData.tenantEnable === 'true'" prop="tenantName">
+          <el-select
+            v-model="loginData.loginForm.tenantName"
+            placeholder="请选择租户平台"
+            clearable
+            filterable
+            :loading="tenantLoading"
+          >
+            <template #prefix><icon-officle /></template>
+            <template #loading>
+              <svg class="circular" viewBox="0 0 50 50">
+                <circle class="path" cx="25" cy="25" r="20" fill="none" />
+              </svg>
+            </template>
+            <el-option
+              v-for="item in tenantList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+      </el-col>
       <el-col
         :span="24"
-        style="padding-right: 10px; padding-left: 10px; margin-top: -20px; margin-bottom: -20px"
+        style="padding-right: 10px; padding-left: 10px; margin-top: -12px; margin-bottom: -20px"
       >
         <el-form-item>
           <el-row justify="space-between" style="width: 100%">
@@ -145,23 +158,25 @@
     </el-row>
   </el-form>
 </template>
+
 <script lang="ts" setup>
 import { ElLoading } from 'element-plus'
 import LoginFormTitle from './LoginFormTitle.vue'
-import type { RouteLocationNormalizedLoaded } from 'vue-router'
-
 import { useIcon } from '@/hooks/web/useIcon'
-
-import * as authUtil from '@/utils/auth'
 import { usePermissionStore } from '@/store/modules/permission'
-import * as LoginApi from '@/api/login'
 import { LoginStateEnum, useFormValid, useLoginState } from './useLogin'
+import * as authUtil from '@/utils/auth'
+import * as LoginApi from '@/api/login'
+import { queryUserTenantByName } from '@/api/system/tenant'
+import type { RouteLocationNormalizedLoaded } from 'vue-router'
+import type { FormRules } from 'element-plus'
+import { debounce } from 'min-dash'
 
 defineOptions({ name: 'LoginForm' })
 
 const { t } = useI18n()
 // const message = useMessage()
-const iconHouse = useIcon({ icon: 'ep:house' })
+const iconOfficle = useIcon({ icon: 'ep:office-building' })
 const iconAvatar = useIcon({ icon: 'ep:avatar' })
 const iconLock = useIcon({ icon: 'ep:lock' })
 const formLogin = ref()
@@ -173,22 +188,48 @@ const redirect = ref<string>('')
 const loginLoading = ref(false)
 const verify = ref()
 const captchaType = ref('blockPuzzle') // blockPuzzle 滑块 clickWord 点击文字
+const tenantList = ref<{ value: string; label: string }[]>([])
+const invalidName = ref('') // 无效用户名时，验证错误信息的显示内容
 
 const getShow = computed(() => unref(getLoginState) === LoginStateEnum.LOGIN)
 
-const LoginRules = {
-  tenantName: [required],
-  username: [required],
-  password: [required]
-}
+const LoginRules = reactive<FormRules<typeof loginData.loginForm>>({
+  username: [
+    required,
+    {
+      // 输入用户名后，获取对应的租户平台，如果没有，则说明该用户名无效
+      asyncValidator: debounce((_rule: any, value: string, cb: (...arg: any[]) => void) => {
+        // 更换用户名，清空原租户平台
+        if (loginData.loginForm.tenantName) {
+          loginData.loginForm.tenantName = ''
+        }
+        queryTenantList(value)
+          .then(() => {
+            cb()
+          })
+          .catch((e) => {
+            cb(new Error(e.msg))
+          })
+      }, 500),
+      trigger: 'change'
+    }
+  ],
+  password: [required],
+  tenantName: [
+    {
+      required: true,
+      message: '输入有效用户名后，选择租户平台'
+    }
+  ]
+})
 const loginData = reactive({
   isShowPassword: false,
   captchaEnable: import.meta.env.VITE_APP_CAPTCHA_ENABLE,
   tenantEnable: import.meta.env.VITE_APP_TENANT_ENABLE,
   loginForm: {
-    tenantName: '恒科信改',
-    username: 'admin',
-    password: 'admin123',
+    username: '',
+    password: '',
+    tenantName: '',
     captchaVerification: '',
     rememberMe: true // 默认记录我。如果不需要，可手动修改
   }
@@ -214,6 +255,7 @@ const getCode = async () => {
     verify.value.show()
   }
 }
+
 // 获取租户 ID
 const getTenantId = async () => {
   if (loginData.tenantEnable === 'true') {
@@ -221,6 +263,7 @@ const getTenantId = async () => {
     authUtil.setTenantId(res)
   }
 }
+
 // 记住我
 const getLoginFormCache = () => {
   const loginForm = authUtil.getLoginForm()
@@ -234,6 +277,7 @@ const getLoginFormCache = () => {
     }
   }
 }
+
 // 根据域名，获得租户信息
 const getTenantByWebsite = async () => {
   const website = location.host
@@ -243,6 +287,28 @@ const getTenantByWebsite = async () => {
     authUtil.setTenantId(res.id)
   }
 }
+
+// 根据用户名，获取租户列表
+const tenantLoading = ref(false)
+const queryTenantList = async (userName: string) => {
+  try {
+    tenantLoading.value = true
+    const { tenantDOList: list } = await queryUserTenantByName({ userName })
+    tenantList.value = list.map(({ tenantName: name }) => ({ label: name, value: name }))
+    loginData.loginForm.tenantName = tenantList.value[0]?.value
+  } catch (error) {
+    if (tenantList.value.length) {
+      tenantList.value = []
+    }
+    if (loginData.loginForm.tenantName) {
+      loginData.loginForm.tenantName = ''
+    }
+    return Promise.reject(error)
+  } finally {
+    tenantLoading.value = false
+  }
+}
+
 const loading = ref() // ElLoading.service 返回的实例
 // 登录
 const handleLogin = async (params) => {
@@ -331,9 +397,19 @@ watch(
     immediate: true
   }
 )
-onMounted(() => {
+
+onBeforeMount(() => {
+  // 提前准备 form 表单初始值（避免 validator change 带来的表单校验）
   getLoginFormCache()
+})
+
+onMounted(() => {
   getTenantByWebsite()
+
+  // 提前获取用户对应的租户平台列表
+  if (loginData.loginForm.username) {
+    queryTenantList(loginData.loginForm.username)
+  }
 })
 </script>
 
@@ -356,5 +432,21 @@ onMounted(() => {
     vertical-align: middle;
     cursor: pointer;
   }
+}
+
+.circular {
+  display: inline;
+  width: 30px;
+  height: 30px;
+  animation: loading-rotate 2s linear infinite;
+}
+
+.path {
+  animation: loading-dash 1.5s ease-in-out infinite;
+  stroke-dasharray: 90, 150;
+  stroke-dashoffset: 0;
+  stroke-width: 2;
+  stroke: var(--el-color-primary);
+  stroke-linecap: round;
 }
 </style>
