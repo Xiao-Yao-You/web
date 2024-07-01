@@ -87,7 +87,7 @@ service.interceptors.request.use(
 
 // response 拦截器
 service.interceptors.response.use(
-  async (response: AxiosResponse<any>) => {
+  async (response: AxiosResponse) => {
     let { data } = response
     const config = response.config
     if (!data) {

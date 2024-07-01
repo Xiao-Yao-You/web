@@ -1,0 +1,33 @@
+{
+  "list": [
+    {
+      "id": 19424,
+      "keyCode": "编码 key",
+      "description": "随便",
+      "prefix": "前缀",
+      "infix": "中缀",
+      "suffix": "后缀",
+      "type": "2",
+      "start": 1,
+      "step": 1,
+      "status": 1,
+      "useStatus": 1,
+      "createTime": 1718349506000
+    },
+    {
+      "id": 19425,
+      "keyCode": "编码 key",
+      "description": "无所谓",
+      "prefix": "前缀",
+      "infix": "中缀",
+      "suffix": "后缀",
+      "type": "2",
+      "start": 1,
+      "step": 1,
+      "status": 0,
+      "useStatus": 1,
+      "createTime": 1718349506000
+    }
+  ],
+  "total": 2
+}

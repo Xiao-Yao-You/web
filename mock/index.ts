@@ -1,10 +1,11 @@
 // https://github.com/vbenjs/vite-plugin-mock/blob/main/README.zh_CN.md
 import type { MockMethod /*, MockConfig */ } from 'vite-plugin-mock'
 import MapData from './data/map.json'
+import ScenecodeMapData from './data/scenecode.json'
 
 export default [
   {
-    url: '/admin-api/map/page',
+    url: '/map/page',
     method: 'get',
     timeout: 2000,
     response: (conf) => {
@@ -12,6 +13,19 @@ export default [
       return {
         code: 0,
         data: MapData,
+        msg: 'success'
+      }
+    }
+  },
+  {
+    url: '/system/scene-code/page',
+    method: 'get',
+    timeout: 2000,
+    response: (conf) => {
+      console.log('🚀 ~ page:', conf.query)
+      return {
+        code: 0,
+        data: ScenecodeMapData,
         msg: 'success'
       }
     }
