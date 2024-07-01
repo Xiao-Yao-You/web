@@ -86,3 +86,9 @@ watch(
     </router-link>
   </div>
 </template>
+
+<style scoped>
+a {
+  color: var(--el-text-color-primary);
+}
+</style>
