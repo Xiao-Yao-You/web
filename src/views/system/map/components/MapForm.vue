@@ -9,7 +9,7 @@
     >
       <el-form-item label="园区" prop="zoneType">
         <el-select v-model="formData.zoneType" disabled>
-          <el-option label="恒科" value="00" />
+          <el-option label="恒力（南通）产业园" value="00" />
         </el-select>
       </el-form-item>
       <el-form-item label="类型" prop="type">

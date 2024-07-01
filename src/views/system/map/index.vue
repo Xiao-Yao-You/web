@@ -13,9 +13,9 @@
           v-model="queryParams.zoneType"
           disabled
           placeholder="请选择园区"
-          class="!w-100px"
+          class="!w-180px"
         >
-          <el-option label="恒科" value="00" />
+          <el-option label="恒力（南通）产业园" value="00" />
         </el-select>
       </el-form-item>
       <el-form-item label="类型" prop="type">
@@ -65,7 +65,7 @@
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
       <el-table-column label="园区" align="center" prop="zoneType">
-        <template #default=""> 恒科 </template>
+        <template #default="">恒力（南通）产业园</template>
       </el-table-column>
       <el-table-column label="地点 ID" align="center" prop="id" />
       <el-table-column label="地点名" align="center" prop="description" />
@@ -116,14 +116,7 @@
 import { storeToRefs } from 'pinia'
 import MapForm from './components/MapForm.vue'
 import { dateFormatter } from '@/utils/formatTime'
-import download from '@/utils/download'
-import {
-  getMapList,
-  deleteMapPoint,
-  exportMapList,
-  type MapPoint,
-  type MapQuery
-} from '@/api/system/map'
+import { getMapList, deleteMapPoint, type MapPoint, type MapQuery } from '@/api/system/map'
 import { useMapStoreWithOut } from '@/store/modules/map'
 
 defineOptions({ name: 'SystemMap' })
@@ -156,7 +149,7 @@ const queryParams = reactive<MapQuery>({
   // latitude: undefined,
 })
 const queryFormRef = ref() // 搜索的表单
-const exportLoading = ref(false) // 导出的加载中
+// const exportLoading = ref(false) // 导出的加载中
 
 const query = async () => {
   await mapStore.fetchCategoryEnums()
