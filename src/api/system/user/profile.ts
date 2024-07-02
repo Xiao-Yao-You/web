@@ -4,10 +4,10 @@ export interface ProfileVO {
   id: number
   username: string
   nickname: string
-  dept: {
+  depts: {
     id: number
     name: string
-  }
+  }[]
   roles: {
     id: number
     name: string
@@ -40,7 +40,7 @@ export interface UserProfileUpdateReqVO {
 
 // 查询用户个人信息
 export const getUserProfile = () => {
-  return request.get({ url: '/system/user/profile/get' })
+  return request.get<ProfileVO>({ url: '/system/user/profile/get' })
 }
 
 // 修改用户个人信息

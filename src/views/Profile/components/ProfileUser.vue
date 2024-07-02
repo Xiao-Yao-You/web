@@ -22,7 +22,9 @@
       <li class="list-group-item">
         <Icon class="mr-5px" icon="carbon:tree-view-alt" />
         {{ t('profile.user.dept') }}
-        <div v-if="userInfo?.dept" class="pull-right">{{ userInfo?.dept.name }}</div>
+        <div v-if="Array.isArray(userInfo?.depts)" class="pull-right">
+          {{ userInfo.depts.map((d) => d.name).join('、') }}
+        </div>
       </li>
       <li class="list-group-item">
         <Icon class="mr-5px" icon="ep:suitcase" />
@@ -49,20 +51,13 @@
 <script lang="ts" setup>
 import { formatDate } from '@/utils/formatTime'
 import UserAvatar from './UserAvatar.vue'
-
-import { getUserProfile, ProfileVO } from '@/api/system/user/profile'
+import type { ProfileVO } from '@/api/system/user/profile'
 
 defineOptions({ name: 'ProfileUser' })
 
+defineProps<{ userInfo: ProfileVO }>()
+
 const { t } = useI18n()
-const userInfo = ref({} as ProfileVO)
-const getUserInfo = async () => {
-  const users = await getUserProfile()
-  userInfo.value = users
-}
-onMounted(async () => {
-  await getUserInfo()
-})
 </script>
 
 <style scoped>

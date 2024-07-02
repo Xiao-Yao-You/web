@@ -6,7 +6,7 @@
           <span>{{ t('profile.user.title') }}</span>
         </div>
       </template>
-      <ProfileUser />
+      <ProfileUser :userInfo="userInfo" />
     </el-card>
     <el-card class="user ml-3 w-2/3" shadow="hover">
       <template #header>
@@ -17,13 +17,13 @@
       <div>
         <el-tabs v-model="activeName" class="profile-tabs" style="height: 400px" tab-position="top">
           <el-tab-pane :label="t('profile.info.basicInfo')" name="basicInfo">
-            <BasicInfo />
+            <BasicInfo :userInfo="userInfo" />
           </el-tab-pane>
           <el-tab-pane :label="t('profile.info.resetPwd')" name="resetPwd">
             <ResetPwd />
           </el-tab-pane>
           <el-tab-pane :label="t('profile.info.userSocial')" name="userSocial">
-            <UserSocial v-model:activeName="activeName" />
+            <UserSocial v-model:activeName="activeName" :userInfo="userInfo" />
           </el-tab-pane>
         </el-tabs>
       </div>
@@ -32,10 +32,22 @@
 </template>
 <script lang="ts" setup>
 import { BasicInfo, ProfileUser, ResetPwd, UserSocial } from './components'
+import { getUserProfile, type ProfileVO } from '@/api/system/user/profile'
+
+defineOptions({ name: 'Profile' })
 
 const { t } = useI18n()
-defineOptions({ name: 'Profile' })
+
 const activeName = ref('basicInfo')
+
+const userInfo = ref({} as ProfileVO)
+
+const getUserInfo = async () => {
+  const users = await getUserProfile()
+  userInfo.value = users
+}
+
+onBeforeMount(getUserInfo)
 </script>
 <style scoped>
 .user {

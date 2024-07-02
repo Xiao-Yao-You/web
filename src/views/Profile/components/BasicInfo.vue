@@ -9,7 +9,7 @@
   </Form>
   <div style="text-align: center">
     <XButton :title="t('common.save')" type="primary" @click="submit()" />
-    <XButton :title="t('common.reset')" type="danger" @click="init()" />
+    <XButton :title="t('common.reset')" type="danger" @click="resetUserInfo()" />
   </div>
 </template>
 <script lang="ts" setup>
@@ -22,12 +22,16 @@ import {
   UserProfileUpdateReqVO
 } from '@/api/system/user/profile'
 import { useUserStore } from '@/store/modules/user'
+import type { ProfileVO } from '@/api/system/user/profile'
 
 defineOptions({ name: 'BasicInfo' })
 
+const props = defineProps<{ userInfo: ProfileVO }>()
+
 const { t } = useI18n()
 const message = useMessage() // 消息弹窗
-const userStore = useUserStore() 
+const userStore = useUserStore()
+
 // 表单校验
 const rules = reactive<FormRules>({
   nickname: [{ required: true, message: t('profile.rules.nickname'), trigger: 'blur' }],
@@ -71,7 +75,9 @@ const schema = reactive<FormSchema[]>([
     value: 0
   }
 ])
+
 const formRef = ref<FormExpose>() // 表单 Ref
+
 const submit = () => {
   const elForm = unref(formRef)?.getElFormRef()
   if (!elForm) return
@@ -80,17 +86,23 @@ const submit = () => {
       const data = unref(formRef)?.formModel as UserProfileUpdateReqVO
       await updateUserProfile(data)
       message.success(t('common.updateSuccess'))
-      const profile = await init()
+      const profile = await resetUserInfo()
       userStore.setUserNicknameAction(profile.nickname)
     }
   })
 }
-const init = async () => {
+
+watchPostEffect(() => {
+  // 设置初始的用户信息
+  if (props.userInfo.id) {
+    unref(formRef)?.setValues(props.userInfo)
+  }
+})
+
+const resetUserInfo = async () => {
   const res = await getUserProfile()
+  // userInfo
   unref(formRef)?.setValues(res)
   return res
 }
-onMounted(async () => {
-  await init()
-})
 </script>

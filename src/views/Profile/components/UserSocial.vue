@@ -23,34 +23,36 @@
 </template>
 <script lang="ts" setup>
 import { SystemUserSocialTypeEnum } from '@/utils/constants'
-import { getUserProfile, ProfileVO } from '@/api/system/user/profile'
+import { ProfileVO } from '@/api/system/user/profile'
 import { socialAuthRedirect, socialBind, socialUnbind } from '@/api/system/user/socialUser'
 
 defineOptions({ name: 'UserSocial' })
-defineProps<{
+
+const props = defineProps<{
   activeName: string
+  userInfo: ProfileVO
 }>()
 const message = useMessage()
 const socialUsers = ref<any[]>([])
-const userInfo = ref<ProfileVO>()
 
-const initSocial = async () => {
-  socialUsers.value = [] // 重置避免无限增长
-  const res = await getUserProfile()
-  userInfo.value = res
-  for (const i in SystemUserSocialTypeEnum) {
-    const socialUser = { ...SystemUserSocialTypeEnum[i] }
-    socialUsers.value.push(socialUser)
-    if (userInfo.value?.socialUsers) {
-      for (const j in userInfo.value.socialUsers) {
-        if (socialUser.type === userInfo.value.socialUsers[j].type) {
-          socialUser.openid = userInfo.value.socialUsers[j].openid
-          break
+watch(
+  () => props.userInfo,
+  (userInfo) => {
+    for (const i in SystemUserSocialTypeEnum) {
+      const socialUser = { ...SystemUserSocialTypeEnum[i] }
+      socialUsers.value.push(socialUser)
+      if (userInfo.socialUsers) {
+        for (const j in userInfo.socialUsers) {
+          if (socialUser.type === userInfo.socialUsers[j].type) {
+            socialUser.openid = userInfo.socialUsers[j].openid
+            break
+          }
         }
       }
     }
   }
-}
+)
+
 const route = useRoute()
 const emit = defineEmits<{
   (e: 'update:activeName', v: string): void
@@ -91,8 +93,9 @@ const unbind = async (row) => {
   message.success('解绑成功')
 }
 
-onMounted(async () => {
-  await initSocial()
+onMounted(() => {
+  // 重置避免无限增长
+  socialUsers.value = []
 })
 
 watch(
