@@ -1,7 +1,7 @@
 // 启用枚举
 export enum EnableEnums {
-  disable = 0,
-  enable = 1
+  enable = 0,
+  disable = 1
 }
 
 // 单据编码-中缀

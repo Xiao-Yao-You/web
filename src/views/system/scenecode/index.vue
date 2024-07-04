@@ -67,8 +67,8 @@
       <el-table-column label="步长" align="center" prop="step" />
       <el-table-column label="启用状态" align="center" prop="status">
         <template #default="{ row: { status } }">
-          <el-tag :type="status ? 'primary' : 'danger'">
-            {{ status ? '启用' : '禁用' }}
+          <el-tag :type="status ? 'danger' : 'primary'">
+            {{ status ? '禁用' : '启用' }}
           </el-tag>
         </template>
       </el-table-column>
