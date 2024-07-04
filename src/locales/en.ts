@@ -453,5 +453,10 @@ export default {
     btn_zoom_in: 'Zoom in',
     btn_zoom_out: 'Zoom out',
     preview: 'Preivew'
+  },
+  map: {
+    NanTong: 'NanTong',
+    HengKe: 'HengKe',
+    XuanDa: 'XuanDa'
   }
 }

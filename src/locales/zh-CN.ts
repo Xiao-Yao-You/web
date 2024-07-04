@@ -448,5 +448,10 @@ export default {
     btn_zoom_out: '缩小',
     preview: '预览'
   },
-  'OAuth 2.0': 'OAuth 2.0' // 避免菜单名是 OAuth 2.0 时，一直 warn 报错
+  'OAuth 2.0': 'OAuth 2.0', // 避免菜单名是 OAuth 2.0 时，一直 warn 报错
+  map: {
+    NanTong: '南通',
+    HengKe: '恒科',
+    XuanDa: '轩达'
+  }
 }

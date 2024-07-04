@@ -8,14 +8,15 @@
       :inline="true"
       label-width="68px"
     >
-      <el-form-item label="园区" prop="zoneType">
+      <el-form-item label="厂区" prop="facrotyCode">
         <el-select
-          v-model="queryParams.zoneType"
-          disabled
-          placeholder="请选择园区"
-          class="!w-180px"
+          v-model="queryParams.factoryCode"
+          placeholder="请选择厂区"
+          clearable
+          class="!w-120px"
         >
-          <el-option label="恒力（南通）产业园" value="00" />
+          <el-option :label="t('map.HengKe')" :value="FactoryType.HengKe" />
+          <el-option :label="t('map.XuanDa')" :value="FactoryType.XuanDa" />
         </el-select>
       </el-form-item>
       <el-form-item label="类型" prop="type">
@@ -28,16 +29,35 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="地点名" prop="description">
+      <el-form-item label="别名描述" prop="description">
         <el-input
           v-model="queryParams.description"
-          placeholder="请输入地点名"
+          placeholder="请输入别名描述"
           clearable
+          show-word-limit
+          maxlength="20"
           @keyup.enter="handleQuery"
-          class="!w-160px"
+          class="!w-200px"
         />
       </el-form-item>
-      <el-form-item label="创建时间" prop="createTime">
+      <el-form-item label="地点名称" prop="name">
+        <el-input
+          v-model="queryParams.name"
+          placeholder="请输入地点名称"
+          clearable
+          show-word-limit
+          maxlength="20"
+          @keyup.enter="handleQuery"
+          class="!w-200px"
+        />
+      </el-form-item>
+      <el-form-item label="状态" prop="status">
+        <el-select v-model="queryParams.status" placeholder="请选择状态" clearable class="!w-120px">
+          <el-option label="启用" :value="CommonStatusEnum.ENABLE" />
+          <el-option label="禁用" :value="CommonStatusEnum.DISABLE" />
+        </el-select>
+      </el-form-item>
+      <!-- <el-form-item label="创建时间" prop="createTime">
         <el-date-picker
           v-model="queryParams.createTime"
           value-format="YYYY-MM-DD HH:mm:ss"
@@ -47,7 +67,7 @@
           :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
           class="!w-240px"
         />
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
@@ -64,25 +84,61 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
-      <el-table-column label="园区" align="center" prop="zoneType">
-        <template #default="">恒力（南通）产业园</template>
+      <el-table-column label="序号" align="center" width="60px">
+        <template #default="{ $index }">
+          {{ $index + 1 }}
+        </template>
       </el-table-column>
-      <el-table-column label="地点 ID" align="center" prop="id" />
-      <el-table-column label="地点名" align="center" prop="description" />
+      <el-table-column label="园区" align="center" prop="zoneType" width="60px">
+        <template #default="{ row: { zoneType } }">{{ t(`map.${ZoneType[zoneType]}`) }}</template>
+      </el-table-column>
+      <el-table-column label="厂区" align="center" prop="factoryCode" width="60px">
+        <template #default="{ row: { factoryCode } }">
+          {{ t(`map.${FactoryType[factoryCode]}`) }}
+        </template>
+      </el-table-column>
+      <el-table-column label="地点编码" align="center" prop="code" />
+      <el-table-column label="别名描述" align="center" prop="description" />
+      <el-table-column label="地点名称" align="center" prop="name" width="150px" />
       <el-table-column label="类型" align="center" prop="type">
         <template #default="{ row: { type } }">
-          <el-tag :type="tagType[type]">
+          <el-tag :type="TAG_TYPE[type]" effect="plain" round>
             {{ categoryEnums[type] }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="权重" align="center" prop="sort">
+      <el-table-column label="GPS 经度" align="center" prop="longitude" />
+      <el-table-column label="GPS 纬度" align="center" prop="latitude" />
+      <el-table-column label="状态" align="center" prop="status">
+        <template #default="{ row: { status } }">
+          <el-tag :type="status ? 'danger' : 'primary'">
+            {{ status ? '禁用' : '启用' }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="权重" align="center" prop="sort" width="60px">
         <template #default="{ row: { type, sort } }">
           {{ `${Number(type)}-${sort}` }}
         </template>
       </el-table-column>
-      <el-table-column label="GPS 经度" align="center" prop="longitude" />
-      <el-table-column label="GPS 纬度" align="center" prop="latitude" />
+      <el-table-column label="区域图片" align="center" prop="image">
+        <template #default="{ row }">
+          <el-image
+            class="h-80px w-80px"
+            lazy
+            :src="row.image || ''"
+            :preview-src-list="[row.image]"
+            preview-teleported
+            fit="cover"
+          >
+            <template #error>
+              <div class="flex justify-center items-center w-full h-full">
+                <EmptyPicture />
+              </div>
+            </template>
+          </el-image>
+        </template>
+      </el-table-column>
       <el-table-column
         label="创建时间"
         align="center"
@@ -90,8 +146,11 @@
         :formatter="dateFormatter"
         width="180px"
       />
-      <el-table-column label="操作" align="center">
+      <el-table-column label="操作" align="center" width="160" fixed="right">
         <template #default="scope">
+          <el-button link type="primary" @click="openForm('detail', scope.row.id)">
+            详情
+          </el-button>
           <el-button link type="primary" @click="openForm('update', scope.row.id)">
             编辑
           </el-button>
@@ -116,23 +175,41 @@
 import { storeToRefs } from 'pinia'
 import MapForm from './components/MapForm.vue'
 import { dateFormatter } from '@/utils/formatTime'
-import { getMapList, deleteMapPoint, type MapPoint, type MapQuery } from '@/api/system/map'
+import {
+  getMapList,
+  deleteMapPoint,
+  FactoryType,
+  ZoneType,
+  type MapPoint,
+  type MapQuery
+} from '@/api/system/map'
 import { useMapStoreWithOut } from '@/store/modules/map'
+import { CommonStatusEnum } from '@/utils/constants'
+import { isEmptyVal } from '@/utils/is'
+import { pickBy } from 'lodash-es'
+import { useIcon } from '@/hooks/web/useIcon'
 
 defineOptions({ name: 'SystemMap' })
 
-const tagType = {
-  '00': 'primary',
-  '01': 'success',
-  '02': 'danger',
-  '03': 'warning',
-  '04': 'info'
+const TAG_TYPE = {
+  '00': 'primary', // 成品仓库
+  '01': 'success', // 立库
+  '02': 'danger', // 期货仓库
+  '03': 'warning', // 切片
+  '04': 'info', // 大门
+  '05': 'warning', // 食堂
+  '06': 'danger', // 消防
+  '07': 'success', // 办公楼
+  '08': 'info', // 码头
+  '09': 'primary', // 公共服务
+  '10': 'success' // 机物料仓库
 }
 
 const mapStore = useMapStoreWithOut()
 const { categoryEnums, categoryOptions } = storeToRefs(mapStore)
 const message = useMessage() // 消息弹窗
 const { t } = useI18n() // 国际化
+const EmptyPicture = useIcon({ icon: 'ep:picture' })
 
 const loading = ref(true) // 列表的加载中
 const list = ref<MapPoint[]>([]) // 列表的数据
@@ -140,13 +217,12 @@ const total = ref(0) // 列表的总页数
 const queryParams = reactive<MapQuery>({
   pageNo: 1,
   pageSize: 10,
-  zoneType: '00',
+  name: '',
+  description: '',
+  factoryCode: undefined,
   type: undefined,
-  description: undefined,
-  createTime: [undefined, undefined]
-  // image: undefined,
-  // longitude: undefined,
-  // latitude: undefined,
+  status: undefined
+  // createTime: [undefined, undefined]
 })
 const queryFormRef = ref() // 搜索的表单
 // const exportLoading = ref(false) // 导出的加载中
@@ -160,7 +236,8 @@ const query = async () => {
 const getList = async () => {
   loading.value = true
   try {
-    const data = await getMapList(queryParams)
+    const params = pickBy(queryParams, (p) => !isEmptyVal(p)) as MapQuery
+    const data = await getMapList(params)
     list.value = data.list
     total.value = data.total
   } finally {
