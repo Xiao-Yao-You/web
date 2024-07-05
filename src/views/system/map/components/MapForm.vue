@@ -18,8 +18,12 @@
       </el-form-item>
       <el-form-item label="所属厂区" prop="factoryCode">
         <el-select v-model="formData.factoryCode">
-          <el-option label="恒科" :value="FactoryType.HengKe" />
-          <el-option label="轩达" :value="FactoryType.XuanDa" />
+          <el-option
+            v-for="opt in FactoryOptions"
+            :key="opt.value"
+            :label="opt.label"
+            :value="opt.value"
+          />
         </el-select>
       </el-form-item>
       <el-form-item label="地点类型" prop="type">
@@ -32,19 +36,28 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="别名描述" prop="description">
+      <el-form-item label="提货名" prop="name">
         <el-input
-          v-model="formData.description"
-          placeholder="请输入地点的别名描述"
+          v-model="formData.name"
+          placeholder="请输入财务提货单上的地点名称"
           clearable
           show-word-limit
           maxlength="20"
         />
       </el-form-item>
-      <el-form-item label="地点名称" prop="name">
+      <el-form-item label="墙标名" prop="markName">
         <el-input
-          v-model="formData.name"
-          placeholder="请输入地点名称"
+          v-model="formData.markName"
+          placeholder="请输入建筑物上标记的名称"
+          clearable
+          show-word-limit
+          maxlength="20"
+        />
+      </el-form-item>
+      <el-form-item label="别名" prop="alias">
+        <el-input
+          v-model="formData.alias"
+          placeholder="请输入地点的常用别名"
           clearable
           show-word-limit
           maxlength="20"
@@ -97,7 +110,7 @@ import {
   createMapPoint,
   getMapPoint,
   ZoneType,
-  FactoryType,
+  FactoryOptions,
   type MapPoint
 } from '@/api/system/map'
 import { pickBy } from 'lodash-es'
@@ -128,7 +141,9 @@ const formData = ref<Partial<MapPoint>>({
   type: undefined,
   longitude: undefined,
   latitude: undefined,
-  description: '',
+  name: '',
+  markName: '',
+  alias: '',
   status: CommonStatusEnum.ENABLE,
   sort: undefined,
   image: ''
@@ -136,8 +151,8 @@ const formData = ref<Partial<MapPoint>>({
 const formRef = ref() // 表单 Ref
 const formRules = reactive({
   factoryCode: [{ required: true, message: '所属厂区不能为空' }],
-  name: [{ required: true, message: '地点名称不能为空' }],
-  description: [{ required: true, message: '地点名称不能为空' }],
+  name: [{ required: true, message: '提货名不能为空' }],
+  markName: [{ required: true, message: '墙标名不能为空' }],
   type: [{ required: true, message: '地点类型不能为空' }],
   sort: [
     { required: true, message: '排序不能为空' },
@@ -223,9 +238,11 @@ const resetForm = () => {
     zoneType: ZoneType.NanTong,
     factoryCode: undefined,
     type: undefined,
+    name: '',
+    markName: '',
+    alias: '',
     longitude: undefined,
     latitude: undefined,
-    description: '',
     status: CommonStatusEnum.ENABLE,
     sort: undefined,
     image: ''

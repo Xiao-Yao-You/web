@@ -15,8 +15,12 @@
           clearable
           class="!w-120px"
         >
-          <el-option :label="t('map.HengKe')" :value="FactoryType.HengKe" />
-          <el-option :label="t('map.XuanDa')" :value="FactoryType.XuanDa" />
+          <el-option
+            v-for="opt in FactoryOptions"
+            :key="opt.value"
+            :label="opt.label"
+            :value="opt.value"
+          />
         </el-select>
       </el-form-item>
       <el-form-item label="类型" prop="type">
@@ -29,10 +33,10 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="别名描述" prop="description">
+      <el-form-item label="提货名" prop="name">
         <el-input
-          v-model="queryParams.description"
-          placeholder="请输入别名描述"
+          v-model="queryParams.name"
+          placeholder="请输入地点的提货名"
           clearable
           show-word-limit
           maxlength="20"
@@ -40,7 +44,7 @@
           class="!w-200px"
         />
       </el-form-item>
-      <el-form-item label="地点名称" prop="name">
+      <!-- <el-form-item label="地点名称" prop="name">
         <el-input
           v-model="queryParams.name"
           placeholder="请输入地点名称"
@@ -50,7 +54,7 @@
           @keyup.enter="handleQuery"
           class="!w-200px"
         />
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="状态" prop="status">
         <el-select v-model="queryParams.status" placeholder="请选择状态" clearable class="!w-120px">
           <el-option label="启用" :value="CommonStatusEnum.ENABLE" />
@@ -98,9 +102,10 @@
         </template>
       </el-table-column>
       <el-table-column label="地点编码" align="center" prop="code" />
-      <el-table-column label="别名描述" align="center" prop="description" />
-      <el-table-column label="地点名称" align="center" prop="name" width="150px" />
-      <el-table-column label="类型" align="center" prop="type">
+      <el-table-column label="提货名" align="center" prop="name" width="150px" />
+      <el-table-column label="墙标名" align="center" prop="markName" width="150px" />
+      <el-table-column label="别名" align="center" prop="alias" width="150px" />
+      <el-table-column label="类型" align="center" prop="type" width="110px">
         <template #default="{ row: { type } }">
           <el-tag :type="TAG_TYPE[type]" effect="plain" round>
             {{ categoryEnums[type] }}
@@ -109,7 +114,7 @@
       </el-table-column>
       <el-table-column label="GPS 经度" align="center" prop="longitude" />
       <el-table-column label="GPS 纬度" align="center" prop="latitude" />
-      <el-table-column label="状态" align="center" prop="status">
+      <el-table-column label="状态" align="center" prop="status" width="70px">
         <template #default="{ row: { status } }">
           <el-tag :type="status ? 'danger' : 'primary'">
             {{ status ? '禁用' : '启用' }}
@@ -121,7 +126,7 @@
           {{ `${Number(type)}-${sort}` }}
         </template>
       </el-table-column>
-      <el-table-column label="区域图片" align="center" prop="image">
+      <!-- <el-table-column label="区域图片" align="center" prop="image">
         <template #default="{ row }">
           <el-image
             class="h-80px w-80px"
@@ -138,7 +143,7 @@
             </template>
           </el-image>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column
         label="创建时间"
         align="center"
@@ -180,6 +185,7 @@ import {
   deleteMapPoint,
   FactoryType,
   ZoneType,
+  FactoryOptions,
   type MapPoint,
   type MapQuery
 } from '@/api/system/map'
@@ -218,7 +224,8 @@ const queryParams = reactive<MapQuery>({
   pageNo: 1,
   pageSize: 10,
   name: '',
-  description: '',
+  alias: '',
+  markName: '',
   factoryCode: undefined,
   type: undefined,
   status: undefined

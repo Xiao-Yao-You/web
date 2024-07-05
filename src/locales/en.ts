@@ -457,6 +457,7 @@ export default {
   map: {
     NanTong: 'NanTong',
     HengKe: 'HengKe',
-    XuanDa: 'XuanDa'
+    XuanDa: 'XuanDa',
+    Public: 'Public'
   }
 }

@@ -452,6 +452,7 @@ export default {
   map: {
     NanTong: '南通',
     HengKe: '恒科',
-    XuanDa: '轩达'
+    XuanDa: '轩达',
+    Public: '公共'
   }
 }
