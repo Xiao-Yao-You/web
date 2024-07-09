@@ -156,10 +156,22 @@
           <el-button link type="primary" @click="openForm('detail', scope.row.id)">
             详情
           </el-button>
-          <el-button link type="primary" @click="openForm('update', scope.row.id)">
+          <el-button
+            link
+            type="primary"
+            @click="openForm('update', scope.row.id)"
+            v-hasPermi="['system:map:update']"
+          >
             编辑
           </el-button>
-          <el-button link type="danger" @click="handleDelete(scope.row.id)"> 删除 </el-button>
+          <el-button
+            link
+            type="danger"
+            @click="handleDelete(scope.row.id)"
+            v-hasPermi="['system:map:delete']"
+          >
+            删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -193,7 +205,7 @@ import { useMapStoreWithOut } from '@/store/modules/map'
 import { CommonStatusEnum } from '@/utils/constants'
 import { isEmptyVal } from '@/utils/is'
 import { pickBy } from 'lodash-es'
-import { useIcon } from '@/hooks/web/useIcon'
+// import { useIcon } from '@/hooks/web/useIcon'
 
 defineOptions({ name: 'SystemMap' })
 
@@ -215,7 +227,7 @@ const mapStore = useMapStoreWithOut()
 const { categoryEnums, categoryOptions } = storeToRefs(mapStore)
 const message = useMessage() // 消息弹窗
 const { t } = useI18n() // 国际化
-const EmptyPicture = useIcon({ icon: 'ep:picture' })
+// const EmptyPicture = useIcon({ icon: 'ep:picture' })
 
 const loading = ref(true) // 列表的加载中
 const list = ref<MapPoint[]>([]) // 列表的数据

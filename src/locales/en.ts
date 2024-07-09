@@ -458,6 +458,9 @@ export default {
     NanTong: 'NanTong',
     HengKe: 'HengKe',
     XuanDa: 'XuanDa',
-    Public: 'Public'
+    Public: 'Public',
+    Headquarter: 'Headquarter',
+    Factory: 'Factory',
+    Dormitory: 'Dormitory'
   }
 }

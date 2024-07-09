@@ -453,6 +453,9 @@ export default {
     NanTong: '南通',
     HengKe: '恒科',
     XuanDa: '轩达',
-    Public: '公共'
+    Public: '公共',
+    Headquarter: '指挥部',
+    Factory: '厂区',
+    Dormitory: '生活区'
   }
 }
