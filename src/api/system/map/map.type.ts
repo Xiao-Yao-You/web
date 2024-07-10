@@ -1,5 +1,3 @@
-import { MapType } from './constant'
-
 export interface CategoryItem {
   id: number
   sort: number
@@ -21,7 +19,7 @@ export interface MapPoint {
   name: string // 财务对外的地点名
   alias: string // 常用的口头地点别名
   markName: string // 建筑物标记的地点名
-  type: MapType // 类型
+  type: string // 类型
   longitude: number // GPS 经度
   latitude: number // GPS 纬度
   status: number

@@ -36,13 +36,14 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="提货名" prop="name">
+      <el-form-item label="提货地名" prop="name">
         <el-input
           v-model="formData.name"
           placeholder="请输入财务提货单上的地点名称"
           clearable
           show-word-limit
           maxlength="20"
+          class="!w-100px"
         />
       </el-form-item>
       <el-form-item label="墙标名" prop="markName">
@@ -151,7 +152,7 @@ const formData = ref<Partial<MapPoint>>({
 const formRef = ref() // 表单 Ref
 const formRules = reactive({
   factoryCode: [{ required: true, message: '所属厂区不能为空' }],
-  name: [{ required: true, message: '提货名不能为空' }],
+  name: [{ required: true, message: '提货地名不能为空' }],
   markName: [{ required: true, message: '墙标名不能为空' }],
   type: [{ required: true, message: '地点类型不能为空' }],
   sort: [

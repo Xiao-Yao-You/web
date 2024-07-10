@@ -33,10 +33,10 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="提货名" prop="name">
+      <el-form-item label="提货地名" prop="name">
         <el-input
           v-model="queryParams.name"
-          placeholder="请输入地点的提货名"
+          placeholder="请输入提货地名"
           clearable
           show-word-limit
           maxlength="20"
@@ -102,14 +102,12 @@
         </template>
       </el-table-column>
       <el-table-column label="地点编码" align="center" prop="code" />
-      <el-table-column label="提货名" align="center" prop="name" width="150px" />
+      <el-table-column label="提货地名" align="center" prop="name" width="150px" />
       <el-table-column label="墙标名" align="center" prop="markName" width="150px" />
       <el-table-column label="别名" align="center" prop="alias" width="150px" />
       <el-table-column label="类型" align="center" prop="type" width="110px">
         <template #default="{ row: { type } }">
-          <el-tag :type="TAG_TYPE[type]" effect="plain" round>
-            {{ categoryEnums[type] }}
-          </el-tag>
+          <dict-tag :type="DICT_TYPE.SYSTEM_MAP_TYPE" :value="type" effect="plain" round />
         </template>
       </el-table-column>
       <el-table-column label="GPS 经度" align="center" prop="longitude" />
@@ -205,23 +203,10 @@ import { useMapStoreWithOut } from '@/store/modules/map'
 import { CommonStatusEnum } from '@/utils/constants'
 import { isEmptyVal } from '@/utils/is'
 import { pickBy } from 'lodash-es'
+import { DICT_TYPE } from '@/utils/dict'
 // import { useIcon } from '@/hooks/web/useIcon'
 
 defineOptions({ name: 'SystemMap' })
-
-const TAG_TYPE = {
-  '00': 'primary', // 成品仓库
-  '01': 'success', // 立库
-  '02': 'danger', // 期货仓库
-  '03': 'warning', // 切片
-  '04': 'info', // 大门
-  '05': 'warning', // 食堂
-  '06': 'danger', // 消防
-  '07': 'success', // 办公楼
-  '08': 'info', // 码头
-  '09': 'primary', // 公共服务
-  '10': 'success' // 机物料仓库
-}
 
 const mapStore = useMapStoreWithOut()
 const { categoryEnums, categoryOptions } = storeToRefs(mapStore)
