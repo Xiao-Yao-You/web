@@ -20,7 +20,9 @@ export default defineComponent({
     const tenantList = ref<{ value: number; label: string }[]>([])
 
     const slots = {
-      default: <Icon class="cursor-pointer !p-0" color={props.color} size={18} icon="ep:switch" />,
+      default: () => (
+        <Icon class="cursor-pointer !p-0" color={props.color} size={18} icon="ep:switch" />
+      ),
       dropdown: () => (
         <ElDropdownMenu>
           {tenantList.value.map((item, index) => {
