@@ -2,6 +2,10 @@
 @import './FormCreate/index.scss';
 @import 'element-plus/theme-chalk/dark/css-vars.css';
 
+li {
+  list-style: none;
+}
+
 .reset-margin [class*='el-icon'] + span {
   margin-left: 2px !important;
 }
