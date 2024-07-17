@@ -164,6 +164,20 @@ export function formatAxis(param: Date): string {
 }
 
 /**
+ * @param startTime
+ * @param endTime
+ * @param unit
+ * @description 计算时差
+ */
+export const timeDiff = (
+  startTime: dayjs.ConfigType,
+  endTime: dayjs.ConfigType,
+  unit: dayjs.OpUnitType | dayjs.QUnitType = 'minute'
+) => {
+  return dayjs(startTime).diff(dayjs(endTime), unit)
+}
+
+/**
  * 将毫秒，转换成时间字符串。例如说，xx 分钟
  *
  * @param ms 毫秒
@@ -329,4 +343,45 @@ export function getDateRange(
     dayjs(beginDate).startOf('d').format('YYYY-MM-DD HH:mm:ss'),
     dayjs(endDate).endOf('d').format('YYYY-MM-DD HH:mm:ss')
   ]
+}
+
+/**
+ * @description 时间间隔转化为对应时间点
+ * @param id 时间间隔id
+ * @param step 时间间隔步长（单位分钟，比如 30 分钟一个间隔时间，则 24 h 会被分为 48 个时间间隔）
+ * @param position 时间间隔的起点 or 终点
+ * */
+export function intervalTransform(
+  id: number,
+  position: 'start' | 'end',
+  step = 30,
+  format = 'HH:mm'
+) {
+  const rate = step / 60
+  const range = id * rate
+
+  let h: number | string = parseInt(String(range), 10)
+  let m: number | string = (range % 1) * 60
+  let s: string = '00'
+  if (Number.isNaN(h) || Number.isNaN(m)) return NaN
+
+  // 规范时间格式为两位数的字符串
+  if (h < 10) {
+    h = '0' + h
+  } else if (h === 24) {
+    h = '23'
+    m = '59'
+    s = '59'
+  }
+  if (m === 0) m = '00'
+
+  let time = dayjs(h + ':' + m + ':' + s, 'HH:mm:ss')
+
+  // 根据 position 获取当前时间间隔的起点或终点
+  // 起点在算出的时间 time 上需要减去 step 间隔
+  if (position === 'start') {
+    time = time.subtract(step, 'minute')
+  }
+
+  return time.format(format)
 }
