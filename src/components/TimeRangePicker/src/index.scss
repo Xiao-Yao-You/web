@@ -1,0 +1,70 @@
+.time-range-picker {
+  --time-border-color: #e4e7ed;
+  --time-active-color: #69c0ff;
+  --time-inrange-color: #e6f7ff;
+  --time-opacity: 0.6;
+
+  @mixin active($bc-color: transparent) {
+    background-color: $bc-color;
+  }
+
+  li {
+    width: 25px;
+    height: 20px;
+    font-size: 12px;
+    line-height: 12px;
+    padding-bottom: 18px;
+    margin-bottom: 10px;
+    margin-left: -1px;
+
+    .box {
+      border: 1px solid var(--time-border-color);
+      cursor: pointer;
+
+      &:hover {
+        @include active(var(--time-active-color));
+        opacity: var(--time-opacity);
+      }
+
+      &:active {
+        opacity: 1;
+      }
+
+      &.time-active {
+        @include active($bc-color: var(--time-active-color));
+      }
+
+      &.time-inrange {
+        @include active($bc-color: var(--time-inrange-color));
+      }
+
+      &.time-disabled {
+        &,
+        &:hover {
+          cursor: not-allowed;
+          @include active($bc-color: #f5f7fa);
+        }
+      }
+    }
+
+    span.start-time {
+      bottom: 0;
+      left: -14px;
+    }
+
+    span.end-time {
+      bottom: 0;
+      right: -14px;
+    }
+  }
+
+  &.forbidden {
+    --time-active-color: undefined;
+    --time-inrange-color: undefined;
+    --time-opacity: 1;
+
+    .box:hover {
+      cursor: default;
+    }
+  }
+}
