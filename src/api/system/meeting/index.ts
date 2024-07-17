@@ -113,6 +113,11 @@ export const MeetingSubscribeApi = {
     return await request.put({ url: `/bookMeeting/update`, data })
   },
 
+  // 撤销会议预约
+  cancelMeetingSubscribe: async (id: number) => {
+    return await request.put({ url: `/bookMeeting/cancel?id=` + id })
+  },
+
   // 删除会议预约
   deleteMeetingSubscribe: async (id: number) => {
     return await request.delete({ url: `/bookMeeting/delete?id=` + id })

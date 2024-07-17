@@ -121,8 +121,8 @@
               handleMeetingStatus({ isCancelled, date, startTime, endTime }) !==
               MeetingStatus.Pending
             "
-            @click="openForm('revoke', id)"
-            v-hasPermi="['system:meeting-subscribe:revoke']"
+            @click="handleCancel(id)"
+            v-hasPermi="['system:meeting-subscribe:cancel']"
           >
             撤销
           </el-button>
@@ -215,11 +215,24 @@ const openForm = (type: string, id?: number) => {
   formRef.value.open(type, id)
 }
 
-/** 删除按钮操作 */
+/** 撤销操作 */
+const handleCancel = async (id: number) => {
+  try {
+    // 删除的二次确认
+    await message.delConfirm('是否撤销当前会议？')
+    // 发起删除
+    await MeetingSubscribeApi.cancelMeetingSubscribe(id)
+    message.success('撤销成功')
+    // 刷新列表
+    await getList()
+  } catch {}
+}
+
+/** 删除操作 */
 const handleDelete = async (id: number) => {
   try {
     // 删除的二次确认
-    await message.delConfirm()
+    await message.delConfirm('是否删除当前会议？')
     // 发起删除
     await MeetingSubscribeApi.deleteMeetingSubscribe(id)
     message.success(t('common.delSuccess'))
