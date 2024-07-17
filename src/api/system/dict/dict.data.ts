@@ -18,6 +18,17 @@ export const getSimpleDictDataList = () => {
   return request.get({ url: '/system/dict-data/simple-list' })
 }
 
+// 根据字典名称查找对应的列表
+export const getDictDataByType = (dictType: string) => {
+  return request.get<{ list: any[] }>({
+    url: '/system/dict-data/pageIgnoreLogin',
+    params: {
+      dictType,
+      pageSize: 100
+    }
+  })
+}
+
 // 查询字典数据列表
 export const getDictDataPage = (params: PageParam) => {
   return request.get({ url: '/system/dict-data/page', params })

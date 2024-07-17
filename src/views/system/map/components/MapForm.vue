@@ -43,7 +43,6 @@
           clearable
           show-word-limit
           maxlength="20"
-          class="!w-100px"
         />
       </el-form-item>
       <el-form-item label="墙标名" prop="markName">

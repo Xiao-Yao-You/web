@@ -83,7 +83,11 @@
         </template>
       </el-table-column>
       <el-table-column label="名称" align="center" prop="name" />
-      <el-table-column label="位置" align="center" prop="position" />
+      <el-table-column label="位置" align="center" prop="position">
+        <template #default="{ row: { position } }">
+          {{ t(`position.${MeetingPosition[position]}`) }}
+        </template>
+      </el-table-column>
       <el-table-column label="房间号" align="center" prop="roomNo" />
       <el-table-column label="容纳人数" align="center" prop="capacity" />
       <el-table-column label="启用状态" align="center" prop="status">
@@ -141,6 +145,7 @@ import MeetingRoomsForm from './MeetingRoomsForm.vue'
 import { MeetingRoomsApi, MeetingRoomsVO } from '@/api/system/meeting'
 import { positionOptions /* , MeetingPosition */ } from '@/api/system/meeting/constant'
 import { CommonStatusEnum } from '@/utils/constants'
+import { MeetingPosition } from '@/api/system/meeting/constant'
 // import download from '@/utils/download'
 
 /** 会议室管理 列表 */
@@ -162,7 +167,7 @@ const queryParams = reactive({
   status: undefined
 })
 const queryFormRef = ref() // 搜索的表单
-const exportLoading = ref(false) // 导出的加载中
+// const exportLoading = ref(false) // 导出的加载中
 
 /** 查询列表 */
 const getList = async () => {

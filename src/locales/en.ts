@@ -462,5 +462,10 @@ export default {
     Headquarter: 'Headquarter',
     Factory: 'Factory',
     Dormitory: 'Dormitory'
+  },
+  position: {
+    Headquarter: '指挥部',
+    Factory: '厂区',
+    Dormitory: '生活区'
   }
 }

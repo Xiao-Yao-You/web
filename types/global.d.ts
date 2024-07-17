@@ -51,5 +51,12 @@ declare global {
     name: string
     children?: Tree[] | any[]
     disabled?: boolean
+    isLeaf?: boolean
+  }
+
+  interface OptionItem<T = string | number> {
+    label: string
+    value: T
+    [key: string]: any
   }
 }
