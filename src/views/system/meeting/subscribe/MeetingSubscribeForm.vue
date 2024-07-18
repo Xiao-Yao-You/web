@@ -66,8 +66,9 @@
           </template>
         </el-input>
       </el-form-item>
-      <el-form-item label="内部与会人员" prop="joinUserId">
+      <el-form-item label="内部与会人员" prop="joinUserList">
         <TreeTransfer
+          v-model="formData.joinUserList"
           :data="deptList"
           :props="{ label: 'name', isLeaf: 'isLeaf' }"
           node-key="id"
@@ -85,7 +86,7 @@
         <el-input-number
           v-model="formData.capacity"
           placeholder="请输入总人数"
-          :min="formData.joinUserId.length || 1"
+          :min="formData.joinUserList.length || 1"
           class="!w-180px"
         />
       </el-form-item>
@@ -158,9 +159,10 @@ import { TimeRangePicker } from '@/components/TimeRangePicker'
 import { TreeTransfer } from '@/components/TreeTransfer'
 import {
   MeetingSubscribeApi,
-  MeetingSubscribeVO,
   MeetingRoomsApi,
-  MeetingRoomsRecord
+  type MeetingRoomsRecord,
+  type MeetingSubscribeVO,
+  type JoinUser
 } from '@/api/system/meeting'
 import { useUserStore } from '@/store/modules/user'
 import { useIcon } from '@/hooks/web/useIcon'
@@ -203,7 +205,7 @@ const formData = ref({
   ], // 起止时间点
   meetingRoomId: undefined as unknown as number,
   meetingRoomName: '',
-  joinUserId: [] as number[],
+  joinUserList: [] as JoinUser[],
   capacity: undefined as unknown as number,
   equipment: [] as number[],
   remark: ''
@@ -245,7 +247,7 @@ const formRules = reactive({
       }
     }
   ],
-  joinUserId: [{ required: true, message: '内部与会人数不能为空', trigger: 'change' }],
+  joinUserList: [{ required: true, message: '内部与会人数不能为空', trigger: 'change' }],
   capacity: [{ required: true, message: '总人数不能为空', trigger: 'blur' }],
   equipment: [{ required: true, message: '设备需求不能为空' }]
 })
@@ -351,7 +353,6 @@ const loadMember = async (node: Node, resolve: (data: Tree[]) => void) => {
   })
 }
 const onTreeChange = (keys: number[]) => {
-  formData.value.joinUserId = keys
   if (keys.length > (formData.value.capacity || 0)) {
     formData.value.capacity = keys.length
   }
@@ -414,7 +415,7 @@ const resetForm = () => {
     ],
     meetingRoomId: undefined as unknown as number,
     meetingRoomName: '',
-    joinUserId: [],
+    joinUserList: [],
     capacity: undefined as unknown as number,
     equipment: [],
     remark: ''
@@ -434,10 +435,9 @@ const open = async (type: string, id?: number) => {
   if (id) {
     formLoading.value = true
     try {
-      const { startTime, endTime, dateMeeting, joinUserIdList, ...rest } =
+      const { startTime, endTime, dateMeeting, ...rest } =
         await MeetingSubscribeApi.getMeetingSubscribe(id)
-
-      // 处理部分数据
+      // 处理部分数据：
       // @ts-ignore
       const date = dayjs(dateMeeting).format('YYYY-MM-DD')
       const start = {
@@ -448,7 +448,6 @@ const open = async (type: string, id?: number) => {
         label: timeTransfer(endTime, 'end', date).format('HH:mm'),
         value: endTime
       }
-
       Object.assign(formData.value, {
         dateMeeting: date,
         range: [start, end],

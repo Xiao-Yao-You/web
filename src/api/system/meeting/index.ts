@@ -72,6 +72,11 @@ export const MeetingRoomsApi = {
   }
 }
 
+export type JoinUser = {
+  userNickName: string
+  userId: number
+}
+
 // 会议预约 VO
 export interface MeetingSubscribeVO {
   subject: string // 名称
@@ -83,7 +88,7 @@ export interface MeetingSubscribeVO {
   startTime: number // 开始时间（timeKey）
   endTime: number // 结束时间（timeKey）
   capacity: number // 与会人数
-  joinUserId: (string | number)[] // 参与会议的用户 id
+  joinUserList: JoinUser[] // 参与会议的用户 id
   equipment: (string | number)[] // 设备
   remark: string // 备注
 }
@@ -94,7 +99,6 @@ export interface MeetingSubscribeInfo extends MeetingSubscribeVO {
   status: number // 0 正常 1 撤销
   dateMeeting: number[]
   createTime: number
-  joinUserIdList: number[]
 }
 
 // 会议预约 API

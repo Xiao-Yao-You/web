@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { pull, remove } from 'lodash-es'
+import { PropType } from 'vue'
+import { remove } from 'lodash-es'
 import { useIcon } from '@/hooks/web/useIcon'
 import type { ElTree } from 'element-plus'
 import type { TreeOptionProps } from 'element-plus/es/components/tree/src/tree.type.d.ts'
+import type { JoinUser } from '@/api/system/meeting'
 
 defineOptions({
   name: 'TreeTransfer',
@@ -16,6 +18,8 @@ const props = withDefaults(
   {}
 )
 
+const model = defineModel({ type: Array as PropType<JoinUser[]>, default: [] })
+
 const emit = defineEmits<{
   change: [keys: number[]]
 }>()
@@ -23,8 +27,8 @@ const emit = defineEmits<{
 const CloseIcon = useIcon({ icon: 'ep:circle-close' })
 
 const treeRef = ref<InstanceType<typeof ElTree>>()
-const selectedMembers = ref([] as Tree[])
 
+const selectedMembers = ref(ref([] as Tree[]))
 const memberKeys = computed(() => selectedMembers.value.map((m) => m.id))
 
 const setcustomClass = (data: Tree) => {
@@ -36,9 +40,11 @@ const onCheck = (currNode: Tree, { checkedKeys }) => {
   if (!currNode.isLeaf) return // 部门跳过，仅保留人员（叶子节点）id
 
   if (checkedKeys.includes(currNode.id)) {
+    // 避免重复添加
+    if (memberKeys.value.includes(currNode.id)) return
     selectedMembers.value.push(currNode)
   } else {
-    pull(selectedMembers.value, currNode)
+    remove(selectedMembers.value, (m) => m.id === currNode.id)
   }
 }
 
@@ -47,9 +53,32 @@ const onRemove = (id: number) => {
   treeRef.value?.setCheckedKeys(memberKeys.value)
 }
 
-watchEffect(() => {
-  emit('change', memberKeys.value)
-})
+// 双向绑定的初始值设定
+watch(
+  model,
+  (newValue) => {
+    selectedMembers.value = newValue.map((item) => ({
+      id: item.userId,
+      name: item.userNickName,
+      isLeaf: true
+    }))
+    treeRef.value?.setCheckedKeys(memberKeys.value)
+  },
+  { once: true }
+)
+
+// 更新选中人员
+watch(
+  selectedMembers,
+  (newValue) => {
+    model.value = newValue.map((m) => ({
+      userNickName: m.name,
+      userId: m.id
+    }))
+    emit('change', memberKeys.value)
+  },
+  { deep: true }
+)
 </script>
 
 <template>
