@@ -94,6 +94,7 @@ export interface MeetingSubscribeInfo extends MeetingSubscribeVO {
   status: number // 0 正常 1 撤销
   dateMeeting: number[]
   createTime: number
+  joinUserIdList: number[]
 }
 
 // 会议预约 API

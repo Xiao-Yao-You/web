@@ -1,19 +1,26 @@
-import { defineComponent, computed, ref, onBeforeUnmount } from 'vue'
+import { defineComponent, computed, ref, onBeforeUnmount, PropType } from 'vue'
 import dayjs from 'dayjs'
 
 import './index.scss'
 
 type TimeRangeItem = {
-  id: number // 当前间隔序号
-  startTime: string
-  endTime: string
-  disabled?: boolean
-  hidden?: boolean
+  id: number // 当前间隔序号（timeKey）
+  startTime: string // 时间间隔的起始时间
+  endTime: string // 时间间隔的结束时间
+  disabled?: boolean // 是否禁用
+  hidden?: boolean // 是否隐藏
 }
 
 export default defineComponent({
   name: 'TimeRangePicker',
   props: {
+    modelValue: {
+      type: Array as PropType<OptionItem<number>[]>,
+      default: () => [
+        { label: '', value: -1 }, // label 为起始时间字符串，value 为该段时间间隔的 id
+        { label: '', value: -1 }
+      ]
+    },
     forbidden: {
       type: Boolean,
       default: false
@@ -47,8 +54,28 @@ export default defineComponent({
     const end = ref<TimeRangeItem | null>(null) // 时间段终点
     const temp = ref<TimeRangeItem | null>(null) // 指针，代表当前选中的点（用以记录中间的点击状态）
 
+    // 编辑场景：双向绑定时，将受控的 modelValue 初始值更新到 start 和 end 上
+    const unwatch = watchEffect(() => {
+      const [startPoint, endPoint] = props.modelValue
+      if (startPoint.value > 0) {
+        // @ts-ignore
+        start.value = {
+          id: startPoint.value as number,
+          startTime: startPoint.label,
+          ...start.value
+        }
+        // @ts-ignore
+        end.value = {
+          id: endPoint.value as number,
+          endTime: endPoint.label,
+          ...end.value
+        }
+        temp.value = end.value
+      }
+    })
+
     // [时间起点(id), 时间终点(id)]，根据数组的变化来判断选择状态
-    const range = computed(() => [start.value?.id, end.value?.id].filter((id) => id))
+    const range = computed(() => [start.value?.id, end.value?.id].filter((id) => id && id > 0))
 
     // 间隔总数
     const total = computed(() => (24 * 60) / props.step)
@@ -144,6 +171,7 @@ export default defineComponent({
 
       temp.value = timeInfo
 
+      unwatch() // 取消 modelValue 监听
       ctx.emit('update:modelValue', [
         { label: start.value?.startTime, value: start.value?.id },
         { label: end.value?.endTime, value: end.value?.id }

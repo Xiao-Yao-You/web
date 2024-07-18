@@ -91,7 +91,7 @@
       <el-table-column label="与会人数" align="center" prop="capacity" width="80" />
       <el-table-column label="所需设备" align="center" prop="equipment">
         <template #default="{ row: { equipment } }">
-          {{ equipment ? equipment.map((e) => equimentDict[e]).join('、') : '无' }}
+          {{ isEmpty(equipment) ? '无' : equipment.map((e) => equimentDict[e]).join('、') }}
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" fixed="right" min-width="150">

@@ -169,6 +169,7 @@ import { getDeptPage } from '@/api/system/dept'
 import { handleTree } from '@/utils/tree'
 import { getUserPage } from '@/api/system/user'
 import type Node from 'element-plus/es/components/tree/src/model/node'
+import { timeTransfer } from './hook/useMeetingStatus'
 
 /** 会议预约 表单 */
 defineOptions({ name: 'MeetingSubscribeForm' })
@@ -346,11 +347,6 @@ const loadMember = async (node: Node, resolve: (data: Tree[]) => void) => {
       name: m.nickname,
       isLeaf: true
     }))
-    memberNodes.push({
-      id: 201,
-      name: '我尼玛',
-      isLeaf: true
-    })
     return resolve(memberNodes)
   })
 }
@@ -438,9 +434,26 @@ const open = async (type: string, id?: number) => {
   if (id) {
     formLoading.value = true
     try {
-      const res = await MeetingSubscribeApi.getMeetingSubscribe(id)
-      console.log('🚀 ~ res:', res)
-      // formData.value = res
+      const { startTime, endTime, dateMeeting, joinUserIdList, ...rest } =
+        await MeetingSubscribeApi.getMeetingSubscribe(id)
+
+      // 处理部分数据
+      // @ts-ignore
+      const date = dayjs(dateMeeting).format('YYYY-MM-DD')
+      const start = {
+        label: timeTransfer(startTime, 'start', date).format('HH:mm'),
+        value: startTime
+      }
+      const end = {
+        label: timeTransfer(endTime, 'end', date).format('HH:mm'),
+        value: endTime
+      }
+
+      Object.assign(formData.value, {
+        dateMeeting: date,
+        range: [start, end],
+        ...rest
+      })
     } finally {
       formLoading.value = false
     }
