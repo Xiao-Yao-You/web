@@ -89,7 +89,7 @@
       </el-table-column>
       <el-table-column label="发起人" align="center" prop="userNickName" />
       <el-table-column label="与会人数" align="center" prop="capacity" width="80" />
-      <el-table-column label="设备需求" align="center" prop="equipment">
+      <el-table-column label="所需设备" align="center" prop="equipment">
         <template #default="{ row: { equipment } }">
           {{ equipment ? equipment.map((e) => equimentDict[e]).join('、') : '无' }}
         </template>
@@ -101,7 +101,7 @@
           <el-button
             link
             type="primary"
-            @click="openForm('detail', id)"
+            @click="openDetail(id)"
             v-hasPermi="['system:meeting-subscribe:detail']"
           >
             详情
@@ -109,6 +109,10 @@
           <el-button
             link
             type="primary"
+            :disabled="
+              handleMeetingStatus({ isCancelled, date, startTime, endTime }) !==
+              MeetingStatus.Pending
+            "
             @click="openForm('update', id)"
             v-hasPermi="['system:meeting-subscribe:update']"
           >
@@ -147,7 +151,10 @@
   </ContentWrap>
 
   <!-- 表单弹窗：添加/修改 -->
-  <MeetingSubscribeForm ref="formRef" :equipments="equipments" @success="getList" />
+  <MeetingSubscribeForm ref="formRef" :equipments="equipmentOptions" @success="getList" />
+
+  <!-- 会议详情 -->
+  <MeetingSubscribeDetail ref="detailRef" :equimentDict="equimentDict" />
 </template>
 
 <script setup lang="ts">
@@ -155,6 +162,7 @@ import dayjs from 'dayjs'
 import { isEmpty } from 'lodash-es'
 import MeetingSubscribeForm from './MeetingSubscribeForm.vue'
 import MeetingStatusTag from './MeetingStatusTag.vue'
+import MeetingSubscribeDetail from './MeetingSubscribeDetail.vue'
 import { MeetingSubscribeApi, MeetingSubscribeVO } from '@/api/system/meeting'
 import { getDictDataByType } from '@/api/system/dict/dict.data'
 import { handleMeetingStatus } from './hook/useMeetingStatus'
@@ -181,8 +189,9 @@ const queryParams = reactive({
   date: []
 })
 const queryFormRef = ref() // 搜索的表单
-const equipments = ref<OptionItem[]>([{ label: '不需要', value: -1 }]) // 设备选项
+const equipmentOptions = ref<OptionItem[]>([{ label: '不需要', value: -1 }]) // 设备选项
 const equimentDict = reactive(wsCache.get('meeting_equiment_type') || {}) // 设备字典
+const detailRef = ref() // 详情
 // const exportLoading = ref(false) // 导出的加载中
 
 /** 查询列表 */
@@ -248,6 +257,11 @@ const calculateDuration = (startTime: number, endTime: number) => {
   return dayjs(finishedTime, 'HH:mm').diff(dayjs(beginTime, 'HH:mm'), 'minute')
 }
 
+/** 打开详情窗口 */
+const openDetail = (id: number) => {
+  detailRef.value?.open(id)
+}
+
 /** 导出按钮操作 */
 // const handleExport = async () => {
 //   try {
@@ -270,20 +284,24 @@ onMounted(() => {
   // 缓存会议设备字典
   if (isEmpty(equimentDict)) {
     getDictDataByType('hk_meeting_equipment_type').then(({ list }) => {
+      // 保存字典
       const dict = {}
       list.forEach(({ label, value }) => {
         dict[value] = label
       })
       wsCache.set('meeting_equiment_type', dict)
-
-      equipments.value = equipments.value.concat(list.map(({ label, value }) => ({ label, value })))
+      Object.assign(equimentDict, dict)
+      // 更新设备下拉菜单
+      equipmentOptions.value = equipmentOptions.value.concat(
+        list.map(({ label, value }) => ({ label, value }))
+      )
     })
   } else {
     const options = [] as OptionItem[]
     for (let value in equimentDict) {
       options.push({ value, label: equimentDict[value] })
     }
-    equipments.value = equipments.value.concat(options)
+    equipmentOptions.value = equipmentOptions.value.concat(options)
   }
 })
 </script>

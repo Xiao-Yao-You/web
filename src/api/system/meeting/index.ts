@@ -75,16 +75,25 @@ export const MeetingRoomsApi = {
 // 会议预约 VO
 export interface MeetingSubscribeVO {
   subject: string // 名称
-  nickname?: string
-  userPhone?: string // 用户联系电话
+  userNickName: string
+  userPhone: string // 用户联系电话
   meetingRoomId: number // 会议室ID
-  dateMeeting: string // 会议日期
+  meetingRoomName: string // 会议室名
+  dateMeeting: string | number[] // 会议日期
   startTime: number // 开始时间（timeKey）
   endTime: number // 结束时间（timeKey）
   capacity: number // 与会人数
   joinUserId: (string | number)[] // 参与会议的用户 id
   equipment: (string | number)[] // 设备
   remark: string // 备注
+}
+
+export interface MeetingSubscribeInfo extends MeetingSubscribeVO {
+  id: number
+  userId: number
+  status: number // 0 正常 1 撤销
+  dateMeeting: number[]
+  createTime: number
 }
 
 // 会议预约 API
@@ -105,7 +114,7 @@ export const MeetingSubscribeApi = {
 
   // 查询会议预约详情
   getMeetingSubscribe: async (id: number) => {
-    return await request.get({ url: `/bookMeeting/get?id=` + id })
+    return await request.get<MeetingSubscribeInfo>({ url: `/bookMeeting/get?id=` + id })
   },
 
   // 修改会议预约

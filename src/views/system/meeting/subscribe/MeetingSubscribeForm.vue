@@ -17,8 +17,8 @@
       </el-form-item>
       <el-row>
         <el-col :lg="12">
-          <el-form-item label="发起人" prop="userNickname">
-            <el-input v-model="formData.userNickname" disabled />
+          <el-form-item label="发起人" prop="userNickName">
+            <el-input v-model="formData.userNickName" disabled />
           </el-form-item>
         </el-col>
         <el-col :lg="12">
@@ -35,6 +35,7 @@
         <el-date-picker
           v-model="formData.dateMeeting"
           type="date"
+          value-format="YYYY-MM-DD"
           placeholder="请选择会议日期"
           :disabled-date="getDisabledDate"
         />
@@ -192,7 +193,7 @@ const formLoading = ref(false) // 表单的加载中：1）修改时的数据加
 const formType = ref('') // 表单的类型：create - 新增；update - 修改
 const formData = ref({
   subject: '',
-  userNickname: userInfo.nickname,
+  userNickName: userInfo.nickname,
   userPhone: userInfo.mobile,
   dateMeeting: dayjs(new Date()).format('YYYY-MM-DD'),
   range: [
@@ -408,7 +409,7 @@ const submitForm = async () => {
 const resetForm = () => {
   formData.value = {
     subject: '',
-    userNickname: userInfo.nickname,
+    userNickName: userInfo.nickname,
     userPhone: userInfo.mobile,
     dateMeeting: dayjs(new Date()).format('YYYY-MM-DD'),
     range: [
@@ -437,7 +438,9 @@ const open = async (type: string, id?: number) => {
   if (id) {
     formLoading.value = true
     try {
-      formData.value = await MeetingSubscribeApi.getMeetingSubscribe(id)
+      const res = await MeetingSubscribeApi.getMeetingSubscribe(id)
+      console.log('🚀 ~ res:', res)
+      // formData.value = res
     } finally {
       formLoading.value = false
     }
