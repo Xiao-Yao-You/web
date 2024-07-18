@@ -266,12 +266,14 @@ const getHiddenDate = (startTime: string) => {
 }
 // 时间间隔禁用函数（当前时间之前和已被占用的间隔需要禁用）
 const getForbiddenDate = (endTime: string, id: number, list: MeetingRoomsRecord['list']) => {
+  // 是否在当前时间之前
   let isBefore = false
-  if (endTime) {
-    const currTime = dayjs().format('HH:mm')
-    isBefore = dayjs(endTime, 'HH:mm').isBefore(dayjs(currTime, 'HH:mm'), 'minute')
+  if (endTime && formData.value.dateMeeting) {
+    const planTime = dayjs(formData.value.dateMeeting + ' ' + endTime)
+    isBefore = planTime.isBefore(dayjs())
   }
 
+  // 是否已被占用
   const timeKeys = list.map((item) => item.timeKey)
   const isOccupied = timeKeys.includes(id)
 
