@@ -45,6 +45,7 @@
           v-model="formData.meetingRoomName"
           placeholder="点击右侧查看，选择会议室"
           class="!w-40% mr-5px"
+          disabled
         />
         <el-button type="primary" :loading="roomLoading" @click="onRoomClick">查看</el-button>
       </el-form-item>
@@ -221,6 +222,7 @@ const formRules = reactive({
       trigger: 'blur'
     }
   ],
+  dateMeeting: [{ required: true, message: '会议日期不能为空', trigger: 'blur' }],
   meetingRoomId: [{ required: true, message: '会议室不能为空', trigger: 'blur' }],
   meetingRoomName: [{ required: true, message: '会议室不能为空', trigger: 'blur' }],
   range: [
