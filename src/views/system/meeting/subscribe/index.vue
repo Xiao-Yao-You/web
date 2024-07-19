@@ -122,10 +122,7 @@
           <el-button
             link
             type="primary"
-            :disabled="
-              handleMeetingStatus({ isCancelled, date, startTime, endTime }) !==
-              MeetingStatus.Pending
-            "
+            :disabled="handleCancelStatus({ isCancelled, date, startTime, endTime })"
             @click="handleCancel(id)"
             v-hasPermi="['system:meeting-subscribe:cancel']"
           >
@@ -166,7 +163,7 @@ import MeetingStatusTag from './MeetingStatusTag.vue'
 import MeetingSubscribeDetail from './MeetingSubscribeDetail.vue'
 import { MeetingSubscribeApi, MeetingSubscribeVO } from '@/api/system/meeting'
 import { getDictDataByType } from '@/api/system/dict/dict.data'
-import { handleMeetingStatus } from './hook/useMeetingStatus'
+import { handleMeetingStatus, type StatusProps } from './hook/useMeetingStatus'
 import { MeetingStatus } from '@/api/system/meeting/constant'
 import { useCache } from '@/hooks/web/useCache'
 import { formatDate, /* dateFormatter, */ intervalTransform } from '@/utils/formatTime'
@@ -236,6 +233,12 @@ const handleCancel = async (id: number) => {
     // 刷新列表
     await getList()
   } catch {}
+}
+
+// 计算撤销的状态（只有 '待开始' 和 '会议中' 的会议，允许撤销）
+const handleCancelStatus = (props: StatusProps) => {
+  const status = handleMeetingStatus(props)
+  return [MeetingStatus.Finished, MeetingStatus.Cancel].includes(status)
 }
 
 /** 删除操作 */
