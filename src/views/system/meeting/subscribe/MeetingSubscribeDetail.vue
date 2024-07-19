@@ -15,7 +15,7 @@ const props = withDefaults(defineProps<{ equimentDict: Record<string, string> }>
 
 const detailVisible = ref(false)
 const loading = ref(false)
-const form = ref<Omit<MeetingSubscribeInfo, 'id' | 'userId' | 'meetingRoomId'>>({
+const form = ref<Omit<MeetingSubscribeInfo, 'id' | 'userId' | 'meetingRoomId' | 'joinUserList'>>({
   subject: '',
   status: -1,
   startTime: undefined as unknown as number,
@@ -24,7 +24,6 @@ const form = ref<Omit<MeetingSubscribeInfo, 'id' | 'userId' | 'meetingRoomId'>>(
   userNickName: '',
   userPhone: '',
   meetingRoomName: '',
-  joinUserId: [] as number[],
   capacity: undefined as unknown as number,
   equipment: [] as number[],
   createTime: 0,
@@ -77,7 +76,6 @@ const resetForm = () => {
     userNickName: '',
     userPhone: '',
     meetingRoomName: '',
-    joinUserId: [] as number[],
     capacity: undefined as unknown as number,
     equipment: [] as number[],
     createTime: 0,
@@ -111,6 +109,9 @@ defineExpose({ open })
       </el-descriptions-item>
       <el-descriptions-item label="会议时长">
         {{ duration + ' 分钟' }}
+      </el-descriptions-item>
+      <el-descriptions-item label="会议主持人">
+        {{ form.userNickName }}
       </el-descriptions-item>
       <el-descriptions-item label="发起人">
         {{ form.userNickName }}

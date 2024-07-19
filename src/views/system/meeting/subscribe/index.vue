@@ -87,6 +87,7 @@
           {{ calculateDuration(startTime, endTime) }}
         </template>
       </el-table-column>
+      <el-table-column label="主持人" align="center" prop="hostUserNickName" />
       <el-table-column label="发起人" align="center" prop="userNickName" />
       <el-table-column label="与会人数" align="center" prop="capacity" width="80" />
       <el-table-column label="所需设备" align="center" prop="equipment">

@@ -15,10 +15,18 @@
           show-word-limit
         />
       </el-form-item>
+      <el-form-item label="会议主持人" prop="hostUserNickName">
+        <el-input
+          v-model="formData.hostUserNickName"
+          class="!w-220px"
+          maxlength="20"
+          show-word-limit
+        />
+      </el-form-item>
       <el-row>
         <el-col :lg="12">
           <el-form-item label="发起人" prop="userNickName">
-            <el-input v-model="formData.userNickName" disabled />
+            <el-input v-model="formData.userNickName" disabled class="!w-220px" />
           </el-form-item>
         </el-col>
         <el-col :lg="12">
@@ -27,6 +35,7 @@
               v-model="formData.userPhone"
               placeholder="请输入联系方式"
               :disabled="!!formData.userPhone"
+              class="!w-220px"
             />
           </el-form-item>
         </el-col>
@@ -44,7 +53,7 @@
         <el-input
           v-model="formData.meetingRoomName"
           placeholder="点击右侧查看，选择会议室"
-          class="!w-40% mr-5px"
+          class="!w-220px mr-5px"
           disabled
         />
         <el-button type="primary" :loading="roomLoading" @click="onRoomClick">查看</el-button>
@@ -88,7 +97,7 @@
           v-model="formData.capacity"
           placeholder="请输入总人数"
           :min="formData.joinUserList.length || 1"
-          class="!w-180px"
+          class="!w-220px"
         />
       </el-form-item>
       <el-form-item label="设备需求" prop="equipment">
@@ -197,6 +206,7 @@ const formLoading = ref(false) // 表单的加载中：1）修改时的数据加
 const formType = ref('') // 表单的类型：create - 新增；update - 修改
 const formData = ref({
   subject: '',
+  hostUserNickName: userInfo.nickname,
   userNickName: userInfo.nickname,
   userPhone: userInfo.mobile,
   dateMeeting: dayjs(new Date()).format('YYYY-MM-DD'),
@@ -213,13 +223,17 @@ const formData = ref({
 })
 const formRules = reactive({
   subject: [{ required: true, message: '会议主题不能为空', trigger: 'blur' }],
+  hostUserNickName: [
+    { required: true, message: '主持人不能为空', trigger: 'blur' },
+    { pattern: /^[\u4e00-\u9fa5a-zA-Z]+$/, message: '名字支持中文或大小写英文', trigger: 'change' }
+  ],
   userPhone: [
     { required: true, message: '联系方式不能为空', trigger: 'blur' },
     {
-      regexp:
+      pattern:
         /^(?:(?:\+|00)86)?1(?:(?:3[\d])|(?:4[5-79])|(?:5[0-35-9])|(?:6[5-7])|(?:7[0-8])|(?:8[\d])|(?:9[1589]))\d{8}$/,
       message: '手机号码格式不正确',
-      trigger: 'blur'
+      trigger: 'change'
     }
   ],
   dateMeeting: [{ required: true, message: '会议日期不能为空', trigger: 'blur' }],
@@ -410,6 +424,7 @@ const submitForm = async () => {
 const resetForm = () => {
   formData.value = {
     subject: '',
+    hostUserNickName: userInfo.nickname,
     userNickName: userInfo.nickname,
     userPhone: userInfo.mobile,
     dateMeeting: dayjs(new Date()).format('YYYY-MM-DD'),
