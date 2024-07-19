@@ -8,7 +8,7 @@
       v-loading="formLoading"
     >
       <el-form-item label="名称" prop="name">
-        <el-input v-model="formData.name" placeholder="请输入名称" />
+        <el-input v-model="formData.name" placeholder="请输入名称" show-word-limit maxlength="20" />
       </el-form-item>
       <el-form-item label="位置" prop="position">
         <el-select v-model="formData.position" placeholder="请选择位置">
@@ -21,10 +21,15 @@
         </el-select>
       </el-form-item>
       <el-form-item label="房间号" prop="roomNo">
-        <el-input v-model="formData.roomNo" placeholder="请输入房间号" />
+        <el-input
+          v-model="formData.roomNo"
+          placeholder="请输入房间号"
+          show-word-limit
+          maxlength="20"
+        />
       </el-form-item>
       <el-form-item label="容纳人数" prop="capacity">
-        <el-input-number v-model="formData.capacity" :min="1" :precision="0" />
+        <el-input-number v-model="formData.capacity" :min="1" :precision="0" :max="999999" />
       </el-form-item>
       <el-form-item label="启用状态" prop="status">
         <el-switch
@@ -34,7 +39,14 @@
         />
       </el-form-item>
       <el-form-item label="备注" prop="remark">
-        <el-input v-model="formData.remark" placeholder="请输入备注" type="textarea" :rows="2" />
+        <el-input
+          v-model="formData.remark"
+          placeholder="请输入备注"
+          type="textarea"
+          :rows="4"
+          show-word-limit
+          maxlength="50"
+        />
       </el-form-item>
     </el-form>
     <template #footer>
