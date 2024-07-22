@@ -41,12 +41,12 @@
           class="!w-180px"
         />
       </el-form-item>
-      <el-form-item label="容纳人数" prop="capacity">
-        <el-input-number
-          v-model="queryParams.capacity"
-          :min="1"
-          controls-position="right"
-          @keyup.enter="handleQuery"
+      <el-form-item label="容纳人数" prop="capacityList">
+        <InputNumberRanger
+          v-model="queryParams.capacityList"
+          input-width="100px"
+          :min="0"
+          :max="999"
         />
       </el-form-item>
       <el-form-item label="启用状态" prop="status">
@@ -142,10 +142,10 @@
 <script setup lang="ts">
 import { dateFormatter } from '@/utils/formatTime'
 import MeetingRoomsForm from './MeetingRoomsForm.vue'
+import InputNumberRanger from '@/components/InputNumberRanger/index.vue'
 import { MeetingRoomsApi, MeetingRoomsVO } from '@/api/system/meeting'
-import { positionOptions /* , MeetingPosition */ } from '@/api/system/meeting/constant'
+import { positionOptions, MeetingPosition } from '@/api/system/meeting/constant'
 import { CommonStatusEnum } from '@/utils/constants'
-import { MeetingPosition } from '@/api/system/meeting/constant'
 // import download from '@/utils/download'
 
 /** 会议室管理 列表 */
@@ -163,7 +163,7 @@ const queryParams = reactive({
   name: undefined,
   position: undefined,
   roomNo: undefined,
-  capacity: undefined,
+  capacityList: [undefined, undefined],
   status: undefined
 })
 const queryFormRef = ref() // 搜索的表单
