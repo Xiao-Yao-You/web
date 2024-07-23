@@ -1,5 +1,6 @@
 import { defineComponent, computed, ref, onBeforeUnmount, PropType } from 'vue'
 import dayjs from 'dayjs'
+import { isDef } from '@/utils/is'
 
 import './index.scss'
 
@@ -50,6 +51,8 @@ export default defineComponent({
   },
   emits: ['update:modelValue'],
   setup(props, ctx) {
+    const message = useMessage()
+
     const start = ref<TimeRangeItem | null>(null) // 时间段起点
     const end = ref<TimeRangeItem | null>(null) // 时间段终点
     const temp = ref<TimeRangeItem | null>(null) // 指针，代表当前选中的点（用以记录中间的点击状态）
@@ -99,7 +102,7 @@ export default defineComponent({
         item.hidden = props.hiddenDate(item.startTime)
         // prettier-ignore
         currTime = i === total.value - 1
-          ? currTime.endOf('day') // 凌晨，算作 23:59:79 而不是 00:00
+          ? currTime.endOf('day') // 凌晨，算作 23:59:59 而不是 00:00
           : currTime.add(props.step, 'minute')
         item.id = i + 1
         item.endTime = currTime.format('HH:mm')
@@ -133,6 +136,12 @@ export default defineComponent({
       }
     }
 
+    // 判断当前选择的时间范围内，有没有已经被占用的时间段
+    const handleOverlap = ([startId, endId]) => {
+      const currSelectedRange = options.value.slice(startId - 1, endId)
+      return isDef(currSelectedRange.find((item) => item.disabled))
+    }
+
     const handleClick = (timeInfo: TimeRangeItem) => {
       if (props.forbidden || timeInfo.disabled) return
 
@@ -145,13 +154,20 @@ export default defineComponent({
         case 2: {
           // 场景二：已有两个值（起点和终点）
           // (1) 如果两个点为同一个，则可以再添加一个点
-          //    (1.1) 如果 timeInfo 与当前值重复，跳过（暂时不用取消）
-          //    (1.2) 如果 timeInfo 在当前值之前，则 timeInfo 视为起点，当前值视为终点
-          //    (1.3) 如果 timeInfo 在当前值之后，则 当前值 视为起点，timeInfo 视为终点
+          //    (1.1) 如果 timeInfo 和当前值中间已经有时间段被占用，则此次选择无效
+          //    (1.2) 如果 timeInfo 与当前值重复，跳过（暂时不用取消）
+          //    (1.3) 如果 timeInfo 在当前值之前，则 timeInfo 视为起点，当前值视为终点
+          //    (1.4) 如果 timeInfo 在当前值之后，则 当前值 视为起点，timeInfo 视为终点
           // (2) 如果两个点不一样，则参照 element-plus 时间范围选择器，直接清空，重新选择，回到场景一
           const [startId, endId] = range.value as [number, number]
           if (startId === endId) {
-            if (timeInfo.id < startId) {
+            const isOverlap = handleOverlap(
+              [startId, timeInfo.id].sort((a, b) => a - b) as [number, number]
+            )
+            if (isOverlap) {
+              message.error('当前选择范围内有时间段已被占用！请重新选择。')
+              setTimeInfo('clearAll')
+            } else if (timeInfo.id < startId) {
               setTimeInfo('start', timeInfo)
               setTimeInfo('end', temp.value!)
             } else if (timeInfo.id > startId) {
