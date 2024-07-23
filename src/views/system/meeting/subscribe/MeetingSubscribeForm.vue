@@ -15,14 +15,29 @@
           show-word-limit
         />
       </el-form-item>
-      <el-form-item label="会议主持人" prop="hostUserNickName">
-        <el-input
-          v-model="formData.hostUserNickName"
-          class="!w-220px"
-          maxlength="20"
-          show-word-limit
-        />
-      </el-form-item>
+      <el-row>
+        <el-col :lg="12">
+          <el-form-item label="会议日期" prop="dateMeeting">
+            <el-date-picker
+              v-model="formData.dateMeeting"
+              type="date"
+              value-format="YYYY-MM-DD"
+              placeholder="请选择会议日期"
+              :disabled-date="getDisabledDate"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :lg="12">
+          <el-form-item label="会议主持人" prop="hostUserNickName">
+            <el-input
+              v-model="formData.hostUserNickName"
+              class="!w-220px"
+              maxlength="20"
+              show-word-limit
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
       <el-row>
         <el-col :lg="12">
           <el-form-item label="发起人" prop="userNickName">
@@ -40,15 +55,7 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-form-item label="会议日期" prop="dateMeeting">
-        <el-date-picker
-          v-model="formData.dateMeeting"
-          type="date"
-          value-format="YYYY-MM-DD"
-          placeholder="请选择会议日期"
-          :disabled-date="getDisabledDate"
-        />
-      </el-form-item>
+
       <el-form-item label="会议室" prop="meetingRoomName">
         <el-input
           v-model="formData.meetingRoomName"
@@ -96,7 +103,9 @@
         <el-input-number
           v-model="formData.capacity"
           placeholder="请输入总人数"
+          :precision="0"
           :min="formData.joinUserList.length || 1"
+          :max="999"
           class="!w-220px"
         />
       </el-form-item>
@@ -264,7 +273,10 @@ const formRules = reactive({
     }
   ],
   joinUserList: [{ required: true, message: '内部与会人数不能为空', trigger: 'change' }],
-  capacity: [{ required: true, message: '总人数不能为空', trigger: 'blur' }],
+  capacity: [
+    { required: true, message: '总人数不能为空', trigger: 'blur' },
+    { pattern: /^[1-9]\d*$/, message: '人数应为正整数', trigger: 'change' }
+  ],
   equipment: [{ required: true, message: '设备需求不能为空' }]
 })
 const formRef = ref() // 表单 Ref
