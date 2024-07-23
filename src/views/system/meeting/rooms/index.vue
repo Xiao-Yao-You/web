@@ -45,6 +45,7 @@
         <InputNumberRanger
           v-model="queryParams.capacityList"
           input-width="100px"
+          :precision="0"
           :min="0"
           :max="999"
         />
