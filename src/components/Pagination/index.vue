@@ -9,6 +9,7 @@
     :pager-count="pagerCount"
     :total="total"
     :small="isSmall"
+    :size="size"
     class="float-right mb-15px mt-15px"
     layout="total, sizes, prev, pager, next, jumper"
     @size-change="handleSizeChange"
@@ -44,6 +45,10 @@ const props = defineProps({
   limit: {
     type: Number,
     default: 20
+  },
+  size: {
+    type: String as PropType<'large' | 'default' | 'small'>,
+    default: ''
   },
   // 设置最大页码按钮数。 页码按钮的数量，当总页数超过该值时会折叠
   // 移动端页码按钮的数量端默认值 5

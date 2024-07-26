@@ -18,9 +18,19 @@ export interface UserVO {
   password?: string
 }
 
+export interface UserQueryParams extends PageParam {
+  deptId?: number | number[]
+  username?: string
+  nickname?: string
+}
+
 // 查询用户管理列表
-export const getUserPage = (params: PageParam & { deptId: number }) => {
-  return request.get<{ list: UserVO[]; total: number }>({ url: '/system/user/page', params })
+export const getUserPage = (params: UserQueryParams, signal?: AbortSignal) => {
+  return request.get<{ list: UserVO[]; total: number }>({
+    url: '/system/user/page',
+    params,
+    signal
+  })
 }
 
 // 查询所有用户列表

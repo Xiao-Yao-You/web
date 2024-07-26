@@ -192,7 +192,7 @@ service.interceptors.response.use(
     }
   },
   (error: AxiosError) => {
-    console.log('err' + error) // for debug
+    console.log('err: ' + error) // for debug
     let { message } = error
     const { t } = useI18n()
     if (message === 'Network Error') {
@@ -201,8 +201,11 @@ service.interceptors.response.use(
       message = t('sys.api.apiTimeoutMessage')
     } else if (message.includes('Request failed with status code')) {
       message = t('sys.api.apiRequestFailed') + message.substr(message.length - 3)
+    } else if (message.indexOf('cancel') !== -1) {
+      message = ''
     }
-    ElMessage.error(message)
+
+    if (message) ElMessage.error(message)
     return Promise.reject(error)
   }
 )
