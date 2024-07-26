@@ -34,7 +34,7 @@
           type="primary"
           plain
           @click="openForm('create')"
-          v-hasPermi="['system:meeting-subscribe:create']"
+          v-hasPermi="['hk:user-book-meeting:create']"
         >
           <Icon icon="ep:plus" class="mr-5px" /> 新增
         </el-button>
@@ -103,7 +103,7 @@
             link
             type="primary"
             @click="openDetail(id)"
-            v-hasPermi="['system:meeting-subscribe:detail']"
+            v-hasPermi="['hk:user-book-meeting:detail']"
           >
             详情
           </el-button>
@@ -115,7 +115,7 @@
               MeetingStatus.Pending
             "
             @click="openForm('update', id)"
-            v-hasPermi="['system:meeting-subscribe:update']"
+            v-hasPermi="['hk:user-book-meeting:update']"
           >
             编辑
           </el-button>
@@ -124,7 +124,7 @@
             type="primary"
             :disabled="handleCancelStatus({ isCancelled, date, startTime, endTime })"
             @click="handleCancel(id)"
-            v-hasPermi="['system:meeting-subscribe:cancel']"
+            v-hasPermi="['hk:user-book-meeting:cancel']"
           >
             撤销
           </el-button>
@@ -132,7 +132,7 @@
             link
             type="danger"
             @click="handleDelete(id)"
-            v-hasPermi="['system:meeting-subscribe:delete']"
+            v-hasPermi="['hk:user-book-meeting:delete']"
           >
             删除
           </el-button>
@@ -184,7 +184,7 @@ const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
   subject: undefined,
-  date: []
+  date: ''
 })
 const queryFormRef = ref() // 搜索的表单
 const equipmentOptions = ref<OptionItem[]>([{ label: '不需要', value: -1 }]) // 设备选项

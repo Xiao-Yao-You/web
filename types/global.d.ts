@@ -59,4 +59,6 @@ declare global {
     value: T
     [key: string]: any
   }
+
+  type Numeric = number | string
 }

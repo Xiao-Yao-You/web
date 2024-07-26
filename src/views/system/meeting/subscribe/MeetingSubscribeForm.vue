@@ -1,5 +1,12 @@
 <template>
-  <Dialog :title="dialogTitle" v-model="dialogVisible">
+  <Dialog
+    :title="dialogTitle"
+    v-model="dialogVisible"
+    top="2vh"
+    class="subscribe-modal"
+    :close-on-click-modal="false"
+    :close-on-press-escape="false"
+  >
     <el-form
       ref="formRef"
       :model="formData"
@@ -63,7 +70,14 @@
           class="!w-220px mr-5px"
           disabled
         />
-        <el-button type="primary" :loading="roomLoading" @click="onRoomClick">查看</el-button>
+        <el-button
+          type="primary"
+          :loading="roomLoading"
+          @click="onRoomClick"
+          v-hasPermi="['hk:meeting-room-book-record:query']"
+        >
+          查看
+        </el-button>
       </el-form-item>
       <el-form-item label="会议时间段" prop="range">
         <TimeRangePicker
@@ -83,21 +97,33 @@
           </template>
         </el-input>
       </el-form-item>
-      <el-form-item label="内部与会人员" prop="joinUserList">
-        <TreeTransfer
-          v-model="formData.joinUserList"
-          :data="deptList"
-          :props="{ label: 'name', isLeaf: 'isLeaf' }"
-          node-key="id"
-          show-checkbox
-          lazy
-          :load="loadMember"
-          @change="onTreeChange"
-        >
-          <template #empty>
-            <el-empty description="暂无会议室数据" />
+      <el-form-item ref="memberItemRef" label="内部与会人员" prop="joinUserList">
+        <el-card shadow="never" class="join-user w-full" :body-style="{ padding: '8px 20px' }">
+          <template #header>
+            <div class="flex justify-between">
+              <span style="color: var(--el-disabled-text-color)">
+                点击右侧按钮，选择公司内部人员
+              </span>
+              <el-button type="primary" @click="openMemberSelector"> 选择 </el-button>
+            </div>
           </template>
-        </TreeTransfer>
+          <template v-if="formData.joinUserList.length">
+            <el-tag
+              v-for="user in formData.joinUserList"
+              class="mr-5px"
+              :key="user.userId"
+              type="info"
+              effect="plain"
+              closable
+              @close="onMemberRemove(user)"
+            >
+              {{ user.userNickName }}
+            </el-tag>
+          </template>
+          <div v-else class="text-center" style="color: var(--el-disabled-text-color)">
+            暂无数据
+          </div>
+        </el-card>
       </el-form-item>
       <el-form-item label="与会总人数" prop="capacity">
         <el-input-number
@@ -171,11 +197,19 @@
       />
     </el-card>
   </el-drawer>
+
+  <!-- 内部人员选择组件 -->
+  <MemberSelector
+    ref="memberRef"
+    title="内部与会人员选择"
+    :default-selected-list="originalMemberData"
+    @selected="onMemberSelected"
+  />
 </template>
 <script setup lang="ts">
 import dayjs from 'dayjs'
+import { remove } from 'lodash-es'
 import { TimeRangePicker } from '@/components/TimeRangePicker'
-import { TreeTransfer } from '@/components/TreeTransfer'
 import {
   MeetingSubscribeApi,
   MeetingRoomsApi,
@@ -184,13 +218,11 @@ import {
   type JoinUser
 } from '@/api/system/meeting'
 import { useUserStore } from '@/store/modules/user'
+import { type UserVO } from '@/api/system/user'
 import { useIcon } from '@/hooks/web/useIcon'
 import { MeetingPosition } from '@/api/system/meeting/constant'
-import { getDeptPage } from '@/api/system/dept'
-import { handleTree } from '@/utils/tree'
-import { getUserPage } from '@/api/system/user'
-import type Node from 'element-plus/es/components/tree/src/model/node'
 import { timeTransfer } from './hook/useMeetingStatus'
+const MemberSelector = defineAsyncComponent(() => import('@/components/UserSelector/index.vue'))
 
 /** 会议预约 表单 */
 defineOptions({ name: 'MeetingSubscribeForm' })
@@ -356,40 +388,32 @@ const onRoomSelect = (info: MeetingRoomsRecord) => {
 // #endregion
 
 // #region 与会人员相关
-// 查询部门
-const deptList = ref()
-const getDeptList = async () => {
-  const data = await getDeptPage({ pageNo: 1, pageSize: 100 })
-  deptList.value = handleTree(data)
+const memberItemRef = ref()
+const memberRef = ref()
+const originalMemberData = ref([] as UserVO[]) // 与 UserSelector 双向绑定的原始数据
+const openMemberSelector = () => {
+  memberRef.value?.open()
 }
-// 根据部门 id 动态加载人员
-const loadMember = async (node: Node, resolve: (data: Tree[]) => void) => {
-  const { data, level } = node
-  // 1. 第一层级 level 为 0
-  if (level === 0) return resolve(data as Tree[])
-  // 2.其他层级
-  if (Array.isArray(data.children) && data.children.length) {
-    return resolve(data.children)
-  }
-
-  // 3. 如果当前部门节点下没有 children，则视为最里面的部门，可以开始请求人员节点了
-  getUserPage({ pageNo: 1, pageSize: 100, deptId: data.id }).then(({ list }) => {
-    const memberNodes = list.map((m) => ({
-      id: m.id,
-      name: m.nickname,
-      isLeaf: true
-    }))
-    return resolve(memberNodes)
-  })
+// 同步与会人员
+const onMemberSelected = (userList: UserVO[]) => {
+  originalMemberData.value = userList
+  formData.value.joinUserList = userList.map((u) => ({ userNickName: u.nickname, userId: u.id }))
+  memberItemRef.value?.validate?.('change')
+  syncCapacity(userList.length)
 }
-const onTreeChange = (keys: number[]) => {
-  if (keys.length > (formData.value.capacity || 0)) {
-    formData.value.capacity = keys.length
+// 移除与会人员
+const onMemberRemove = (user: JoinUser) => {
+  remove(formData.value.joinUserList, (u) => u.userId === user.userId)
+  remove(originalMemberData.value, (u) => u.id === user.userId)
+  memberItemRef.value?.validate?.('change')
+  syncCapacity(formData.value.joinUserList.length)
+}
+// 同步会议总人数
+const syncCapacity = (num: number) => {
+  if (num > (formData.value.capacity || 0)) {
+    formData.value.capacity = num
   }
 }
-onMounted(() => {
-  getDeptList()
-})
 // #endregion
 
 // #region 设备选择相关
@@ -519,5 +543,15 @@ defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 
 .room-item:last-child {
   margin-bottom: 0;
+}
+
+.join-user {
+  :deep(.el-card__header) {
+    padding: 8px 20px;
+  }
+}
+
+:global(.com-dialog.subscribe-modal) {
+  min-width: 800px;
 }
 </style>
