@@ -1,12 +1,8 @@
 <template>
-  <doc-alert title="用户体系" url="https://doc.iocoder.cn/user-center/" />
-  <doc-alert title="三方登陆" url="https://doc.iocoder.cn/social-user/" />
-  <doc-alert title="Excel 导入导出" url="https://doc.iocoder.cn/excel-import-and-export/" />
-
   <el-row :gutter="20">
     <!-- 左侧部门树 -->
     <el-col :span="4" :xs="24">
-      <ContentWrap class="h-1/1">
+      <ContentWrap class="h-1/1 mb-unset">
         <DeptTree @node-click="handleDeptNodeClick" />
       </ContentWrap>
     </el-col>
@@ -18,32 +14,46 @@
           :model="queryParams"
           ref="queryFormRef"
           :inline="true"
-          label-width="68px"
+          :rules="formRules"
+          label-width="45px"
         >
-          <el-form-item label="用户名称" prop="username">
+          <el-form-item label="工号" prop="username">
             <el-input
               v-model="queryParams.username"
-              placeholder="请输入用户名称"
+              placeholder="请输入工号"
               clearable
+              maxlength="8"
+              show-word-limit
               @keyup.enter="handleQuery"
-              class="!w-240px"
+              class="!w-160px"
             />
           </el-form-item>
-          <el-form-item label="手机号码" prop="mobile">
+          <el-form-item label="姓名" prop="nickname">
+            <el-input
+              v-model="queryParams.nickname"
+              placeholder="请输入姓名"
+              clearable
+              maxlength="20"
+              show-word-limit
+              @keyup.enter="handleQuery"
+              class="!w-200px"
+            />
+          </el-form-item>
+          <el-form-item label="手机" prop="mobile">
             <el-input
               v-model="queryParams.mobile"
               placeholder="请输入手机号码"
               clearable
               @keyup.enter="handleQuery"
-              class="!w-240px"
+              class="!w-180px"
             />
           </el-form-item>
           <el-form-item label="状态" prop="status">
             <el-select
               v-model="queryParams.status"
-              placeholder="用户状态"
+              placeholder="开启/关闭"
               clearable
-              class="!w-240px"
+              class="!w-120px"
             >
               <el-option
                 v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
@@ -53,7 +63,7 @@
               />
             </el-select>
           </el-form-item>
-          <el-form-item label="创建时间" prop="createTime">
+          <!-- <el-form-item label="创建时间" prop="createTime">
             <el-date-picker
               v-model="queryParams.createTime"
               value-format="YYYY-MM-DD HH:mm:ss"
@@ -62,7 +72,7 @@
               end-placeholder="结束日期"
               class="!w-240px"
             />
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item>
             <el-button @click="handleQuery"><Icon icon="ep:search" />搜索</el-button>
             <el-button @click="resetQuery"><Icon icon="ep:refresh" />重置</el-button>
@@ -82,7 +92,7 @@
             >
               <Icon icon="ep:upload" /> 导入
             </el-button>
-            <el-button
+            <!-- <el-button
               type="success"
               plain
               @click="handleExport"
@@ -90,24 +100,24 @@
               v-hasPermi="['system:user:export']"
             >
               <Icon icon="ep:download" />导出
-            </el-button>
+            </el-button> -->
           </el-form-item>
         </el-form>
       </ContentWrap>
 
       <!-- 用户 Table -->
-      <ContentWrap>
-        <el-table v-loading="loading" :data="list">
-          <el-table-column label="用户编号" align="center" prop="id" width="80" />
-          <el-table-column label="用户名称" align="center" prop="username" show-overflow-tooltip />
-          <el-table-column label="用户昵称" align="center" prop="nickname" show-overflow-tooltip />
+      <ContentWrap class="mb-unset">
+        <el-table v-loading="loading" :data="list" height="560">
+          <el-table-column label="序号" align="center" type="index" width="80" />
+          <el-table-column label="工号" align="center" prop="username" show-overflow-tooltip />
+          <el-table-column label="姓名" align="center" prop="nickname" show-overflow-tooltip />
           <el-table-column label="部门" align="center" prop="deptName" show-overflow-tooltip>
             <template #default="{ row }">
               {{ row.deptList.map((d) => d.name || '').join('、') }}
             </template>
           </el-table-column>
-          <el-table-column label="手机号码" align="center" prop="mobile" width="120" />
-          <el-table-column label="状态" prop="status" align="center" width="80">
+          <el-table-column label="手机号码" align="center" prop="mobile" />
+          <el-table-column label="状态" prop="status" align="center">
             <template #default="scope">
               <el-switch
                 v-model="scope.row.status"
@@ -201,7 +211,6 @@
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import { checkPermi } from '@/utils/permission'
 import { dateFormatter } from '@/utils/formatTime'
-import download from '@/utils/download'
 import { CommonStatusEnum } from '@/utils/constants'
 import * as UserApi from '@/api/system/user'
 import UserForm from './UserForm.vue'
@@ -209,6 +218,8 @@ import UserImportForm from './UserImportForm.vue'
 import UserAssignRoleForm from './UserAssignRoleForm.vue'
 import UserBindTenantForm from './UserBindTenantForm.vue'
 import DeptTree from './DeptTree.vue'
+import type { UserVO } from '@/api/system/user'
+// import download from '@/utils/download'
 
 defineOptions({ name: 'SystemUser' })
 
@@ -217,17 +228,35 @@ const { t } = useI18n() // 国际化
 
 const loading = ref(true) // 列表的加载中
 const total = ref(0) // 列表的总页数
-const list = ref([]) // 列表的数
+const list = ref<UserVO[]>([]) // 列表的数
 const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
-  username: undefined,
+  username: undefined, // 工号
+  nickname: undefined, // 名称
   mobile: undefined,
   status: undefined,
   deptId: undefined,
   createTime: []
 })
 const queryFormRef = ref() // 搜索的表单
+const formRules = reactive({
+  username: [
+    {
+      pattern: /^\d{8}$/,
+      message: '工号格式不正确',
+      trigger: 'change'
+    }
+  ],
+  mobile: [
+    {
+      pattern:
+        /^(?:(?:\+|00)86)?1(?:(?:3[\d])|(?:4[5-79])|(?:5[0-35-9])|(?:6[5-7])|(?:7[0-8])|(?:8[\d])|(?:9[1589]))\d{8}$/,
+      message: '手机号码格式不正确',
+      trigger: 'change'
+    }
+  ]
+})
 
 /** 查询列表 */
 const getList = async () => {
@@ -277,7 +306,7 @@ const handleStatusChange = async (row: UserApi.UserVO) => {
   try {
     // 修改状态的二次确认
     const text = row.status === CommonStatusEnum.ENABLE ? '启用' : '停用'
-    await message.confirm('确认要"' + text + '""' + row.username + '"用户吗?')
+    await message.confirm('确认要' + text + ' "' + row.nickname + '" 用户吗?')
     // 发起修改状态
     await UserApi.updateUserStatus(row.id, row.status)
     // 刷新列表
@@ -290,20 +319,20 @@ const handleStatusChange = async (row: UserApi.UserVO) => {
 }
 
 /** 导出按钮操作 */
-const exportLoading = ref(false)
-const handleExport = async () => {
-  try {
-    // 导出的二次确认
-    await message.exportConfirm()
-    // 发起导出
-    exportLoading.value = true
-    const data = await UserApi.exportUser(queryParams)
-    download.excel(data, '用户数据.xls')
-  } catch {
-  } finally {
-    exportLoading.value = false
-  }
-}
+// const exportLoading = ref(false)
+// const handleExport = async () => {
+//   try {
+//     // 导出的二次确认
+//     await message.exportConfirm()
+//     // 发起导出
+//     exportLoading.value = true
+//     const data = await UserApi.exportUser(queryParams)
+//     download.excel(data, '用户数据.xls')
+//   } catch {
+//   } finally {
+//     exportLoading.value = false
+//   }
+// }
 
 /** 操作分发 */
 const handleCommand = (command: string, row: UserApi.UserVO) => {
@@ -343,7 +372,7 @@ const handleResetPwd = async (row: UserApi.UserVO) => {
   try {
     // 重置的二次确认
     const result = await message.prompt(
-      '请输入"' + row.username + '"的新密码',
+      '请输入 "' + row.nickname + '" 的新密码',
       t('common.reminder')
     )
     const password = result.value
