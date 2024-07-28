@@ -1,7 +1,4 @@
 <template>
-  <doc-alert title="功能权限" url="https://doc.iocoder.cn/resource-permission" />
-  <doc-alert title="数据权限" url="https://doc.iocoder.cn/data-permission" />
-
   <ContentWrap>
     <!-- 搜索工作栏 -->
     <el-form
@@ -30,7 +27,7 @@
         />
       </el-form-item>
       <el-form-item label="状态" prop="status">
-        <el-select v-model="queryParams.status" class="!w-240px" clearable placeholder="请选择状态">
+        <el-select v-model="queryParams.status" class="!w-240px" clearable placeholder="开启/关闭">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
             :key="dict.value"
@@ -187,7 +184,7 @@ const queryParams = reactive({
   code: '',
   name: '',
   status: undefined,
-  createTime: []
+  createTime: ''
 })
 const queryFormRef = ref() // 搜索的表单
 const exportLoading = ref(false) // 导出的加载中
