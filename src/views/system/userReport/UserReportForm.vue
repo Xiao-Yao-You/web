@@ -7,46 +7,52 @@
       label-width="100px"
       v-loading="formLoading"
     >
-      <el-form-item label="用户id" prop="userId">
-        <el-input v-model="formData.userId" placeholder="请输入用户id" />
+      <el-form-item label="汇报人" prop="userNikeName">
+        <el-input v-model="formData.userNikeName" placeholder="请输入用户昵称" />
       </el-form-item>
-      <el-form-item label="部门id" prop="deptId">
+      <el-form-item label="部门" prop="deptId">
         <el-input v-model="formData.deptId" placeholder="请输入部门id" />
       </el-form-item>
       <el-form-item label="汇报日期" prop="dateReport">
         <el-input v-model="formData.dateReport" placeholder="请输入汇报日期" />
       </el-form-item>
-      <el-form-item label="提交时间" prop="commitTime">
-        <el-date-picker
-          v-model="formData.commitTime"
-          type="date"
-          value-format="x"
-          placeholder="选择提交时间"
-        />
+      <el-form-item label="汇报对象" prop="reportObject">
+        <el-input v-model="formData.reportObject" placeholder="请输入汇报对象" />
+      </el-form-item>
+      <el-form-item label="工作进度" prop="workProgress">
+        <el-table :data="formData.workProgress" style="width: 100%; margin-bottom: 5px">
+          <el-table-column type="index +1" label="序号" />
+          <el-table-column prop="workContent" label="工作内容" />
+          <el-table-column prop="completeSituation" label="完成情况" />
+          <el-table-column prop="relatedMatter" label="关联事项" />
+        </el-table>
+        <el-button color="#626aef" size="small" @click="openProgressDrawer()">+</el-button>
+        <el-button color="red" size="small">-</el-button>
+      </el-form-item>
+      <el-form-item label="工作计划" prop="workPlan">
+        <el-table :data="formData.workPlan" style="width: 100%; margin-bottom: 5px">
+          <el-table-column type="index +1" label="序号" />
+          <el-table-column prop="planContent" label="计划内容" />
+          <el-table-column prop="expectedWorkingHours" label="预计工时" />
+          <el-table-column prop="resourceDemand" label="资源需求" />
+        </el-table>
+        <el-button color="#626aef" size="small">+</el-button>
+        <el-button color="red" size="small">-</el-button>
       </el-form-item>
       <el-form-item label="备注" prop="remark">
-        <el-input v-model="formData.remark" placeholder="请输入备注" />
-      </el-form-item>
-      <el-form-item label="用户昵称" prop="userNikeName">
-        <el-input v-model="formData.userNikeName" placeholder="请输入用户昵称" />
-      </el-form-item>
-      <el-form-item label="领导查看状态(00:未查看,01已查看)" prop="checkSatus">
-        <el-input v-model="formData.checkSatus" placeholder="请输入领导查看状态(00:未查看,01已查看)" />
-      </el-form-item>
-      <el-form-item label="类型(00:正常,01:补交,02:缺)" prop="type">
-        <el-select v-model="formData.type" placeholder="请选择类型(00:正常,01:补交,02:缺)">
-          <el-option label="请选择字典生成" value="" />
-        </el-select>
+        <el-input type="textarea" v-model="formData.remark" placeholder="请输入备注" />
       </el-form-item>
     </el-form>
     <template #footer>
       <el-button @click="submitForm" type="primary" :disabled="formLoading">确 定</el-button>
       <el-button @click="dialogVisible = false">取 消</el-button>
     </template>
+    <AddWorkProgressForm ref="addProgressFormRef" />
   </Dialog>
 </template>
 <script setup lang="ts">
-import { UserReportApi, UserReportVO } from '@/api/hk/userreport'
+import { UserReportApi, UserReportVO } from '@/api/system/userReport'
+import AddWorkProgressForm from './addWorkProgressForm.vue'
 
 /** 用户汇报 表单 */
 defineOptions({ name: 'UserReportForm' })
@@ -68,15 +74,35 @@ const formData = ref({
   userNikeName: undefined,
   checkSatus: undefined,
   type: undefined,
+
+  workProgress: [
+    {
+      workContent: undefined,
+      completeSituation: undefined,
+      relatedMatter: undefined
+    }
+  ],
+  workPlan: [
+    {
+      planContent: undefined,
+      expectedWorkingHours: undefined,
+      resourceDemand: undefined
+    }
+  ],
+  reportObject: undefined
 })
 const formRules = reactive({
-  userId: [{ required: true, message: '用户id不能为空', trigger: 'blur' }],
-  deptId: [{ required: true, message: '部门id不能为空', trigger: 'blur' }],
+  userId: [{ required: true, message: '汇报人不能为空', trigger: 'blur' }],
+  deptId: [{ required: true, message: '部门不能为空', trigger: 'blur' }],
   dateReport: [{ required: true, message: '汇报日期不能为空', trigger: 'blur' }],
-  checkSatus: [{ required: true, message: '领导查看状态(00:未查看,01已查看)不能为空', trigger: 'blur' }],
-  type: [{ required: true, message: '类型(00:正常,01:补交,02:缺)不能为空', trigger: 'change' }],
+  checkSatus: [{ required: true, message: '状态不能为空', trigger: 'blur' }],
+  type: [{ required: true, message: '类型不能为空', trigger: 'change' }]
 })
 const formRef = ref() // 表单 Ref
+const addProgressFormRef = ref()
+const openProgressDrawer = () => {
+  addProgressFormRef.value.open()
+}
 
 /** 打开弹窗 */
 const open = async (type: string, id?: number) => {
@@ -132,6 +158,21 @@ const resetForm = () => {
     userNikeName: undefined,
     checkSatus: undefined,
     type: undefined,
+    workProgress: [
+      {
+        workContent: undefined,
+        completeSituation: undefined,
+        relatedMatter: undefined
+      }
+    ],
+    workPlan: [
+      {
+        planContent: undefined,
+        expectedWorkingHours: undefined,
+        resourceDemand: undefined
+      }
+    ],
+    reportObject: undefined
   }
   formRef.value?.resetFields()
 }

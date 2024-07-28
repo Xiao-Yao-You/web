@@ -8,36 +8,27 @@
       :inline="true"
       label-width="68px"
     >
-      <el-form-item label="汇报日期" prop="dateReport">
-        <el-input
-          v-model="queryParams.dateReport"
-          placeholder="请输入汇报日期"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="备注" prop="remark">
-        <el-input
-          v-model="queryParams.remark"
-          placeholder="请输入备注"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
       <el-form-item label="用户昵称" prop="userNikeName">
         <el-input
           v-model="queryParams.userNikeName"
-          placeholder="请输入用户昵称"
+          placeholder="请输入汇报人姓名"
+          clearable
+          @keyup.enter="handleQuery"
+          class="!w-240px"
+        />
+      </el-form-item>
+      <el-form-item label="汇报日期" prop="dateReport">
+        <el-input
+          v-model="queryParams.dateReport"
+          placeholder="请选择汇报日期"
           clearable
           @keyup.enter="handleQuery"
           class="!w-240px"
         />
       </el-form-item>
       <el-form-item>
-        <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
-        <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
+        <el-button @click="handleQuery"> <Icon icon="ep:search" class="mr-5px" /> 搜索 </el-button>
+        <el-button @click="resetQuery"> <Icon icon="ep:refresh" class="mr-5px" /> 重置 </el-button>
         <el-button
           type="primary"
           plain
@@ -62,10 +53,13 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
-      <el-table-column label="主键" align="center" prop="id" />
-      <el-table-column label="用户id" align="center" prop="userId" />
-      <el-table-column label="部门id" align="center" prop="deptId" />
+      <el-table-column type="index+1" label="序号" />
+      <el-table-column label="姓名" align="center" prop="userNikeName" />
+      <el-table-column label="部门" align="center" prop="deptId" />
+      <el-table-column label="类型" align="center" prop="type" />
+      <el-table-column label="状态" align="center" prop="checkSatus" />
       <el-table-column label="汇报日期" align="center" prop="dateReport" />
+      <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column
         label="提交时间"
         align="center"
@@ -73,7 +67,6 @@
         :formatter="dateFormatter"
         width="180px"
       />
-      <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column
         label="创建时间"
         align="center"
@@ -81,11 +74,10 @@
         :formatter="dateFormatter"
         width="180px"
       />
-      <el-table-column label="用户昵称" align="center" prop="userNikeName" />
-      <el-table-column label="领导查看状态(00:未查看,01已查看)" align="center" prop="checkSatus" />
-      <el-table-column label="类型(00:正常,01:补交,02:缺)" align="center" prop="type" />
       <el-table-column label="操作" align="center">
         <template #default="scope">
+          <el-button link type="primary"> 详情 </el-button>
+          <el-button link type="primary"> 补交 </el-button>
           <el-button
             link
             type="primary"
@@ -121,7 +113,7 @@
 <script setup lang="ts">
 import { dateFormatter } from '@/utils/formatTime'
 import download from '@/utils/download'
-import { UserReportApi, UserReportVO } from '@/api/system/userreport'
+import { UserReportApi, UserReportVO } from '@/api/system/userReport'
 import UserReportForm from './UserReportForm.vue'
 
 /** 用户汇报 列表 */
@@ -137,8 +129,7 @@ const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
   dateReport: [],
-  remark: undefined,
-  userNikeName: undefined,
+  userNikeName: undefined
 })
 const queryFormRef = ref() // 搜索的表单
 const exportLoading = ref(false) // 导出的加载中
@@ -194,7 +185,7 @@ const handleExport = async () => {
     // 发起导出
     exportLoading.value = true
     const data = await UserReportApi.exportUserReport(queryParams)
-    download.excel(data, '用户汇报.xls')
+    download.excel(data, '工作汇报.xls')
   } catch {
   } finally {
     exportLoading.value = false
