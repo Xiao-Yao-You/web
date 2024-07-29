@@ -2,15 +2,31 @@ import request from '@/config/axios'
 
 // 用户汇报 VO
 export interface UserReportVO {
-  id: number // 主键
-  userId: number // 用户id
-  deptId: number // 部门id
-  dateReport: Date // 汇报日期
-  commitTime: Date // 提交时间
-  remark: string // 备注
-  userNikeName: string // 用户昵称
-  checkSatus: string // 领导查看状态(00:未查看,01已查看)
-  type: string // 类型(00:正常,01:补交,02:缺)
+  id: number
+  userId: number
+  deptId: number
+  dateReport: Date
+  commitTime: Date
+  remark: string
+  userNikeName: string
+  checkSatus: number
+  type: number
+  workProgress: workProgress[]
+  workPlan: workPlan[]
+  reportObject: number
+}
+
+//工作进度
+export interface workProgress {
+  workContent: string
+  completeSituation: string
+  relatedMatter: number
+}
+//工作计划
+export interface workPlan {
+  planContent: string
+  expectedWorkingHours: string
+  resourceDemand: string
 }
 
 // 用户汇报 API

@@ -5,26 +5,49 @@
     </template>
     <template #default>
       <el-form :model="planData" :rules="planRules" label-position="right" label-width="80px">
-        <el-form-item label="工作计划" prop="workPlan">
-          <el-input v-model="planData.workPlan" placeholder="请输入工作计划" maxlength="500" show-word-limit type="textarea" :rows="10" />
+        <el-form-item label="工作计划" prop="planContent">
+          <el-input
+            v-model="planData.planContent"
+            placeholder="请输入工作计划"
+            maxlength="500"
+            show-word-limit
+            type="textarea"
+            :rows="10"
+          />
         </el-form-item>
         <el-form-item label="预计工时" prop="expectedWorkingHours">
-          <el-input type="textarea" v-model="planData.expectedWorkingHours" placeholder="请输入预计工时" maxlength="500" show-word-limit :rows="10" />
+          <el-input
+            type="textarea"
+            v-model="planData.expectedWorkingHours"
+            placeholder="请输入预计工时"
+            maxlength="500"
+            show-word-limit
+            :rows="10"
+          />
         </el-form-item>
         <el-form-item label="资源需求" prop="resourceDemand">
-          <el-input type="textarea" v-model="planData.resourceDemand" placeholder="请输入资源需求" maxlength="500" show-word-limit :rows="10" />
+          <el-input
+            type="textarea"
+            v-model="planData.resourceDemand"
+            placeholder="请输入资源需求"
+            maxlength="500"
+            show-word-limit
+            :rows="10"
+          />
         </el-form-item>
       </el-form>
     </template>
     <template #footer>
       <div style="flex: auto">
         <el-button @click="cancelClick">取消</el-button>
-        <el-button type="primary">确认</el-button>
+        <el-button type="primary" @click="submit">确认</el-button>
       </div>
     </template>
   </el-drawer>
 </template>
 <script setup lang="ts">
+import { type workPlan } from '@/api/system/userReport'
+import { cloneDeep } from 'lodash-es'
 
 /** 工作进度 表单 */
 defineOptions({ name: 'AddWorkPlanForm' })
@@ -37,21 +60,39 @@ const direction = ref<DrawerProps['direction']>('rtl')
 const drawer = ref(false)
 const addPlanFormRef = ref()
 
-const planData = ref({
-  workPlan: undefined,
-  expectedWorkingHours: undefined,
-  resourceDemand: undefined
-})
+const emits = defineEmits<{
+  addplan: [addPlan: workPlan]
+  updateplan: [updatePlan: workPlan]
+}>()
 
-const planRules = reactive({
-  workPlan: [{ required: true, message: '工作内容不能为空', trigger: 'blur' }],
-  expectedWorkingHours: [{ required: true, message: '完成情况不能为空', trigger: 'blur' }],
-})
+const planData = ref({} as workPlan)
+/** 操作类型 */
+const controlType = ref('')
+
+/**提交表单 */
+const submit = async () => {
+  if (controlType.value == 'add') {
+    emits('addplan', planData.value)
+  } else {
+    emits('updateplan', planData.value)
+  }
+  planData.value = {} as workPlan
+  drawer.value = false
+}
 
 /** 打开弹窗 */
-const open = async () => {
+const open = async (type: string, plan: workPlan) => {
+  if (type === 'update') {
+    planData.value = cloneDeep(plan)
+  }
+  controlType.value = type
   drawer.value = true
 }
+
+const planRules = reactive({
+  planContent: [{ required: true, message: '工作内容不能为空', trigger: 'blur' }],
+  expectedWorkingHours: [{ required: true, message: '完成情况不能为空', trigger: 'blur' }]
+})
 
 /** 取消按钮 */
 const cancelClick = async () => {
