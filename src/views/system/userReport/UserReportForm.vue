@@ -358,6 +358,7 @@ const remoteMethod = async (query: string) => {
 /** 打开弹窗 */
 const open = async (type: string, id?: number) => {
   dialogVisible.value = true
+  reportObjects.value = []
   if (type == 'view') {
     dialogTitle.value = '详情'
   } else {
