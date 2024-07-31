@@ -8,7 +8,7 @@
       :inline="true"
       label-width="68px"
     >
-      <el-form-item label="汇报人姓名" prop="userNickName">
+      <el-form-item label="汇报人姓名" prop="userNickName" label-width="100">
         <el-input
           v-model="queryParams.userNickName"
           placeholder="请输入汇报人姓名"
