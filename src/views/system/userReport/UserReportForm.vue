@@ -1,5 +1,5 @@
 <template>
-  <Dialog :title="dialogTitle" v-model="dialogVisible">
+  <Dialog :title="dialogTitle" v-model="dialogVisible" width="1200px">
     <el-form
       ref="formRef"
       :model="formData"
@@ -36,6 +36,7 @@
               placeholder="请选择汇报日期"
               :disabled-date="disabledDate"
               value-format="YYYY-MM-DD"
+              style="width: 100%"
               :disabled="formType === 'view'"
             />
           </el-form-item>
@@ -66,7 +67,11 @@
       </el-row>
 
       <el-form-item label="工作进度" prop="workProgress">
-        <el-table :data="formData.reportJobScheduleDOList" style="width: 100%; margin-bottom: 5px">
+        <el-table
+          :data="formData.reportJobScheduleDOList"
+          style="width: 100%; margin-bottom: 5px"
+          show-overflow-tooltip
+        >
           <el-table-column type="index" label="序号" width="60" />
           <el-table-column prop="content" label="工作内容" />
           <el-table-column prop="situation" label="完成情况" />
@@ -110,7 +115,11 @@
         <!-- <el-button color="red" size="small">-</el-button> -->
       </el-form-item>
       <el-form-item label="工作计划" prop="workPlan">
-        <el-table :data="formData.reportJobPlanDOList" style="width: 100%; margin-bottom: 5px">
+        <el-table
+          :data="formData.reportJobPlanDOList"
+          style="width: 100%; margin-bottom: 5px"
+          show-overflow-tooltip
+        >
           <el-table-column type="index" label="序号" width="60" />
           <el-table-column prop="content" label="计划内容" />
           <el-table-column prop="estimatedTime" label="预计工时" />
