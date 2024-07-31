@@ -42,3 +42,8 @@ export const updateDept = async (params: DeptVO) => {
 export const deleteDept = async (id: number) => {
   return await request.delete({ url: '/system/dept/delete?id=' + id })
 }
+
+// 根据用户Id获取用户所在部门集合
+export const getDeptsByUserId = async (userId: number) => {
+  return await request.get({ url: '/system/dept/getDeptsByUserId?userId=' + userId })
+}

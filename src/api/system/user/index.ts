@@ -90,3 +90,8 @@ export const updateUserStatus = (id: number, status: number) => {
 export const getSimpleUserList = (): Promise<UserVO[]> => {
   return request.get({ url: '/system/user/simple-list' })
 }
+
+// 查询所有用户列表
+export const getAll = (nickname: string) => {
+  return request.get({ url: '/system/user/getAllUser?nickname=' + nickname })
+}

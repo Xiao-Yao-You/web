@@ -5,28 +5,29 @@ export interface UserReportVO {
   id: number
   userId: number
   deptId: number
+  deptName: string
   dateReport: Date
   commitTime: Date
   remark: string
-  userNikeName: string
-  checkSatus: number
+  userNickName: string
+  checkStatus: number
   type: number
-  workProgress: workProgress[]
-  workPlan: workPlan[]
-  reportObject: number
+  reportJobScheduleDOList: workProgress[]
+  reportJobPlanDOList: workPlan[]
+  reportObject: number[]
 }
 
 //工作进度
 export interface workProgress {
-  workContent: string
-  completeSituation: string
-  relatedMatter: number
+  content: string
+  situation: string
+  connectId: number
 }
 //工作计划
 export interface workPlan {
-  planContent: string
-  expectedWorkingHours: string
-  resourceDemand: string
+  content: string
+  estimatedTime: string
+  needSource: string
 }
 
 // 用户汇报 API

@@ -8,9 +8,9 @@
       :inline="true"
       label-width="68px"
     >
-      <el-form-item label="用户昵称" prop="userNikeName">
+      <el-form-item label="汇报人姓名" prop="userNickName">
         <el-input
-          v-model="queryParams.userNikeName"
+          v-model="queryParams.userNickName"
           placeholder="请输入汇报人姓名"
           clearable
           @keyup.enter="handleQuery"
@@ -18,12 +18,12 @@
         />
       </el-form-item>
       <el-form-item label="汇报日期" prop="dateReport">
-        <el-input
+        <el-date-picker
           v-model="queryParams.dateReport"
-          placeholder="请选择汇报日期"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
+          type="daterange"
+          range-separator="To"
+          start-placeholder="请选择开始日期"
+          end-placeholder="请选择结束日期"
         />
       </el-form-item>
       <el-form-item>
@@ -53,13 +53,30 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
-      <el-table-column type="index+1" label="序号" />
-      <el-table-column label="姓名" align="center" prop="userNikeName" />
-      <el-table-column label="部门" align="center" prop="deptId" />
-      <el-table-column label="类型" align="center" prop="type" />
-      <el-table-column label="状态" align="center" prop="checkSatus" />
-      <el-table-column label="汇报日期" align="center" prop="dateReport" />
-      <el-table-column label="备注" align="center" prop="remark" />
+      <el-table-column type="index" label="序号" width="60" />
+      <el-table-column label="姓名" align="center" prop="userNickName" />
+      <el-table-column label="部门" align="center" prop="deptName" />
+      <el-table-column
+        label="汇报日期"
+        align="center"
+        prop="dateReport"
+        :formatter="dateFormatter2"
+      />
+      <el-table-column label="类型" align="center" prop="type">
+        <template #default="scope">
+          <el-tag type="success" v-if="scope.row.type == 0">正常</el-tag>
+          <el-tag type="warning" v-if="scope.row.type == 1">补交</el-tag>
+          <el-tag type="danger" v-if="scope.row.type == 2">缺</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="状态" align="center" prop="checkStatus">
+        <template #default="scope">
+          <el-tag type="primary" v-if="scope.row.checkStatus == 0">未阅</el-tag>
+          <el-tag type="warning" v-if="scope.row.checkStatus == 1">已阅</el-tag>
+        </template></el-table-column
+      >
+
+      <!-- <el-table-column label="备注" align="center" prop="remark" /> -->
       <el-table-column
         label="提交时间"
         align="center"
@@ -67,16 +84,16 @@
         :formatter="dateFormatter"
         width="180px"
       />
-      <el-table-column
+      <!-- <el-table-column
         label="创建时间"
         align="center"
         prop="createTime"
         :formatter="dateFormatter"
         width="180px"
-      />
+      /> -->
       <el-table-column label="操作" align="center">
         <template #default="scope">
-          <el-button link type="primary"> 详情 </el-button>
+          <el-button link type="primary" @click="openForm('view', scope.row.id)"> 详情 </el-button>
           <el-button link type="primary"> 补交 </el-button>
           <el-button
             link
@@ -111,7 +128,7 @@
 </template>
 
 <script setup lang="ts">
-import { dateFormatter } from '@/utils/formatTime'
+import { dateFormatter, dateFormatter2 } from '@/utils/formatTime'
 import download from '@/utils/download'
 import { UserReportApi, UserReportVO } from '@/api/system/userReport'
 import UserReportForm from './UserReportForm.vue'
@@ -128,8 +145,8 @@ const total = ref(0) // 列表的总页数
 const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
-  dateReport: [],
-  userNikeName: undefined
+  dateReport: '',
+  userNickName: undefined
 })
 const queryFormRef = ref() // 搜索的表单
 const exportLoading = ref(false) // 导出的加载中

@@ -5,14 +5,15 @@
     </template>
     <template #default>
       <el-form
+        ref="addProgressFormRef"
         :model="progressData"
         :rules="progressRules"
         label-position="right"
         label-width="80px"
       >
-        <el-form-item label="工作内容" prop="workContent">
+        <el-form-item label="工作内容" prop="content">
           <el-input
-            v-model="progressData.workContent"
+            v-model="progressData.content"
             placeholder="请输入工作内容"
             maxlength="500"
             show-word-limit
@@ -20,19 +21,19 @@
             :rows="10"
           />
         </el-form-item>
-        <el-form-item label="完成情况" prop="completeSituation">
+        <el-form-item label="完成情况" prop="situation">
           <el-input
             type="textarea"
-            v-model="progressData.completeSituation"
+            v-model="progressData.situation"
             placeholder="请输入完成情况"
             maxlength="500"
             show-word-limit
             :rows="10"
           />
         </el-form-item>
-        <el-form-item label="关联事项" prop="relatedMatter">
+        <el-form-item label="关联事项" prop="connectId">
           <el-select
-            v-model="progressData.relatedMatter"
+            v-model="progressData.connectId"
             filterable
             placeholder="请选择需要关联的事项"
             style="width: 100%"
@@ -76,11 +77,11 @@ const emits = defineEmits<{
 
 const options = ref([
   {
-    value: 'Option1',
+    value: '1',
     label: 'Option1'
   },
   {
-    value: 'Option2',
+    value: '2',
     label: 'Option2'
   }
 ])
@@ -89,12 +90,17 @@ const progressData = ref({} as workProgress)
 /** 操作类型 */
 const controlType = ref('')
 const progressRules = reactive({
-  workContent: [{ required: true, message: '工作内容不能为空', trigger: 'blur' }],
-  completeSituation: [{ required: true, message: '完成情况不能为空', trigger: 'blur' }]
+  content: [{ required: true, message: '工作内容不能为空', trigger: 'blur' }],
+  situation: [{ required: true, message: '完成情况不能为空', trigger: 'blur' }]
 })
 
 /**提交表单 */
 const submit = async () => {
+  // 校验表单
+  await addProgressFormRef.value.validate()
+  // 提交请求
+  formLoading.value = true
+
   if (controlType.value == 'add') {
     emits('addprogress', progressData.value)
   } else {

@@ -9,20 +9,21 @@
     >
       <el-row>
         <el-col :lg="12">
-          <el-form-item label="汇报人" prop="userNikeName">
-            <el-input v-model="formData.userNikeName" placeholder="请输入用户昵称" disabled />
+          <el-form-item label="汇报人" prop="userNickName">
+            <el-input v-model="formData.userNickName" placeholder="请输入用户昵称" disabled />
           </el-form-item>
         </el-col>
         <el-col :lg="12">
           <el-form-item label="部门" prop="deptId">
-            <el-select v-model="formData.deptId" placeholder="请选择所在部门">
-              <el-option
-                v-for="item in depts"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
+            <el-tree-select
+              v-model="formData.deptId"
+              :data="depts"
+              :props="defaultProps"
+              check-strictly
+              node-key="id"
+              placeholder="请选择归属部门"
+              :disabled="formType === 'view'"
+            />
           </el-form-item>
         </el-col>
       </el-row>
@@ -33,6 +34,9 @@
               v-model="formData.dateReport"
               type="date"
               placeholder="请选择汇报日期"
+              :disabled-date="disabledDate"
+              value-format="YYYY-MM-DD"
+              :disabled="formType === 'view'"
             />
           </el-form-item>
         </el-col>
@@ -47,6 +51,8 @@
               placeholder="请输汇报对象姓名"
               :remote-method="remoteMethod"
               :loading="loading"
+              ref="selectObj"
+              :disabled="formType === 'view'"
             >
               <el-option
                 v-for="item in reportObjects"
@@ -60,12 +66,12 @@
       </el-row>
 
       <el-form-item label="工作进度" prop="workProgress">
-        <el-table :data="formData.workProgress" style="width: 100%; margin-bottom: 5px">
+        <el-table :data="formData.reportJobScheduleDOList" style="width: 100%; margin-bottom: 5px">
           <el-table-column type="index" label="序号" width="60" />
-          <el-table-column prop="workContent" label="工作内容" />
-          <el-table-column prop="completeSituation" label="完成情况" />
-          <el-table-column prop="relatedMatter" label="关联事项" />
-          <el-table-column label="操作" align="center">
+          <el-table-column prop="content" label="工作内容" />
+          <el-table-column prop="situation" label="完成情况" />
+          <el-table-column prop="connectId" label="关联事项" />
+          <el-table-column label="操作" align="center" v-if="formType != 'view'">
             <template #default="scope">
               <el-button link type="primary" @click="openUpdateProgressDrawer(scope.$index)">
                 编辑
@@ -74,18 +80,22 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-button color="#626aef" size="small" @click="openAddProgressDrawer()"
+        <el-button
+          color="#626aef"
+          size="small"
+          @click="openAddProgressDrawer()"
+          v-if="formType != 'view'"
           >添加一项进度</el-button
         >
         <!-- <el-button color="red" size="small">-</el-button> -->
       </el-form-item>
       <el-form-item label="工作计划" prop="workPlan">
-        <el-table :data="formData.workPlan" style="width: 100%; margin-bottom: 5px">
+        <el-table :data="formData.reportJobPlanDOList" style="width: 100%; margin-bottom: 5px">
           <el-table-column type="index" label="序号" width="60" />
-          <el-table-column prop="planContent" label="计划内容" />
-          <el-table-column prop="expectedWorkingHours" label="预计工时" />
-          <el-table-column prop="resourceDemand" label="资源需求" />
-          <el-table-column label="操作" align="center">
+          <el-table-column prop="content" label="计划内容" />
+          <el-table-column prop="estimatedTime" label="预计工时" />
+          <el-table-column prop="needSource" label="资源需求" />
+          <el-table-column label="操作" align="center" v-if="formType != 'view'">
             <template #default="scope">
               <el-button link type="primary" @click="openUpdatePlanDrawer(scope.$index)">
                 编辑
@@ -94,7 +104,11 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-button color="#626aef" size="small" @click="openAddPlanDrawer()"
+        <el-button
+          color="#626aef"
+          size="small"
+          @click="openAddPlanDrawer()"
+          v-if="formType != 'view'"
           >添加一项计划</el-button
         >
         <!-- <el-button color="red" size="small">-</el-button> -->
@@ -107,11 +121,18 @@
           maxlength="300"
           show-word-limit
           :rows="5"
+          :disabled="formType === 'view'"
         />
       </el-form-item>
     </el-form>
     <template #footer>
-      <el-button @click="submitForm" type="primary" :disabled="formLoading">确 定</el-button>
+      <el-button
+        @click="submitForm"
+        type="primary"
+        :disabled="formLoading"
+        v-if="formType != 'view'"
+        >确 定</el-button
+      >
       <el-button @click="dialogVisible = false">取 消</el-button>
     </template>
     <AddWorkProgressForm
@@ -129,9 +150,15 @@ import {
   type workProgress,
   type workPlan
 } from '@/api/system/userReport'
+import { getDeptsByUserId } from '@/api/system/dept'
+import { getAll } from '@/api/system/user'
 import AddWorkProgressForm from './addWorkProgressForm.vue'
 import AddWorkPlanForm from './addWorkPlanForm.vue'
 import { useUserStore } from '@/store/modules/user'
+import { defaultProps, handleTree } from '@/utils/tree'
+import dayjs from 'dayjs'
+import { isArray } from '../../../utils/is'
+import { formatDate } from '../../../utils/formatTime'
 
 /** 用户汇报 表单 */
 defineOptions({ name: 'UserReportForm' })
@@ -143,6 +170,7 @@ const dialogVisible = ref(false) // 弹窗的是否展示
 const dialogTitle = ref('') // 弹窗的标题
 const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
 const formType = ref('') // 表单的类型：create - 新增；update - 修改
+const selectObj = ref()
 const userInfo = useUserStore().getUser
 const formData = ref({
   id: undefined,
@@ -151,24 +179,29 @@ const formData = ref({
   dateReport: undefined,
   commitTime: undefined,
   remark: undefined,
-  userNikeName: userInfo.nickname,
-  checkSatus: undefined,
+  userNickName: userInfo.nickname,
+  checkStatus: undefined,
   type: undefined,
-  workProgress: [] as workProgress[],
-  workPlan: [] as workPlan[],
+  reportJobScheduleDOList: [] as workProgress[],
+  reportJobPlanDOList: [] as workPlan[],
   reportObject: undefined
 })
 const formRules = reactive({
-  userId: [{ required: true, message: '汇报人不能为空', trigger: 'blur' }],
+  userNickName: [{ required: true, message: '汇报人不能为空', trigger: 'blur' }],
+  reportObject: [{ required: true, message: '汇报对象不能为空', trigger: 'blur' }],
   deptId: [{ required: true, message: '部门不能为空', trigger: 'blur' }],
   dateReport: [{ required: true, message: '汇报日期不能为空', trigger: 'blur' }],
-  checkSatus: [{ required: true, message: '状态不能为空', trigger: 'blur' }],
+  checkStatus: [{ required: true, message: '状态不能为空', trigger: 'blur' }],
   type: [{ required: true, message: '类型不能为空', trigger: 'change' }]
 })
 const formRef = ref() // 表单 Ref
 const addProgressFormRef = ref()
 const addPlanFormRef = ref()
 
+/**限制可选汇报日期 */
+const disabledDate = (data: Date) => {
+  return data.getTime() > new Date().getTime()
+}
 /** 新增一行progress */
 const openAddProgressDrawer = () => {
   addProgressFormRef.value.open('add', {} as workProgress)
@@ -177,11 +210,14 @@ const openAddProgressDrawer = () => {
 /**编辑一行progress */
 const openUpdateProgressDrawer = (index: number) => {
   progressIndex.value = index
-  addProgressFormRef.value.open('update', formData.value.workProgress[index] as workProgress)
+  addProgressFormRef.value.open(
+    'update',
+    formData.value.reportJobScheduleDOList[index] as workProgress
+  )
 }
 /**删除一行progress */
 const deleteProgress = (index: number) => {
-  formData.value.workProgress.splice(index, 1)
+  formData.value.reportJobScheduleDOList.splice(index, 1)
 }
 
 /** 新增一行plan */
@@ -192,46 +228,28 @@ const openAddPlanDrawer = () => {
 /**编辑一行plan */
 const openUpdatePlanDrawer = (index: number) => {
   progressIndex.value = index
-  addPlanFormRef.value.open('update', formData.value.workPlan[index] as workPlan)
+  addPlanFormRef.value.open('update', formData.value.reportJobPlanDOList[index] as workPlan)
 }
 /**删除一行plan */
 const deletePlan = (index: number) => {
-  formData.value.workPlan.splice(index, 1)
+  formData.value.reportJobPlanDOList.splice(index, 1)
 }
 
-const depts = ref<any[]>([
-  {
-    value: '部门1',
-    label: '部门1'
-  },
-  {
-    value: '部门2',
-    label: '部门2'
-  }
-])
+const depts = ref<Tree[]>([])
 const reportObjects = ref<any[]>([])
 const loading = ref(false)
-const list = ref<any[]>([
-  {
-    value: '对象1',
-    label: '对象1'
-  },
-  {
-    value: '对象2',
-    label: '对象2'
-  }
-])
+const list = ref<any[]>([])
 /** 编辑progress的index */
 const progressIndex = ref()
 
 /**添加工作进度 */
 const addWorkProgress = (progress: workProgress) => {
-  formData.value.workProgress.push(progress)
+  formData.value.reportJobScheduleDOList.push(progress)
 }
 
 /**更新工作进度 */
 const updateWorkProgress = (progress: workProgress) => {
-  formData.value.workProgress.splice(progressIndex.value, 1, progress)
+  formData.value.reportJobScheduleDOList.splice(progressIndex.value, 1, progress)
 }
 
 /** 编辑plan的index */
@@ -239,40 +257,69 @@ const planIndex = ref()
 
 /**添加工作计划 */
 const addWorkPlan = (plan: workPlan) => {
-  formData.value.workPlan.push(plan)
+  formData.value.reportJobPlanDOList.push(plan)
 }
 
 /**更新工作计划 */
 const updateWorkPlan = (plan: workPlan) => {
-  formData.value.workPlan.splice(planIndex.value, 1, plan)
+  formData.value.reportJobPlanDOList.splice(planIndex.value, 1, plan)
+}
+
+/**过滤重复数据 */
+const filterDuplicateObjects = (arr: any[]) => {
+  const seen = new Set()
+  return arr.filter((item) => {
+    const serializedKey = JSON.stringify(item['value'])
+    return seen.has(serializedKey) ? false : seen.add(serializedKey)
+  })
 }
 
 /**查询汇报对象 */
 const remoteMethod = async (query: string) => {
   if (query) {
     loading.value = true
-    setTimeout(() => {
-      loading.value = false
-      reportObjects.value = list.value.filter((item) => {
-        return item.label.includes(query)
-      })
-    }, 200)
-  } else {
-    reportObjects.value = []
+    const users = await getAll(query)
+    const userMap = users.map((item) => {
+      return { value: item.id, label: `${item.nickname}-${item.username}` }
+    })
+    list.value.concat(userMap)
+    nextTick(() => {
+      const tempUser = filterDuplicateObjects(list.value)
+      setTimeout(() => {
+        loading.value = false
+        reportObjects.value = tempUser.filter((item) => {
+          return item.label.includes(query)
+        })
+      }, 200)
+    })
   }
 }
 
 /** 打开弹窗 */
 const open = async (type: string, id?: number) => {
   dialogVisible.value = true
-  dialogTitle.value = t('action.' + type)
+  if (type == 'view') {
+    dialogTitle.value = '详情'
+  } else {
+    dialogTitle.value = t('action.' + type)
+  }
+
   formType.value = type
+  /**查询当前用户所在的部门列表 */
+  const deptList = await getDeptsByUserId(formData.value.userId)
+  depts.value = handleTree(deptList)
   resetForm()
   // 修改时，设置数据
   if (id) {
     formLoading.value = true
     try {
-      formData.value = await UserReportApi.getUserReport(id)
+      const res = await UserReportApi.getUserReport(id)
+      res.dateReport = dayjs(res.dateReport).format('YYYY-MM-DD')
+      list.value = res.userList.map((item) => {
+        return { value: item.id, label: `${item.nickname}-${item.username}` }
+      })
+      reportObjects.value = list.value
+      formData.value = res
     } finally {
       formLoading.value = false
     }
@@ -285,6 +332,13 @@ const emit = defineEmits(['success']) // 定义 success 事件，用于操作成
 const submitForm = async () => {
   // 校验表单
   await formRef.value.validate()
+  if (
+    formData.value.reportJobScheduleDOList == undefined ||
+    formData.value.reportJobScheduleDOList.length <= 0
+  ) {
+    message.error('请填写工作进度')
+    return
+  }
   // 提交请求
   formLoading.value = true
   try {
@@ -313,11 +367,11 @@ const resetForm = () => {
     dateReport: undefined,
     commitTime: undefined,
     remark: undefined,
-    userNikeName: userInfo.nickname,
-    checkSatus: undefined,
+    userNickName: userInfo.nickname,
+    checkStatus: undefined,
     type: undefined,
-    workProgress: [] as workProgress[],
-    workPlan: [] as workPlan[],
+    reportJobScheduleDOList: [] as workProgress[],
+    reportJobPlanDOList: [] as workPlan[],
     reportObject: undefined
   }
   formRef.value?.resetFields()

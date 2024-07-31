@@ -1,13 +1,19 @@
 <template>
   <el-drawer v-model="drawer" :direction="direction" :before-close="handleClose" addProgressFormRef>
     <template #header>
-      <h4>添加工作进度</h4>
+      <h4>添加工作计划</h4>
     </template>
     <template #default>
-      <el-form :model="planData" :rules="planRules" label-position="right" label-width="80px">
-        <el-form-item label="工作计划" prop="planContent">
+      <el-form
+        ref="addPlanFormRef"
+        :model="planData"
+        :rules="planRules"
+        label-position="right"
+        label-width="80px"
+      >
+        <el-form-item label="工作计划" prop="content">
           <el-input
-            v-model="planData.planContent"
+            v-model="planData.content"
             placeholder="请输入工作计划"
             maxlength="500"
             show-word-limit
@@ -15,20 +21,20 @@
             :rows="10"
           />
         </el-form-item>
-        <el-form-item label="预计工时" prop="expectedWorkingHours">
+        <el-form-item label="预计工时" prop="estimatedTime">
           <el-input
             type="textarea"
-            v-model="planData.expectedWorkingHours"
+            v-model="planData.estimatedTime"
             placeholder="请输入预计工时"
             maxlength="500"
             show-word-limit
             :rows="10"
           />
         </el-form-item>
-        <el-form-item label="资源需求" prop="resourceDemand">
+        <el-form-item label="资源需求" prop="needSource">
           <el-input
             type="textarea"
-            v-model="planData.resourceDemand"
+            v-model="planData.needSource"
             placeholder="请输入资源需求"
             maxlength="500"
             show-word-limit
@@ -71,6 +77,10 @@ const controlType = ref('')
 
 /**提交表单 */
 const submit = async () => {
+  // 校验表单
+  await addPlanFormRef.value.validate()
+  // 提交请求
+  formLoading.value = true
   if (controlType.value == 'add') {
     emits('addplan', planData.value)
   } else {
@@ -90,8 +100,8 @@ const open = async (type: string, plan: workPlan) => {
 }
 
 const planRules = reactive({
-  planContent: [{ required: true, message: '工作内容不能为空', trigger: 'blur' }],
-  expectedWorkingHours: [{ required: true, message: '完成情况不能为空', trigger: 'blur' }]
+  content: [{ required: true, message: '工作内容不能为空', trigger: 'blur' }],
+  estimatedTime: [{ required: true, message: '完成情况不能为空', trigger: 'blur' }]
 })
 
 /** 取消按钮 */
