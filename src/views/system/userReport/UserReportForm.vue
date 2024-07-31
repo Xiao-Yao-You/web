@@ -71,12 +71,32 @@
           <el-table-column prop="content" label="工作内容" />
           <el-table-column prop="situation" label="完成情况" />
           <el-table-column prop="connectId" label="关联事项" />
-          <el-table-column label="操作" align="center" v-if="formType != 'view'">
+          <el-table-column label="操作" align="center">
             <template #default="scope">
-              <el-button link type="primary" @click="openUpdateProgressDrawer(scope.$index)">
+              <el-button
+                link
+                type="primary"
+                @click="openViewProgressDrawer(scope.$index)"
+                v-if="formType == 'view'"
+              >
+                详情
+              </el-button>
+              <el-button
+                link
+                type="primary"
+                @click="openUpdateProgressDrawer(scope.$index)"
+                v-if="formType != 'view'"
+              >
                 编辑
               </el-button>
-              <el-button link type="danger" @click="deleteProgress(scope.$index)"> 删除 </el-button>
+              <el-button
+                link
+                type="danger"
+                @click="deleteProgress(scope.$index)"
+                v-if="formType != 'view'"
+              >
+                删除
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -95,12 +115,32 @@
           <el-table-column prop="content" label="计划内容" />
           <el-table-column prop="estimatedTime" label="预计工时" />
           <el-table-column prop="needSource" label="资源需求" />
-          <el-table-column label="操作" align="center" v-if="formType != 'view'">
+          <el-table-column label="操作" align="center">
             <template #default="scope">
-              <el-button link type="primary" @click="openUpdatePlanDrawer(scope.$index)">
+              <el-button
+                link
+                type="primary"
+                @click="openViewPlanDrawer(scope.$index)"
+                v-if="formType == 'view'"
+              >
+                详情
+              </el-button>
+              <el-button
+                link
+                type="primary"
+                @click="openUpdatePlanDrawer(scope.$index)"
+                v-if="formType != 'view'"
+              >
                 编辑
               </el-button>
-              <el-button link type="danger" @click="deletePlan(scope.$index)"> 删除 </el-button>
+              <el-button
+                link
+                type="danger"
+                @click="deletePlan(scope.$index)"
+                v-if="formType != 'view'"
+              >
+                删除
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -206,7 +246,14 @@ const disabledDate = (data: Date) => {
 const openAddProgressDrawer = () => {
   addProgressFormRef.value.open('add', {} as workProgress)
 }
-
+/**查看一行progress */
+const openViewProgressDrawer = (index: number) => {
+  progressIndex.value = index
+  addProgressFormRef.value.open(
+    'view',
+    formData.value.reportJobScheduleDOList[index] as workProgress
+  )
+}
 /**编辑一行progress */
 const openUpdateProgressDrawer = (index: number) => {
   progressIndex.value = index
@@ -224,7 +271,11 @@ const deleteProgress = (index: number) => {
 const openAddPlanDrawer = () => {
   addPlanFormRef.value.open('add', {} as workPlan)
 }
-
+/**查看一行plan */
+const openViewPlanDrawer = (index: number) => {
+  progressIndex.value = index
+  addPlanFormRef.value.open('view', formData.value.reportJobPlanDOList[index] as workPlan)
+}
 /**编辑一行plan */
 const openUpdatePlanDrawer = (index: number) => {
   progressIndex.value = index

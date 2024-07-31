@@ -84,13 +84,13 @@
         :formatter="dateFormatter"
         width="180px"
       />
-      <!-- <el-table-column
+      <el-table-column
         label="创建时间"
         align="center"
         prop="createTime"
         :formatter="dateFormatter"
         width="180px"
-      /> -->
+      />
       <el-table-column label="操作" align="center">
         <template #default="scope">
           <el-button link type="primary" @click="openForm('view', scope.row.id)"> 详情 </el-button>

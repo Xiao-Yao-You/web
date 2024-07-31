@@ -19,6 +19,7 @@
             show-word-limit
             type="textarea"
             :rows="10"
+            :disabled="controlType == 'view'"
           />
         </el-form-item>
         <el-form-item label="完成情况" prop="situation">
@@ -29,6 +30,7 @@
             maxlength="500"
             show-word-limit
             :rows="10"
+            :disabled="controlType == 'view'"
           />
         </el-form-item>
         <el-form-item label="关联事项" prop="connectId">
@@ -37,6 +39,7 @@
             filterable
             placeholder="请选择需要关联的事项"
             style="width: 100%"
+            :disabled="controlType == 'view'"
           >
             <el-option
               v-for="item in options"
@@ -51,7 +54,7 @@
     <template #footer>
       <div style="flex: auto">
         <el-button @click="cancelClick">取消</el-button>
-        <el-button type="primary" @click="submit">确认</el-button>
+        <el-button type="primary" @click="submit" v-if="controlType != 'view'">确认</el-button>
       </div>
     </template>
   </el-drawer>
@@ -112,7 +115,7 @@ const submit = async () => {
 
 /** 打开弹窗 */
 const open = async (type: string, process: workProgress) => {
-  if (type === 'update') {
+  if (type === 'update' || type === 'view') {
     progressData.value = cloneDeep(process)
   }
   controlType.value = type

@@ -19,6 +19,7 @@
             show-word-limit
             type="textarea"
             :rows="10"
+            :disabled="controlType == 'view'"
           />
         </el-form-item>
         <el-form-item label="预计工时" prop="estimatedTime">
@@ -29,6 +30,7 @@
             maxlength="500"
             show-word-limit
             :rows="10"
+            :disabled="controlType == 'view'"
           />
         </el-form-item>
         <el-form-item label="资源需求" prop="needSource">
@@ -39,6 +41,7 @@
             maxlength="500"
             show-word-limit
             :rows="10"
+            :disabled="controlType == 'view'"
           />
         </el-form-item>
       </el-form>
@@ -46,7 +49,7 @@
     <template #footer>
       <div style="flex: auto">
         <el-button @click="cancelClick">取消</el-button>
-        <el-button type="primary" @click="submit">确认</el-button>
+        <el-button type="primary" @click="submit" v-if="controlType != 'view'">确认</el-button>
       </div>
     </template>
   </el-drawer>
@@ -92,7 +95,7 @@ const submit = async () => {
 
 /** 打开弹窗 */
 const open = async (type: string, plan: workPlan) => {
-  if (type === 'update') {
+  if (type === 'update' || type === 'view') {
     planData.value = cloneDeep(plan)
   }
   controlType.value = type
