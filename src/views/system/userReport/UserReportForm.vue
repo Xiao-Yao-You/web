@@ -342,9 +342,10 @@ const remoteMethod = async (query: string) => {
     const userMap = users.map((item) => {
       return { value: item.id, label: `${item.nickname}-${item.username}` }
     })
-    list.value.concat(userMap)
+    list.value = list.value.concat(userMap)
     nextTick(() => {
       const tempUser = filterDuplicateObjects(list.value)
+      console.log('--------------------------tempUser', tempUser)
       setTimeout(() => {
         loading.value = false
         reportObjects.value = tempUser.filter((item) => {
@@ -358,7 +359,7 @@ const remoteMethod = async (query: string) => {
 /** 打开弹窗 */
 const open = async (type: string, id?: number) => {
   dialogVisible.value = true
-  reportObjects.value = []
+  //reportObjects.value = []
   if (type == 'view') {
     dialogTitle.value = '详情'
   } else {
