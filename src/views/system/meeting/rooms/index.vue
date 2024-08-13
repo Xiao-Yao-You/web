@@ -112,7 +112,7 @@
             link
             type="primary"
             @click="openForm('update', scope.row.id)"
-            v-hasPermi="['system:meeting-rooms:update']"
+            v-hasPermi="['hk:meeting-room-info:update']"
           >
             编辑
           </el-button>
@@ -120,7 +120,7 @@
             link
             type="danger"
             @click="handleDelete(scope.row.id)"
-            v-hasPermi="['system:meeting-rooms:delete']"
+            v-hasPermi="['hk:meeting-room-info:delete']"
           >
             删除
           </el-button>
