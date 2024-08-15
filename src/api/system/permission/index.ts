@@ -21,9 +21,19 @@ export const getRoleMenuList = async (roleId: number) => {
   return await request.get({ url: '/system/permission/list-role-menus?roleId=' + roleId })
 }
 
+// 查询角色拥有的小程序菜单权限
+export const getRoleWechatMenuList = async (roleId: number) => {
+  return request.get({ url: '/system/permission/list-role-wechat-menus?roleId=' + roleId })
+}
+
 // 赋予角色菜单权限
 export const assignRoleMenu = async (data: PermissionAssignRoleMenuReqVO) => {
   return await request.post({ url: '/system/permission/assign-role-menu', data })
+}
+
+// 赋予角色小程序菜单权限
+export const assignRoleWechatMenu = async (data: PermissionAssignRoleMenuReqVO) => {
+  return request.post({ url: '/system/permission/assign-wechat-role-menu', data })
 }
 
 // 赋予角色数据权限

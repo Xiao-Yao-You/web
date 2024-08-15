@@ -42,7 +42,7 @@
           重置
         </el-button>
         <el-button
-          v-hasPermi="['system:menu:create']"
+          v-hasPermi="['wechat:menu:create']"
           plain
           type="primary"
           @click="openForm('create')"
@@ -72,24 +72,36 @@
       row-key="id"
     >
       <el-table-column :show-overflow-tooltip="true" label="菜单名称" prop="name" width="250" />
-      <el-table-column align="center" label="图标" prop="icon" width="100">
-        <template #default="scope">
-          <Icon :icon="scope.row.icon" />
-        </template>
-      </el-table-column>
-      <el-table-column label="排序" prop="sort" width="60" />
-      <el-table-column :show-overflow-tooltip="true" label="权限标识" prop="permission" />
-      <el-table-column :show-overflow-tooltip="true" label="组件路径" prop="component" />
-      <el-table-column :show-overflow-tooltip="true" label="组件名称" prop="componentName" />
-      <el-table-column label="状态" prop="status" width="80">
+      <el-table-column align="center" :show-overflow-tooltip="true" label="路由地址" prop="path" />
+      <el-table-column
+        align="center"
+        :show-overflow-tooltip="true"
+        label="权限标识"
+        prop="permission"
+      />
+      <el-table-column align="center" label="排序" prop="sort" width="60" />
+      <el-table-column align="center" label="icon" prop="icon" />
+      <!-- <el-table-column
+        align="center"
+        :show-overflow-tooltip="true"
+        label="组件路径"
+        prop="component"
+      />
+      <el-table-column
+        align="center"
+        :show-overflow-tooltip="true"
+        label="组件名称"
+        prop="componentName"
+      /> -->
+      <el-table-column align="center" label="状态" prop="status" width="80">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.COMMON_STATUS" :value="scope.row.status" />
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作">
+      <el-table-column align="center" label="操作" width="200">
         <template #default="scope">
           <el-button
-            v-hasPermi="['system:menu:update']"
+            v-hasPermi="['wechat:menu:update']"
             link
             type="primary"
             @click="openForm('update', scope.row.id)"
@@ -97,7 +109,7 @@
             修改
           </el-button>
           <el-button
-            v-hasPermi="['system:menu:create']"
+            v-hasPermi="['wechat:menu:create']"
             link
             type="primary"
             @click="openForm('create', undefined, scope.row.id)"
@@ -105,7 +117,7 @@
             新增
           </el-button>
           <el-button
-            v-hasPermi="['system:menu:delete']"
+            v-hasPermi="['wechat:menu:delete']"
             link
             type="danger"
             @click="handleDelete(scope.row.id)"
@@ -123,11 +135,11 @@
 <script lang="ts" setup>
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import { handleTree } from '@/utils/tree'
-import * as MenuApi from '@/api/system/menu'
-import MenuForm from './MenuForm.vue'
+import { getWechatMenuList, deleteWechatMenu } from '@/api/system/menu-wechat'
+import MenuForm from './WechatMenuForm.vue'
 import { CACHE_KEY, useCache } from '@/hooks/web/useCache'
 
-defineOptions({ name: 'SystemMenu' })
+defineOptions({ name: 'SystemWechatMenu' })
 
 const { wsCache } = useCache()
 const { t } = useI18n() // 国际化
@@ -147,7 +159,7 @@ const refreshTable = ref(true) // 重新渲染表格状态
 const getList = async () => {
   loading.value = true
   try {
-    const data = await MenuApi.getMenuList(queryParams)
+    const data = await getWechatMenuList(queryParams)
     list.value = handleTree(data)
   } finally {
     loading.value = false
@@ -198,7 +210,7 @@ const handleDelete = async (id: number) => {
     // 删除的二次确认
     await message.delConfirm()
     // 发起删除
-    await MenuApi.deleteMenu(id)
+    await deleteWechatMenu(id)
     message.success(t('common.delSuccess'))
     // 刷新列表
     await getList()

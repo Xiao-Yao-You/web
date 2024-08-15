@@ -47,22 +47,31 @@
 <script lang="ts" setup>
 import { defaultProps, handleTree } from '@/utils/tree'
 import * as RoleApi from '@/api/system/role'
-import * as MenuApi from '@/api/system/menu'
+import { getSimpleMenusList } from '@/api/system/menu'
+import { getWechatMenusLevels } from '@/api/system/menu-wechat'
 import * as PermissionApi from '@/api/system/permission'
 
 defineOptions({ name: 'SystemRoleAssignMenuForm' })
+
+interface FormData {
+  id: undefined | number
+  name: string
+  code: string
+  menuIds: number[]
+}
 
 const { t } = useI18n() // 国际化
 const message = useMessage() // 消息弹窗
 
 const dialogVisible = ref(false) // 弹窗的是否展示
 const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
-const formData = reactive({
+const formData = reactive<FormData>({
   id: undefined,
   name: '',
   code: '',
   menuIds: []
 })
+const formType = ref('') // 'wechat' | 'web'
 const formRef = ref() // 表单 Ref
 const menuOptions = ref<any[]>([]) // 菜单树形结构
 const menuExpand = ref(false) // 展开/折叠
@@ -70,20 +79,27 @@ const treeRef = ref() // 菜单树组件 Ref
 const treeNodeAll = ref(false) // 全选/全不选
 
 /** 打开弹窗 */
-const open = async (row: RoleApi.RoleVO) => {
+const open = async (row: RoleApi.RoleVO, type: 'web' | 'wechat') => {
+  formType.value = type
   dialogVisible.value = true
   resetForm()
   // 加载 Menu 列表。注意，必须放在前面，不然下面 setChecked 没数据节点
-  menuOptions.value = handleTree(await MenuApi.getSimpleMenusList())
-  // 设置数据
-  formData.id = row.id
-  formData.name = row.name
-  formData.code = row.code
+  const tree = type === 'wechat' ? await getWechatMenusLevels() : await getSimpleMenusList()
+  menuOptions.value = handleTree(tree)
+  Object.assign(formData, {
+    id: row.id,
+    name: row.name,
+    code: row.code
+  })
+
   formLoading.value = true
   try {
-    formData.value.menuIds = await PermissionApi.getRoleMenuList(row.id)
-    // 设置选中
-    formData.value.menuIds.forEach((menuId: number) => {
+    const menuIds =
+      type === 'wechat'
+        ? await PermissionApi.getRoleWechatMenuList(row.id)
+        : await PermissionApi.getRoleMenuList(row.id)
+    formData.menuIds = menuIds
+    menuIds.forEach((menuId: number) => {
       treeRef.value.setChecked(menuId, true, false)
     })
   } finally {
@@ -103,13 +119,15 @@ const submitForm = async () => {
   formLoading.value = true
   try {
     const data = {
-      roleId: formData.id,
+      roleId: formData.id!,
       menuIds: [
         ...(treeRef.value.getCheckedKeys(false) as unknown as Array<number>), // 获得当前选中节点
         ...(treeRef.value.getHalfCheckedKeys() as unknown as Array<number>) // 获得半选中的父节点
       ]
     }
-    await PermissionApi.assignRoleMenu(data)
+    formType.value === 'wechat'
+      ? await PermissionApi.assignRoleWechatMenu(data)
+      : await PermissionApi.assignRoleMenu(data)
     message.success(t('common.updateSuccess'))
     dialogVisible.value = false
     // 发送操作成功的事件
@@ -125,12 +143,12 @@ const resetForm = () => {
   treeNodeAll.value = false
   menuExpand.value = false
   // 重置表单
-  formData.value = {
+  Object.assign(formData, {
     id: undefined,
     name: '',
     code: '',
     menuIds: []
-  }
+  })
   treeRef.value?.setCheckedNodes([])
   formRef.value?.resetFields()
 }

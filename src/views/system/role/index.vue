@@ -104,44 +104,58 @@
         prop="createTime"
         width="180"
       />
-      <el-table-column :width="300" align="center" label="操作">
+      <el-table-column :width="200" align="center" label="操作" fixed="right">
         <template #default="scope">
-          <el-button
-            v-hasPermi="['system:role:update']"
-            link
-            type="primary"
-            @click="openForm('update', scope.row.id)"
-          >
-            编辑
-          </el-button>
-          <el-button
-            v-hasPermi="['system:permission:assign-role-menu']"
-            link
-            preIcon="ep:basketball"
-            title="菜单权限"
-            type="primary"
-            @click="openAssignMenuForm(scope.row)"
-          >
-            菜单权限
-          </el-button>
-          <el-button
-            v-hasPermi="['system:permission:assign-role-data-scope']"
-            link
-            preIcon="ep:coin"
-            title="数据权限"
-            type="primary"
-            @click="openDataPermissionForm(scope.row)"
-          >
-            数据权限
-          </el-button>
-          <el-button
-            v-hasPermi="['system:role:delete']"
-            link
-            type="danger"
-            @click="handleDelete(scope.row.id)"
-          >
-            删除
-          </el-button>
+          <div class="flex items-center justify-evenly">
+            <el-button
+              v-hasPermi="['system:role:update']"
+              link
+              type="primary"
+              @click="openForm('update', scope.row.id)"
+            >
+              编辑
+            </el-button>
+            <el-dropdown
+              @command="(command) => handleCommand(command, scope.row)"
+              v-hasPermi="[
+                'system:permission:assign-role-menu',
+                'system:permission:assign-role-wechat-menu',
+                'system:permission:assign-role-data-scope'
+              ]"
+            >
+              <el-button type="primary" link><Icon icon="ep:d-arrow-right" /> 权限</el-button>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item
+                    command="menu"
+                    v-if="checkPermi(['system:permission:assign-role-menu'])"
+                  >
+                    <Icon icon="ep:menu" />菜单权限
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    command="wechat"
+                    v-if="checkPermi(['system:permission:assign-role-wechat-menu'])"
+                  >
+                    <Icon icon="ep:chat-dot-round" />小程序权限
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    command="data"
+                    v-if="checkPermi(['system:permission:assign-role-data-scope'])"
+                  >
+                    <Icon icon="ep:coin" />数据权限
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+            <el-button
+              v-hasPermi="['system:role:delete']"
+              link
+              type="danger"
+              @click="handleDelete(scope.row.id)"
+            >
+              删除
+            </el-button>
+          </div>
         </template>
       </el-table-column>
     </el-table>
@@ -169,6 +183,7 @@ import * as RoleApi from '@/api/system/role'
 import RoleForm from './RoleForm.vue'
 import RoleAssignMenuForm from './RoleAssignMenuForm.vue'
 import RoleDataPermissionForm from './RoleDataPermissionForm.vue'
+import { checkPermi } from '@/utils/permission'
 
 defineOptions({ name: 'SystemRole' })
 
@@ -219,16 +234,31 @@ const openForm = (type: string, id?: number) => {
   formRef.value.open(type, id)
 }
 
-/** 数据权限操作 */
+/** 权限操作 */
+const handleCommand = (command: string, row: RoleApi.RoleVO) => {
+  switch (command) {
+    case 'data':
+      openDataPermissionForm(row)
+      break
+    case 'menu':
+      openAssignMenuForm(row, 'web')
+      break
+    case 'wechat':
+      openAssignMenuForm(row, 'wechat')
+      break
+    default:
+      break
+  }
+}
+/** 数据权限 */
 const dataPermissionFormRef = ref()
 const openDataPermissionForm = async (row: RoleApi.RoleVO) => {
   dataPermissionFormRef.value.open(row)
 }
-
-/** 菜单权限操作 */
+/** 菜单权限 */
 const assignMenuFormRef = ref()
-const openAssignMenuForm = async (row: RoleApi.RoleVO) => {
-  assignMenuFormRef.value.open(row)
+const openAssignMenuForm = async (row: RoleApi.RoleVO, type: 'web' | 'wechat') => {
+  assignMenuFormRef.value.open(row, type)
 }
 
 /** 删除按钮操作 */
