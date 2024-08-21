@@ -15,7 +15,7 @@ const props = withDefaults(defineProps<{ equimentDict: Record<string, string> }>
 
 const detailVisible = ref(false)
 const loading = ref(false)
-const form = ref<Omit<MeetingSubscribeInfo, 'id' | 'userId' | 'meetingRoomId' | 'joinUserList'>>({
+const form = ref<Omit<MeetingSubscribeInfo, 'id' | 'userId' | 'meetingRoomId'>>({
   subject: '',
   status: -1,
   startTime: undefined as unknown as number,
@@ -25,6 +25,8 @@ const form = ref<Omit<MeetingSubscribeInfo, 'id' | 'userId' | 'meetingRoomId' | 
   userPhone: '',
   meetingRoomName: '',
   capacity: undefined as unknown as number,
+  joinUserList: [],
+  otherAttend: [],
   equipment: [] as number[],
   createTime: 0,
   remark: ''
@@ -52,6 +54,18 @@ const meetingDate = computed(() => {
   return isEmpty(form.value.dateMeeting) ? '' : form.value.dateMeeting.join('-')
 })
 
+// 内部人员
+const internalUserList = computed(() => {
+  if (isEmpty(form.value.joinUserList)) return '无'
+  return form.value.joinUserList.map((u) => u.userNickName).join('、')
+})
+
+// 外部人员
+const externalUserList = computed(() => {
+  if (isEmpty(form.value.otherAttend)) return '无'
+  return form.value.otherAttend.join('、')
+})
+
 const open = async (id: number) => {
   resetForm()
   detailVisible.value = true
@@ -77,6 +91,8 @@ const resetForm = () => {
     userPhone: '',
     meetingRoomName: '',
     capacity: undefined as unknown as number,
+    joinUserList: [],
+    otherAttend: [],
     equipment: [] as number[],
     createTime: 0,
     remark: ''
@@ -89,7 +105,7 @@ defineExpose({ open })
 <template>
   <Dialog title="会议详情" v-model="detailVisible">
     <el-descriptions :column="2" border v-loading="loading">
-      <el-descriptions-item label="会议主题">
+      <el-descriptions-item label="会议主题" min-width="100">
         {{ form.subject }}
       </el-descriptions-item>
       <el-descriptions-item label="会议室">
@@ -118,6 +134,12 @@ defineExpose({ open })
       </el-descriptions-item>
       <el-descriptions-item label="联系方式">
         {{ form.userPhone }}
+      </el-descriptions-item>
+      <el-descriptions-item label="内部人员">
+        {{ internalUserList }}
+      </el-descriptions-item>
+      <el-descriptions-item label="外部人员">
+        {{ externalUserList }}
       </el-descriptions-item>
       <el-descriptions-item label="与会人数">
         {{ form.capacity + ' 人' }}
