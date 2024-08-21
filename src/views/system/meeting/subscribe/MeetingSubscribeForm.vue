@@ -125,14 +125,18 @@
           </div>
         </el-card>
       </el-form-item>
+      <el-form-item label="外部与会人员" prop="otherAttend">
+        <el-card class="w-full" shadow="never">
+          <TagGroup v-model="formData.otherAttend" tag-type="info" tag-effect="plain" />
+        </el-card>
+      </el-form-item>
       <el-form-item label="与会总人数" prop="capacity">
         <el-input-number
           v-model="formData.capacity"
-          placeholder="请输入总人数"
           :precision="0"
-          :min="formData.joinUserList.length || 1"
+          :min="formData.capacity"
           :max="999"
-          class="!w-220px"
+          class="!w-120px"
         />
       </el-form-item>
       <el-form-item label="设备需求" prop="equipment">
@@ -210,6 +214,7 @@
 import dayjs from 'dayjs'
 import { remove } from 'lodash-es'
 import { TimeRangePicker } from '@/components/TimeRangePicker'
+import { EditableTagGroup as TagGroup } from '@/components/EditableTagGroup'
 import {
   MeetingSubscribeApi,
   MeetingRoomsApi,
@@ -258,7 +263,8 @@ const formData = ref({
   meetingRoomId: undefined as unknown as number,
   meetingRoomName: '',
   joinUserList: [] as JoinUser[],
-  capacity: undefined as unknown as number,
+  capacity: 0,
+  otherAttend: [],
   equipment: [] as number[],
   remark: ''
 })
@@ -305,10 +311,6 @@ const formRules = reactive({
     }
   ],
   joinUserList: [{ required: true, message: '内部与会人数不能为空', trigger: 'change' }],
-  capacity: [
-    { required: true, message: '总人数不能为空', trigger: 'blur' },
-    { pattern: /^[1-9]\d*$/, message: '人数应为正整数', trigger: 'change' }
-  ],
   equipment: [{ required: true, message: '设备需求不能为空' }]
 })
 const formRef = ref() // 表单 Ref
@@ -399,21 +401,20 @@ const onMemberSelected = (userList: UserVO[]) => {
   originalMemberData.value = userList
   formData.value.joinUserList = userList.map((u) => ({ userNickName: u.nickname, userId: u.id }))
   memberItemRef.value?.validate?.('change')
-  syncCapacity(userList.length)
 }
 // 移除与会人员
 const onMemberRemove = (user: JoinUser) => {
   remove(formData.value.joinUserList, (u) => u.userId === user.userId)
   remove(originalMemberData.value, (u) => u.id === user.userId)
   memberItemRef.value?.validate?.('change')
-  syncCapacity(formData.value.joinUserList.length)
 }
-// 同步会议总人数
-const syncCapacity = (num: number) => {
-  if (num > (formData.value.capacity || 0)) {
-    formData.value.capacity = num
-  }
-}
+watch(
+  [() => formData.value.joinUserList, () => formData.value.otherAttend],
+  ([internalUsers, externalUsers]) => {
+    formData.value.capacity = internalUsers.length + externalUsers.length
+  },
+  { deep: true }
+)
 // #endregion
 
 // #region 设备选择相关
@@ -471,7 +472,8 @@ const resetForm = () => {
     meetingRoomId: undefined as unknown as number,
     meetingRoomName: '',
     joinUserList: [],
-    capacity: undefined as unknown as number,
+    capacity: 0,
+    otherAttend: [],
     equipment: [],
     remark: ''
   }
@@ -490,7 +492,7 @@ const open = async (type: string, id?: number) => {
   if (id) {
     formLoading.value = true
     try {
-      const { startTime, endTime, dateMeeting, ...rest } =
+      const { startTime, endTime, dateMeeting, equipment, ...rest } =
         await MeetingSubscribeApi.getMeetingSubscribe(id)
       // 处理部分数据：
       // @ts-ignore
@@ -506,6 +508,7 @@ const open = async (type: string, id?: number) => {
       Object.assign(formData.value, {
         dateMeeting: date,
         range: [start, end],
+        equipment: equipment.length ? equipment : [-1],
         ...rest
       })
     } finally {
