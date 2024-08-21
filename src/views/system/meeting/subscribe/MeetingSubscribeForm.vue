@@ -213,6 +213,7 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import { remove } from 'lodash-es'
+import { ElMessageBox } from 'element-plus'
 import { TimeRangePicker } from '@/components/TimeRangePicker'
 import { EditableTagGroup as TagGroup } from '@/components/EditableTagGroup'
 import {
@@ -430,12 +431,33 @@ const emit = defineEmits(['success']) // 定义 success 事件，用于操作成
 const submitForm = async () => {
   // 校验表单
   await formRef.value.validate()
+
+  const { range, equipment, ...rest } = formData.value
+  const [startTime, endTime] = range
+
+  // 校验时间是否过期
+  if (dayjs().isAfter(dayjs(endTime.label, 'HH:mm'))) {
+    ElMessageBox.confirm('会议时间已过期，请重新选择会议室与时间段哦~ 😀', '系统提示', {
+      type: 'error',
+      showClose: false,
+      showCancelButton: false,
+      closeOnClickModal: false
+    }).then(() => {
+      Object.assign(formData.value, {
+        range: [
+          { label: '', value: -1 },
+          { label: '', value: -1 }
+        ],
+        meetingRoomId: undefined as unknown as number,
+        meetingRoomName: ''
+      })
+    })
+    return
+  }
+
   // 提交请求
   formLoading.value = true
   try {
-    const { range, equipment, ...rest } = formData.value
-    const [startTime, endTime] = range
-
     const data: MeetingSubscribeVO = {
       equipment: equipment.includes(-1) ? [] : equipment,
       startTime: startTime.value,
@@ -492,7 +514,7 @@ const open = async (type: string, id?: number) => {
   if (id) {
     formLoading.value = true
     try {
-      const { startTime, endTime, dateMeeting, equipment, ...rest } =
+      const { startTime, endTime, dateMeeting, equipment, otherAttend, ...rest } =
         await MeetingSubscribeApi.getMeetingSubscribe(id)
       // 处理部分数据：
       // @ts-ignore
@@ -509,6 +531,7 @@ const open = async (type: string, id?: number) => {
         dateMeeting: date,
         range: [start, end],
         equipment: equipment.length ? equipment : [-1],
+        otherAttend: otherAttend || [],
         ...rest
       })
     } finally {

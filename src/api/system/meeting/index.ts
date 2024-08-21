@@ -88,6 +88,7 @@ export interface MeetingSubscribeVO {
   startTime: number // 开始时间（timeKey）
   endTime: number // 结束时间（timeKey）
   capacity: number // 与会人数
+  otherAttend: string[] // 外部与会人员
   joinUserList: JoinUser[] // 参与会议的用户 id
   equipment: (string | number)[] // 设备
   remark: string // 备注
