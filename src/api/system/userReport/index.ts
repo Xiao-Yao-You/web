@@ -60,5 +60,9 @@ export const UserReportApi = {
   // 导出用户汇报 Excel
   exportUserReport: async (params) => {
     return await request.download({ url: `/user-report/export-excel`, params })
+  },
+
+  getSummaryData: async (params: any) => {
+    return request.get({ url: `/user-report/summary`, params })
   }
 }

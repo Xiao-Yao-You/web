@@ -345,7 +345,6 @@ const remoteMethod = async (query: string) => {
     list.value = list.value.concat(userMap)
     nextTick(() => {
       const tempUser = filterDuplicateObjects(list.value)
-      console.log('--------------------------tempUser', tempUser)
       setTimeout(() => {
         loading.value = false
         reportObjects.value = tempUser.filter((item) => {
