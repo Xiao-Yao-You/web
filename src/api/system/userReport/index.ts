@@ -1,4 +1,5 @@
 import request from '@/config/axios'
+import { type } from '../../../types/auto-imports'
 
 // 用户汇报 VO
 export interface UserReportVO {
@@ -28,6 +29,25 @@ export interface workPlan {
   content: string
   estimatedTime: string
   needSource: string
+}
+//工作
+export interface reportAttention {
+  userId: number
+  userNickName
+  reply: string
+  type: number
+  jobId: number
+  connectContent: string
+  deptId: string
+  dateReport: string
+  content: string
+  transferRemark: string
+  replyUserId: number
+  replyUserNickName: string
+  situation: string
+  replyStatus: string
+  jobScheduleId: number
+  reportScheduleId: number
 }
 
 // 用户汇报 API
@@ -64,5 +84,20 @@ export const UserReportApi = {
 
   getSummaryData: async (params: any) => {
     return request.get({ url: `/user-report/summary`, params })
+  },
+
+  //新增关注记录
+  createReportAttention: async (data: reportAttention) => {
+    return await request.post({ url: `/report-attention/create`, data })
+  },
+
+  //新增关注记录列表
+  getReportAttentionPage: async (params: any) => {
+    return await request.get({ url: `/report-attention/queryAttentionPage`, params })
+  },
+
+  //新增跟进记录列表
+  getReportFollowPage: async (params: any) => {
+    return await request.get({ url: `/report-attention/queryFollowPage`, params })
   }
 }

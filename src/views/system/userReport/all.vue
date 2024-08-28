@@ -98,7 +98,7 @@
       <el-table-column label="操作" align="center">
         <template #default="scope">
           <el-button link type="primary" @click="openForm('view', scope.row.id)"> 详情 </el-button>
-          <el-button link type="primary"> 补交 </el-button>
+          <!-- <el-button link type="primary"> 补交 </el-button> -->
           <el-button
             link
             type="primary"

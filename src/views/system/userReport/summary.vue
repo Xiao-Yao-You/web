@@ -43,8 +43,16 @@
         <el-table-column label="完成情况" align="center" prop="situation" />
         <el-table-column label="关联事项" align="center" prop="connectContent" />
         <el-table-column label="操作" align="center">
-          <template #default="">
-            <el-button link type="primary"> 关注 </el-button>
+          <template #default="scope">
+            <el-button
+              link
+              type="primary"
+              @click="openHandleFollowForm(scope.row)"
+              v-hasPermi="['hk:report-attention:create']"
+              v-if="scope.row.attentionUserId == '' || scope.row.attentionUserId == null"
+            >
+              关注
+            </el-button>
             <el-button link type="primary"> 详情 </el-button>
           </template>
         </el-table-column>
@@ -57,6 +65,10 @@
         @pagination="getList"
       />
     </ContentWrap>
+    <HandleFollow ref="handleFollowRef" />
+    以下人员暂未提交本日工作汇报： <br />
+    <span v-if="notSubmitUserList.length != 0"> {{ notSubmitUserList.join(',') }} </span>
+    <span v-if="notSubmitUserList.length == 0"> 暂无统计数据 </span>
   </Dialog>
 </template>
 <script setup lang="ts">
@@ -68,6 +80,7 @@ import { defaultProps, handleTree } from '@/utils/tree'
 import dayjs from 'dayjs'
 import { isArray } from '../../../utils/is'
 import { formatDate } from '../../../utils/formatTime'
+import HandleFollow from './handleFollow.vue'
 import {
   UserReportApi,
   UserReportVO,
@@ -82,6 +95,7 @@ const { t } = useI18n() // 国际化
 const message = useMessage() // 消息弹窗
 const loading = ref(false) // 列表的加载中
 const list = ref<UserReportVO[]>([]) // 列表的数据
+const notSubmitUserList = ref<string[]>([])
 const total = ref(0) // 列表的总页数
 
 const dialogVisible = ref(false) // 弹窗的是否展示
@@ -93,6 +107,7 @@ const userInfo = useUserStore().getUser
 const tableData = ref({})
 
 const formRef = ref() // 表单 Ref
+const handleFollowRef = ref()
 
 const depts = ref<Tree[]>([])
 const reportObjects = ref<any[]>([])
@@ -101,16 +116,36 @@ const queryFormRef = ref() // 搜索的表单
 const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
-  dateReport: ''
+  dateReport: [] as string[]
 })
 
-const queryToday = () => {}
-
-const queryYesterday = () => {}
+/**打开关注的操作抽屉 */
+const openHandleFollowForm = (row) => {
+  handleFollowRef.value.open(row)
+}
 
 /** 搜索按钮操作 */
 const handleQuery = () => {
   queryParams.pageNo = 1
+  getList()
+}
+
+/** 查询今天的汇报 */
+const queryToday = () => {
+  queryParams.pageNo = 1
+  const today = new Date()
+  const todayStr = today.toISOString().split('T')[0]
+  queryParams.dateReport = [todayStr, todayStr]
+  getList()
+}
+/** 查询昨天的汇报 */
+const queryYesterday = () => {
+  queryParams.pageNo = 1
+  const today = new Date()
+  const yesterday = new Date(today)
+  yesterday.setDate(yesterday.getDate() - 1)
+  const yesterdayStr = yesterday.toISOString().split('T')[0]
+  queryParams.dateReport = [yesterdayStr, yesterdayStr]
   getList()
 }
 
@@ -125,6 +160,7 @@ const getList = async () => {
   loading.value = true
   try {
     const data = await UserReportApi.getSummaryData(queryParams)
+    notSubmitUserList.value = data.notSubmitUserNameList
     list.value = data.reportList.list
     total.value = data.reportList.total
   } finally {
