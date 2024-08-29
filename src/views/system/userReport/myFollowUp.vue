@@ -57,7 +57,17 @@
           >
             跟进
           </el-button>
-          <el-button link type="primary"> 转交 </el-button>
+          <el-button
+            link
+            type="primary"
+            @click="openTransferForm(scope.row)"
+            v-if="scope.row.replyStatus == 0"
+          >
+            转交
+          </el-button>
+          <el-button link type="primary" @click="openTransferRecordForm(scope.row)">
+            转交记录
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -69,13 +79,17 @@
       @pagination="getList"
     />
   </ContentWrap>
-  <HandleFollowUpForm ref="handleFollowUpRef" />
+  <HandleFollowUpForm ref="handleFollowUpRef" @success="getList" />
+  <TransferForm ref="handleTransferRef" @success="getList" />
+  <transferRecordForm ref="transferRecordRef" @success="getList" />
 </template>
 
 <script setup lang="ts">
 import { dateFormatter, dateFormatter2 } from '@/utils/formatTime'
 import { UserReportApi, UserReportVO } from '@/api/system/userReport'
 import HandleFollowUpForm from './handleFollowUpForm.vue'
+import TransferForm from './transferForm.vue'
+import transferRecordForm from './transferRecordForm.vue'
 
 /** 用户汇报 列表 */
 defineOptions({ name: 'MyFollow' })
@@ -96,6 +110,21 @@ const queryFormRef = ref() // 搜索的表单
 
 const handleFollowUpRef = ref() // 处理跟进的窗口
 
+const handleTransferRef = ref() // 处理转交的窗口
+
+const transferRecordRef = ref() // 处理转交记录的窗口
+
+/**查询跟进记录 */
+const openTransferRecordForm = async (row: any) => {
+  transferRecordRef.value.open(row)
+}
+
+/** 处理跟进 */
+const openTransferForm = async (row: any) => {
+  handleTransferRef.value.open(row)
+}
+
+/** 处理转交 */
 const openHandleFollowUpForm = async (row: any) => {
   handleFollowUpRef.value.open(row)
 }

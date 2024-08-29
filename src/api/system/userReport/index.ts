@@ -29,12 +29,21 @@ export interface workProgress {
   deptId: string
   deptName: string
 }
+
 //工作计划
 export interface workPlan {
   content: string
   estimatedTime: string
   needSource: string
 }
+
+//转交
+export interface transfer {
+  id: number
+  replyUserId: number
+  transferRemark: string
+}
+
 //工作
 export interface reportAttention {
   id: number
@@ -116,5 +125,15 @@ export const UserReportApi = {
   //创建跟进
   createFollow: async (data: workProgress) => {
     return await request.put({ url: `/report-attention/follow`, data })
+  },
+
+  //转交跟进
+  transfer: async (data: transfer) => {
+    return await request.put({ url: `/report-attention/transfer`, data })
+  },
+
+  // 查询转交记录
+  getTransferRecord: async (id: number) => {
+    return await request.get({ url: `/report-attention/queryTransferList?id=` + id })
   }
 }

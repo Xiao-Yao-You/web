@@ -118,6 +118,8 @@ const submitForm = async () => {
   try {
     const data = formData.value as unknown as workProgress
     UserReportApi.createFollow(data)
+
+    message.success(t('common.createSuccess'))
     dialogVisible.value = false
     // 发送操作成功的事件
     emit('success')
