@@ -7,6 +7,29 @@
       label-width="100px"
       v-loading="formLoading"
     >
+      <el-divider content-position="left">关联事项</el-divider>
+      <el-form-item label="关联事项" prop="content">
+        <el-input
+          type="textarea"
+          v-model="formData.connectContent"
+          maxlength="300"
+          show-word-limit
+          :rows="5"
+          disabled
+        />
+      </el-form-item>
+      <el-divider content-position="left">领导批复</el-divider>
+      <el-form-item label="领导批复" prop="reply">
+        <el-input
+          type="textarea"
+          v-model="formData.reply"
+          maxlength="300"
+          show-word-limit
+          :rows="5"
+          disabled
+        />
+      </el-form-item>
+      <el-divider content-position="left">工作跟进</el-divider>
       <el-form-item label="工作内容" prop="content">
         <el-input
           type="textarea"
@@ -35,18 +58,14 @@
   </Dialog>
 </template>
 <script setup lang="ts">
-import {
-  UserReportApi,
-  UserReportVO,
-  type workProgress,
-  type workPlan
-} from '@/api/system/userReport'
+import { UserReportApi, UserReportVO, type workProgress } from '@/api/system/userReport'
 import { getDeptsByUserId } from '@/api/system/dept'
 import { useUserStore } from '@/store/modules/user'
 import { defaultProps, handleTree } from '@/utils/tree'
 import dayjs from 'dayjs'
 import { isArray } from '../../../utils/is'
 import { formatDate } from '../../../utils/formatTime'
+import { reportAttention } from '../../../api/system/userReport/index'
 
 /** 用户汇报 表单 */
 defineOptions({ name: 'HandleFollowUpForm' })
@@ -74,9 +93,15 @@ const loading = ref(false)
 const list = ref<any[]>([])
 
 /** 打开弹窗 */
-const open = async (id?: number) => {
+const open = async (row: reportAttention) => {
+  formData.value.reply = row.reply
+  formData.value.connectContent = row.content
+  formData.value.id = row.id
+  formData.value.connectId = row.id
+  formData.value.deptId = row.deptId
+  formData.value.deptName = row.deptName
   dialogVisible.value = true
-  dialogTitle.value = '跟进'
+  dialogTitle.value = '工作跟进'
 
   /**查询当前用户所在的部门列表 */
   resetForm()
@@ -88,24 +113,11 @@ const emit = defineEmits(['success']) // 定义 success 事件，用于操作成
 const submitForm = async () => {
   // 校验表单
   await formRef.value.validate()
-  if (
-    formData.value.reportJobScheduleDOList == undefined ||
-    formData.value.reportJobScheduleDOList.length <= 0
-  ) {
-    message.error('请填写工作进度')
-    return
-  }
   // 提交请求
   formLoading.value = true
   try {
-    const data = formData.value as unknown as UserReportVO
-    if (formType.value === 'create') {
-      await UserReportApi.createUserReport(data)
-      message.success(t('common.createSuccess'))
-    } else {
-      await UserReportApi.updateUserReport(data)
-      message.success(t('common.updateSuccess'))
-    }
+    const data = formData.value as unknown as workProgress
+    UserReportApi.createFollow(data)
     dialogVisible.value = false
     // 发送操作成功的事件
     emit('success')
@@ -116,20 +128,6 @@ const submitForm = async () => {
 
 /** 重置表单 */
 const resetForm = () => {
-  formData.value = {
-    id: undefined,
-    userId: userInfo.id,
-    deptId: undefined,
-    dateReport: undefined,
-    commitTime: undefined,
-    remark: undefined,
-    userNickName: userInfo.nickname,
-    checkStatus: undefined,
-    type: undefined,
-    reportJobScheduleDOList: [] as workProgress[],
-    reportJobPlanDOList: [] as workPlan[],
-    reportObject: undefined
-  }
   formRef.value?.resetFields()
 }
 </script>

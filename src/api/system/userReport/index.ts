@@ -20,9 +20,14 @@ export interface UserReportVO {
 
 //工作进度
 export interface workProgress {
+  id: number
   content: string
   situation: string
   connectId: number
+  connectContent: string
+  reply: string
+  deptId: string
+  deptName: string
 }
 //工作计划
 export interface workPlan {
@@ -32,6 +37,7 @@ export interface workPlan {
 }
 //工作
 export interface reportAttention {
+  id: number
   userId: number
   userNickName
   reply: string
@@ -39,6 +45,7 @@ export interface reportAttention {
   jobId: number
   connectContent: string
   deptId: string
+  deptName: string
   dateReport: string
   content: string
   transferRemark: string
@@ -96,8 +103,18 @@ export const UserReportApi = {
     return await request.get({ url: `/report-attention/queryAttentionPage`, params })
   },
 
-  //新增跟进记录列表
+  //查询跟进记录列表
   getReportFollowPage: async (params: any) => {
     return await request.get({ url: `/report-attention/queryFollowPage`, params })
+  },
+
+  //查询跟进记录列表
+  getReportFollowUpUndo: async () => {
+    return await request.get({ url: `/report-attention/queryFollowUndo` })
+  },
+
+  //创建跟进
+  createFollow: async (data: workProgress) => {
+    return await request.put({ url: `/report-attention/follow`, data })
   }
 }

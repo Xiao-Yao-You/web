@@ -36,10 +36,10 @@
         <el-form-item label="关联事项" prop="connectId">
           <el-select
             v-model="progressData.connectId"
-            filterable
             placeholder="请选择需要关联的事项"
             style="width: 100%"
             :disabled="controlType == 'view'"
+            @change="selectConnect"
           >
             <el-option
               v-for="item in options"
@@ -62,6 +62,7 @@
 <script setup lang="ts">
 import { cloneDeep } from 'lodash-es'
 import { type workProgress } from '@/api/system/userReport'
+import { UserReportApi } from '../../../api/system/userReport/index'
 
 /** 工作进度 表单 */
 defineOptions({ name: 'AddWorkProgressForm' })
@@ -78,24 +79,22 @@ const emits = defineEmits<{
   updateprogress: [updateProgress: workProgress]
 }>()
 
-const options = ref([
-  {
-    value: '1',
-    label: 'Option1'
-  },
-  {
-    value: '2',
-    label: 'Option2'
-  }
-])
+const options = ref([] as any)
 
 const progressData = ref({} as workProgress)
+
 /** 操作类型 */
 const controlType = ref('')
 const progressRules = reactive({
   content: [{ required: true, message: '工作内容不能为空', trigger: 'blur' }],
   situation: [{ required: true, message: '完成情况不能为空', trigger: 'blur' }]
 })
+
+/**改变选择 */
+const selectConnect = async (value: any) => {
+  const selectedLabel = options.value.find((option) => option.value === value).label
+  progressData.value.connectContent = selectedLabel
+}
 
 /**提交表单 */
 const submit = async () => {
@@ -118,6 +117,10 @@ const open = async (type: string, process: workProgress) => {
   if (type === 'update' || type === 'view') {
     progressData.value = cloneDeep(process)
   }
+  const data = await UserReportApi.getReportFollowUpUndo()
+  options.value = data.map((item) => {
+    return { value: `${item.id}`, label: `${item.content}` }
+  })
   controlType.value = type
   drawer.value = true
 }

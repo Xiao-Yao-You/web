@@ -53,7 +53,9 @@
             >
               关注
             </el-button>
-            <el-button link type="primary"> 详情 </el-button>
+            <el-button link type="primary" @click="openSummaryDetailForm(scope.row)">
+              详情
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -65,7 +67,8 @@
         @pagination="getList"
       />
     </ContentWrap>
-    <HandleFollow ref="handleFollowRef" />
+    <HandleFollow ref="handleFollowRef" @success="getList" />
+    <SummaryDetail ref="summaryDetailRef" />
     以下人员暂未提交本日工作汇报： <br />
     <span v-if="notSubmitUserList.length != 0"> {{ notSubmitUserList.join(',') }} </span>
     <span v-if="notSubmitUserList.length == 0"> 暂无统计数据 </span>
@@ -81,6 +84,7 @@ import dayjs from 'dayjs'
 import { isArray } from '../../../utils/is'
 import { formatDate } from '../../../utils/formatTime'
 import HandleFollow from './handleFollow.vue'
+import SummaryDetail from './summaryDetail.vue'
 import {
   UserReportApi,
   UserReportVO,
@@ -108,6 +112,7 @@ const tableData = ref({})
 
 const formRef = ref() // 表单 Ref
 const handleFollowRef = ref()
+const summaryDetailRef = ref()
 
 const depts = ref<Tree[]>([])
 const reportObjects = ref<any[]>([])
@@ -118,6 +123,11 @@ const queryParams = reactive({
   pageSize: 10,
   dateReport: [] as string[]
 })
+
+/**打开关注详情的操作抽屉 */
+const openSummaryDetailForm = (row) => {
+  summaryDetailRef.value.open(row)
+}
 
 /**打开关注的操作抽屉 */
 const openHandleFollowForm = (row) => {

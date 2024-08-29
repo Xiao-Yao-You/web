@@ -56,6 +56,8 @@ const formLoading = ref(false) // 表单的加载中：1）修改时的数据加
 const direction = ref<DrawerProps['direction']>('rtl')
 const drawer = ref(false)
 const handleFollowRef = ref()
+/** 提交表单 */
+const emit = defineEmits(['success']) // 定义 success 事件，用于操作成功后的回调
 
 const formData = ref({} as reportAttention)
 /** 操作类型 */
@@ -72,6 +74,7 @@ const submit = async () => {
   await UserReportApi.createReportAttention(data)
   message.success('关注成功')
   formLoading.value = true
+  emit('success')
   formData.value = {} as reportAttention
   drawer.value = false
 }

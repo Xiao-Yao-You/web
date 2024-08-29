@@ -40,9 +40,21 @@
 
       <el-table-column label="批复" align="center" prop="reply" />
 
+      <el-table-column label="跟进状态" align="center" prop="replyStatus">
+        <template #default="scope">
+          <el-tag type="success" v-if="scope.row.replyStatus == 0">未跟进</el-tag>
+          <el-tag type="warning" v-if="scope.row.replyStatus == 1">已跟进</el-tag>
+        </template>
+      </el-table-column>
+
       <el-table-column label="操作" align="center">
         <template #default="scope">
-          <el-button link type="primary" @click="openHandleFollowUpForm(scope.row)">
+          <el-button
+            link
+            type="primary"
+            @click="openHandleFollowUpForm(scope.row)"
+            v-if="scope.row.replyStatus == 0"
+          >
             跟进
           </el-button>
           <el-button link type="primary"> 转交 </el-button>
@@ -85,7 +97,7 @@ const queryFormRef = ref() // 搜索的表单
 const handleFollowUpRef = ref() // 处理跟进的窗口
 
 const openHandleFollowUpForm = async (row: any) => {
-  handleFollowUpRef.value.open()
+  handleFollowUpRef.value.open(row)
 }
 
 /** 查询列表 */
