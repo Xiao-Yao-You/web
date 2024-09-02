@@ -55,8 +55,15 @@
       >
       <el-table-column label="跟进情况" align="situation" prop="content" />
       <el-table-column label="操作" align="center">
-        <template #default="">
-          <el-button link type="primary"> 查看跟进 </el-button>
+        <template #default="scope">
+          <el-button
+            link
+            type="primary"
+            @click="viewFollow(scope.row.id)"
+            :disabled="scope.row.replyStatus == 0"
+          >
+            查看跟进
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -68,11 +75,13 @@
       @pagination="getList"
     />
   </ContentWrap>
+  <ViewWorkProgressForm ref="viewWorkProgressRef" />
 </template>
 
 <script setup lang="ts">
 import { dateFormatter, dateFormatter2 } from '@/utils/formatTime'
 import { UserReportApi, UserReportVO } from '@/api/system/userReport'
+import ViewWorkProgressForm from './viewWorkProgressForm.vue'
 
 /** 用户汇报 列表 */
 defineOptions({ name: 'MyFollow' })
@@ -90,6 +99,7 @@ const queryParams = reactive({
   reportUserNickName: undefined
 })
 const queryFormRef = ref() // 搜索的表单
+const viewWorkProgressRef = ref()
 
 /** 查询列表 */
 const getList = async () => {
@@ -101,6 +111,9 @@ const getList = async () => {
   } finally {
     loading.value = false
   }
+}
+const viewFollow = async (id: number) => {
+  viewWorkProgressRef.value.open(id)
 }
 
 /** 搜索按钮操作 */
