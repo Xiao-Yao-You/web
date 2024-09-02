@@ -116,6 +116,10 @@
             type="danger"
             @click="handleDelete(scope.row.id)"
             v-hasPermi="['hk:user-report:delete']"
+            v-if="
+              new Date(scope.row.createTime).getUTCDate() == new Date().getUTCDate() &&
+              userInfo.id === scope.row.userId
+            "
           >
             删除
           </el-button>
