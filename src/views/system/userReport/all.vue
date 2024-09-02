@@ -73,12 +73,12 @@
           <el-tag type="danger" v-if="scope.row.type == 2">缺</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="状态" align="center" prop="checkStatus">
+      <!-- <el-table-column label="状态" align="center" prop="checkStatus">
         <template #default="scope">
           <el-tag type="primary" v-if="scope.row.checkStatus == 0">未阅</el-tag>
           <el-tag type="warning" v-if="scope.row.checkStatus == 1">已阅</el-tag>
         </template></el-table-column
-      >
+      > -->
 
       <!-- <el-table-column label="备注" align="center" prop="remark" /> -->
       <el-table-column
@@ -104,7 +104,7 @@
             type="primary"
             @click="openForm('update', scope.row.id)"
             v-hasPermi="['hk:user-report:update']"
-            v-if="new Date(scope.row.createtime) == new Date()"
+            v-if="new Date(scope.row.createTime).getUTCDate() == new Date().getUTCDate()"
           >
             编辑
           </el-button>
