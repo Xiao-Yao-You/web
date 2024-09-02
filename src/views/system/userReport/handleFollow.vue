@@ -18,7 +18,18 @@
             maxlength="500"
             show-word-limit
             type="textarea"
-            :rows="10"
+            :rows="5"
+            disabled
+          />
+        </el-form-item>
+        <el-form-item label="工作进度" prop="situation">
+          <el-input
+            v-model="formData.situation"
+            placeholder="请输入工作进度"
+            maxlength="500"
+            show-word-limit
+            type="textarea"
+            :rows="5"
             disabled
           />
         </el-form-item>
@@ -87,6 +98,7 @@ const open = async (row: any) => {
 
 const attentionRules = reactive({
   content: [{ required: true, message: '工作内容不能为空', trigger: 'blur' }],
+  situation: [{ required: true, message: '工作进度不能为空  ', trigger: 'blur' }],
   reply: [{ required: true, message: '批复内容不能为空  ', trigger: 'blur' }]
 })
 
