@@ -104,7 +104,10 @@
             type="primary"
             @click="openForm('update', scope.row.id)"
             v-hasPermi="['hk:user-report:update']"
-            v-if="new Date(scope.row.createTime).getUTCDate() == new Date().getUTCDate()"
+            v-if="
+              new Date(scope.row.createTime).getUTCDate() == new Date().getUTCDate() &&
+              userInfo.id === scope.row.userId
+            "
           >
             编辑
           </el-button>
@@ -139,6 +142,8 @@ import download from '@/utils/download'
 import { UserReportApi, UserReportVO } from '@/api/system/userReport'
 import UserReportForm from './UserReportForm.vue'
 import Summary from './summary.vue'
+import { useUserStore } from '@/store/modules/user'
+const userInfo = useUserStore().getUser
 
 /** 用户汇报 列表 */
 defineOptions({ name: 'UserReport' })
