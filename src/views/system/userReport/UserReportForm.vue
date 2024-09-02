@@ -206,8 +206,6 @@ import AddWorkPlanForm from './addWorkPlanForm.vue'
 import { useUserStore } from '@/store/modules/user'
 import { defaultProps, handleTree } from '@/utils/tree'
 import dayjs from 'dayjs'
-import { isArray } from '../../../utils/is'
-import { formatDate } from '../../../utils/formatTime'
 
 /** 用户汇报 表单 */
 defineOptions({ name: 'UserReportForm' })
@@ -225,7 +223,7 @@ const formData = ref({
   id: undefined,
   userId: userInfo.id,
   deptId: undefined,
-  dateReport: undefined,
+  dateReport: dayjs(new Date()).format('YYYY-MM-DD'),
   commitTime: undefined,
   remark: undefined,
   userNickName: userInfo.nickname,
@@ -425,7 +423,7 @@ const resetForm = () => {
     id: undefined,
     userId: userInfo.id,
     deptId: undefined,
-    dateReport: undefined,
+    dateReport: dayjs(new Date()).format('YYYY-MM-DD'),
     commitTime: undefined,
     remark: undefined,
     userNickName: userInfo.nickname,

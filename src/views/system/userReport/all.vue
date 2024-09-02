@@ -104,6 +104,7 @@
             type="primary"
             @click="openForm('update', scope.row.id)"
             v-hasPermi="['hk:user-report:update']"
+            v-if="new Date(scope.row.createtime) == new Date()"
           >
             编辑
           </el-button>
