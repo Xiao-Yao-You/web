@@ -135,5 +135,10 @@ export const UserReportApi = {
   // 查询转交记录
   getTransferRecord: async (id: number) => {
     return await request.get({ url: `/report-attention/queryTransferList?id=` + id })
+  },
+
+  // 查询跟进
+  getFollowRecord: async (id: number) => {
+    return await request.get({ url: `/user-report/getScheduleInfo?id=` + id })
   }
 }
