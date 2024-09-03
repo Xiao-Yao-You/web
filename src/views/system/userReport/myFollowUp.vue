@@ -62,6 +62,7 @@
             type="primary"
             @click="openTransferForm(scope.row)"
             v-if="scope.row.replyStatus == 0"
+            :disabled="new Date(scope.row.createTime).getUTCDate() == new Date().getUTCDate()"
           >
             转交
           </el-button>
