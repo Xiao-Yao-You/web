@@ -14,7 +14,7 @@
           </el-form-item>
         </el-col>
         <el-col :lg="12">
-          <el-form-item label="部门" prop="deptId">
+          <el-form-item label="部门" prop="deptId" v-if="formType != 'view'">
             <el-tree-select
               v-model="formData.deptId"
               :data="depts"
@@ -22,8 +22,10 @@
               check-strictly
               node-key="id"
               placeholder="请选择归属部门"
-              :disabled="formType === 'view'"
             />
+          </el-form-item>
+          <el-form-item label="部门" prop="deptName" v-if="formType === 'view'">
+            <el-input v-model="formData.deptName" placeholder="部门" disabled />
           </el-form-item>
         </el-col>
       </el-row>
@@ -223,6 +225,7 @@ const formData = ref({
   id: undefined,
   userId: userInfo.id,
   deptId: undefined,
+  deptName: undefined,
   dateReport: dayjs(new Date()).format('YYYY-MM-DD'),
   commitTime: undefined,
   remark: undefined,
@@ -237,6 +240,7 @@ const formRules = reactive({
   userNickName: [{ required: true, message: '汇报人不能为空', trigger: 'blur' }],
   reportObject: [{ required: true, message: '汇报对象不能为空', trigger: 'blur' }],
   deptId: [{ required: true, message: '部门不能为空', trigger: 'blur' }],
+  deptName: [{ required: true, message: '部门不能为空', trigger: 'blur' }],
   dateReport: [{ required: true, message: '汇报日期不能为空', trigger: 'blur' }],
   checkStatus: [{ required: true, message: '状态不能为空', trigger: 'blur' }],
   type: [{ required: true, message: '类型不能为空', trigger: 'change' }]
@@ -431,7 +435,8 @@ const resetForm = () => {
     type: undefined,
     reportJobScheduleDOList: [] as workProgress[],
     reportJobPlanDOList: [] as workPlan[],
-    reportObject: undefined
+    reportObject: undefined,
+    deptName: undefined
   }
   formRef.value?.resetFields()
 }
