@@ -33,7 +33,7 @@
       <el-table-column
         label="汇报日期"
         align="center"
-        prop="createTime"
+        prop="dateReport"
         :formatter="dateFormatter2"
       />
       <el-table-column label="关注人" align="center" prop="userNickName" />
@@ -54,7 +54,7 @@
             type="primary"
             @click="openHandleFollowUpForm(scope.row)"
             v-if="scope.row.replyStatus == 0"
-            :disabled="new Date(scope.row.createTime).getUTCDate() == new Date().getUTCDate()"
+            :disabled="isSameOrBefore(scope.row.dateReport)"
           >
             跟进
           </el-button>
@@ -86,11 +86,15 @@
 </template>
 
 <script setup lang="ts">
+import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
 import { dateFormatter, dateFormatter2 } from '@/utils/formatTime'
 import { UserReportApi, UserReportVO } from '@/api/system/userReport'
 import HandleFollowUpForm from './handleFollowUpForm.vue'
 import TransferForm from './transferForm.vue'
 import transferRecordForm from './transferRecordForm.vue'
+
+dayjs.extend(customParseFormat)
 
 /** 用户汇报 列表 */
 defineOptions({ name: 'MyFollow' })
@@ -152,6 +156,11 @@ const handleQuery = () => {
 const resetQuery = () => {
   queryFormRef.value.resetFields()
   handleQuery()
+}
+
+const isSameOrBefore = (dateReport: number[]) => {
+  // @ts-ignore
+  return dayjs().isSameOrBefore(dayjs(dateReport.join('-'), 'YYYY-M-D'), 'day')
 }
 
 /** 初始化 **/
