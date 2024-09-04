@@ -140,5 +140,10 @@ export const UserReportApi = {
   // 查询跟进
   getFollowRecord: async (id: number) => {
     return await request.get({ url: `/user-report/getScheduleInfo?id=` + id })
+  },
+
+  // 取消关注
+  deleteFollow: async (id: number) => {
+    return await request.delete({ url: `/report-attention/delete?id=` + id })
   }
 }

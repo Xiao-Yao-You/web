@@ -64,6 +64,14 @@
           >
             查看跟进
           </el-button>
+          <el-button
+            link
+            type="primary"
+            @click="deleteFollow(scope.row.id)"
+            v-if="scope.row.replyStatus == 0"
+          >
+            取消关注
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -100,6 +108,18 @@ const queryParams = reactive({
 })
 const queryFormRef = ref() // 搜索的表单
 const viewWorkProgressRef = ref()
+
+const deleteFollow = async (id: number) => {
+  try {
+    // 取消的二次确认
+    await message.confirm('是否确认取消关注当前事项?', '取消关注')
+    // 发起取消
+    await UserReportApi.deleteFollow(id)
+    message.success('取消成功')
+    // 刷新列表
+    await getList()
+  } catch {}
+}
 
 /** 查询列表 */
 const getList = async () => {
