@@ -46,7 +46,7 @@
         :formatter="dateFormatter2"
       />
       <el-table-column label="工作内容" align="center" prop="content" />
-      <el-table-column label="关联事件" align="connectContent" prop="commitTime" width="180px" />
+      <el-table-column label="关联事件" align="center" prop="connectContent" width="180px" />
       <el-table-column label="跟进状态" align="center" prop="replyStatus" width="180px">
         <template #default="scope">
           <el-tag type="primary" v-if="scope.row.replyStatus == 0">未跟进</el-tag>

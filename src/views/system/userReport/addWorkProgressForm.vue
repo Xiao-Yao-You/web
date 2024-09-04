@@ -33,7 +33,7 @@
             :disabled="controlType == 'view'"
           />
         </el-form-item>
-        <el-form-item label="关联事项" prop="connectId">
+        <el-form-item label="关联事项" prop="connectId" v-if="controlType != 'view'">
           <el-select
             v-model="progressData.connectId"
             placeholder="请选择需要关联的事项"
@@ -48,6 +48,17 @@
               :value="item.value"
             />
           </el-select>
+        </el-form-item>
+        <el-form-item label="关联事项" prop="connectContent" v-if="controlType == 'view'">
+          <el-input
+            type="textarea"
+            v-model="progressData.connectContent"
+            placeholder="暂无关联事项"
+            maxlength="500"
+            show-word-limit
+            :rows="10"
+            :disabled="controlType == 'view'"
+          />
         </el-form-item>
       </el-form>
     </template>
