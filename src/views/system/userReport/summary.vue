@@ -131,7 +131,7 @@ const openSummaryDetailForm = (row) => {
 
 /**打开关注的操作抽屉 */
 const openHandleFollowForm = (row) => {
-  handleFollowRef.value.open(row)
+  handleFollowRef.value.open(row, 1)
 }
 
 /** 搜索按钮操作 */

@@ -91,6 +91,18 @@
               <el-button
                 link
                 type="primary"
+                v-if="
+                  formType == 'view' &&
+                  formData.reportObject.includes(userInfo.id) &&
+                  scope.row.attentionId == null
+                "
+                @click="openFollow(scope.row)"
+              >
+                关注
+              </el-button>
+              <el-button
+                link
+                type="primary"
                 @click="openUpdateProgressDrawer(scope.$index)"
                 v-if="formType != 'view'"
               >
@@ -192,6 +204,7 @@
       @updateprogress="updateWorkProgress"
     />
     <AddWorkPlanForm ref="addPlanFormRef" @addplan="addWorkPlan" @updateplan="updateWorkPlan" />
+    <HandleFollow ref="handleFollwRef" @success="resetData" />
   </Dialog>
 </template>
 <script setup lang="ts">
@@ -205,9 +218,11 @@ import { getDeptsByUserId } from '@/api/system/dept'
 import { getAll } from '@/api/system/user'
 import AddWorkProgressForm from './addWorkProgressForm.vue'
 import AddWorkPlanForm from './addWorkPlanForm.vue'
+import HandleFollow from './handleFollow.vue'
 import { useUserStore } from '@/store/modules/user'
 import { defaultProps, handleTree } from '@/utils/tree'
 import dayjs from 'dayjs'
+import { includes } from 'lodash-es'
 
 /** 用户汇报 表单 */
 defineOptions({ name: 'UserReportForm' })
@@ -234,7 +249,7 @@ const formData = ref({
   type: undefined,
   reportJobScheduleDOList: [] as workProgress[],
   reportJobPlanDOList: [] as workPlan[],
-  reportObject: undefined
+  reportObject: [] as number[]
 })
 const formRules = reactive({
   userNickName: [{ required: true, message: '汇报人不能为空', trigger: 'blur' }],
@@ -248,6 +263,13 @@ const formRules = reactive({
 const formRef = ref() // 表单 Ref
 const addProgressFormRef = ref()
 const addPlanFormRef = ref()
+
+const handleFollwRef = ref()
+
+/**打开关注窗口 */
+const openFollow = async (row: any) => {
+  handleFollwRef.value.open(row, 2)
+}
 
 /**限制可选汇报日期 */
 const disabledDate = (data: Date) => {
@@ -357,9 +379,11 @@ const remoteMethod = async (query: string) => {
   }
 }
 
+const formId = ref(0)
 /** 打开弹窗 */
 const open = async (type: string, id?: number) => {
   dialogVisible.value = true
+
   //reportObjects.value = []
   if (type == 'view') {
     dialogTitle.value = '详情'
@@ -374,6 +398,7 @@ const open = async (type: string, id?: number) => {
   resetForm()
   // 修改时，设置数据
   if (id) {
+    formId.value = id
     formLoading.value = true
     try {
       const res = await UserReportApi.getUserReport(id)
@@ -388,6 +413,17 @@ const open = async (type: string, id?: number) => {
     }
   }
 }
+
+const resetData = async () => {
+  const res = await UserReportApi.getUserReport(formId.value)
+  res.dateReport = dayjs(res.dateReport).format('YYYY-MM-DD')
+  list.value = res.userList.map((item) => {
+    return { value: item.id, label: `${item.nickname}-${item.username}` }
+  })
+  reportObjects.value = list.value
+  formData.value = res
+}
+
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 
 /** 提交表单 */
@@ -435,7 +471,7 @@ const resetForm = () => {
     type: undefined,
     reportJobScheduleDOList: [] as workProgress[],
     reportJobPlanDOList: [] as workPlan[],
-    reportObject: undefined,
+    reportObject: [] as number[],
     deptName: undefined
   }
   formRef.value?.resetFields()

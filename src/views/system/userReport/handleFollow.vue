@@ -55,8 +55,6 @@
 </template>
 <script setup lang="ts">
 import { type reportAttention, UserReportApi } from '@/api/system/userReport'
-import { cloneDeep } from 'lodash-es'
-
 /** 工作进度 表单 */
 defineOptions({ name: 'HandleFollow' })
 
@@ -68,11 +66,9 @@ const direction = ref<DrawerProps['direction']>('rtl')
 const drawer = ref(false)
 const handleFollowRef = ref()
 /** 提交表单 */
-const emit = defineEmits(['success']) // 定义 success 事件，用于操作成功后的回调
+const emit = defineEmits(['success', 'resetData']) // 定义 success 事件，用于操作成功后的回调
 
 const formData = ref({} as reportAttention)
-/** 操作类型 */
-const controlType = ref('')
 
 /**提交表单 */
 const submit = async () => {
@@ -86,13 +82,17 @@ const submit = async () => {
   message.success('关注成功')
   formLoading.value = true
   emit('success')
+  emit('resetData')
   formData.value = {} as reportAttention
   drawer.value = false
 }
 
 /** 打开抽屉 */
-const open = async (row: any) => {
+const open = async (row: any, type: number) => {
   formData.value = row
+  if (type == 2) {
+    formData.value.reportScheduleId = row.id
+  }
   drawer.value = true
 }
 
