@@ -11,7 +11,7 @@
         <template #header>
           <div class="flex justify-between">
             <span style="color: var(--el-disabled-text-color)">
-              点击右侧按钮，选择公司内部人员
+              点击右侧按钮，选择需要汇报的人员
             </span>
             <el-button type="primary" @click="openMemberSelector"> 选择 </el-button>
           </div>
@@ -72,7 +72,7 @@ const formData = ref({
 const formRef = ref()
 
 const formRules = reactive({
-  joinUserList: [{ required: true, message: '摄制人员数不能为空', trigger: 'change' }]
+  joinUserList: [{ required: true, message: '设置人员数不能为空', trigger: 'change' }]
 })
 
 // #region 与会人员相关
@@ -121,7 +121,6 @@ const open = async () => {
         nickname: item.reportUserNickName
       }
     })
-    console.log(originalMemberData.value)
   } finally {
     formLoading.value = false
   }
