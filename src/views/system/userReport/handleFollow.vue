@@ -91,6 +91,7 @@ const submit = async () => {
 const open = async (row: any, type: number) => {
   formData.value = row
   if (type == 2) {
+    //2:从汇报详情中关注，1：从每日汇总中关注
     formData.value.reportScheduleId = row.id
   }
   drawer.value = true
