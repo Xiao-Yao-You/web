@@ -75,22 +75,10 @@
   </Dialog>
 </template>
 <script setup lang="ts">
-import { getDeptsByUserId } from '@/api/system/dept'
-import { dateFormatter, dateFormatter2 } from '@/utils/formatTime'
-import { getAll } from '@/api/system/user'
 import { useUserStore } from '@/store/modules/user'
-import { defaultProps, handleTree } from '@/utils/tree'
-import dayjs from 'dayjs'
-import { isArray } from '../../../utils/is'
-import { formatDate } from '../../../utils/formatTime'
 import HandleFollow from './handleFollow.vue'
 import SummaryDetail from './summaryDetail.vue'
-import {
-  UserReportApi,
-  UserReportVO,
-  type workProgress,
-  type workPlan
-} from '@/api/system/userReport'
+import { UserReportApi, UserReportVO } from '@/api/system/userReport'
 
 /** 用户汇报汇总 窗口 */
 defineOptions({ name: 'UserReportForm' })
