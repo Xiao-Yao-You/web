@@ -222,7 +222,6 @@ import HandleFollow from './handleFollow.vue'
 import { useUserStore } from '@/store/modules/user'
 import { defaultProps, handleTree } from '@/utils/tree'
 import dayjs from 'dayjs'
-import { includes } from 'lodash-es'
 
 /** 用户汇报 表单 */
 defineOptions({ name: 'UserReportForm' })

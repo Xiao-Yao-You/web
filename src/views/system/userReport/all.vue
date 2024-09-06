@@ -51,6 +51,9 @@
           <!-- v-hasPermi="['hk:user-summary:query']" -->
           <Icon icon="ep:select" class="mr-5px" /> 每日汇总
         </el-button>
+        <el-button type="warning" plain @click="openSettingPersonnel">
+          <Icon icon="ep:setting" class="mr-5px" /> 人员设置
+        </el-button>
       </el-form-item>
     </el-form>
   </ContentWrap>
@@ -137,6 +140,7 @@
 
   <!-- 表单弹窗：添加/修改 -->
   <UserReportForm ref="formRef" @success="getList" />
+  <SettingPersonnelForm ref="settingPersionnelRef" />
   <Summary ref="summaryRef" />
 </template>
 
@@ -147,6 +151,7 @@ import { UserReportApi, UserReportVO } from '@/api/system/userReport'
 import UserReportForm from './UserReportForm.vue'
 import Summary from './summary.vue'
 import { useUserStore } from '@/store/modules/user'
+import SettingPersonnelForm from './settingPersonnel.vue'
 const userInfo = useUserStore().getUser
 
 /** 用户汇报 列表 */
@@ -167,6 +172,12 @@ const queryParams = reactive({
 const queryFormRef = ref() // 搜索的表单
 const exportLoading = ref(false) // 导出的加载中
 const summaryRef = ref() //汇报汇总窗口
+const settingPersionnelRef = ref() //人员设置窗口
+
+/**打开人员设置窗口 */
+const openSettingPersonnel = async () => {
+  settingPersionnelRef.value.open()
+}
 
 /** 打开工作汇报汇总窗口 */
 const openSummaryForm = () => {

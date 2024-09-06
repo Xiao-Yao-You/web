@@ -66,6 +66,13 @@ export interface reportAttention {
   reportScheduleId: number
 }
 
+export interface reportObjectSaveReqVOs {
+  userId: number
+  reportUserId: number
+  userNickName: string
+  reportUserNickName: string
+}
+
 // 用户汇报 API
 export const UserReportApi = {
   // 查询用户汇报分页
@@ -145,5 +152,15 @@ export const UserReportApi = {
   // 取消关注
   deleteFollow: async (id: number) => {
     return await request.delete({ url: `/report-attention/delete?id=` + id })
+  },
+
+  // 设置需要提交日报的人员
+  createReportUsers: async (data: reportObjectSaveReqVOs[]) => {
+    return await request.post({ url: `report-object/batchCreate`, data })
+  },
+
+  // 查询所有设置的对象
+  getAllReportUser: async () => {
+    return await request.get({ url: `report-object/page` })
   }
 }
