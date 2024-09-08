@@ -3,12 +3,12 @@
 import { ElTree, ElTable, ElMessageBox } from 'element-plus'
 import { getSimpleDeptList } from '@/api/system/dept'
 import { getUserPage, type UserVO } from '@/api/system/user'
-import { defaultProps, handleTree } from '@/utils/tree'
+import { handleTree } from '@/utils/tree'
 import { useIcon } from '@/hooks/web/useIcon'
 import { remove } from 'lodash-es'
 import { isUnDef } from '@/utils/is'
 
-// 顶层节点 id （南通信改，先写死）
+// 顶层节点 id （恒科信改，先写死）
 const TOP_LEVEL_KEY = 499
 
 interface QueryParams extends PageParam {
@@ -240,7 +240,7 @@ defineExpose({ open, clear: resetData })
             :data="deptList"
             accordion
             highlight-current
-            :props="defaultProps"
+            :props="{ label: 'name', children: 'children' }"
             :filter-node-method="filterNode"
             :default-expanded-keys="expandedKeys"
             :default-checked-keys="checkedKeys"
@@ -272,7 +272,7 @@ defineExpose({ open, clear: resetData })
         <!-- table height = 400(wrapper 的总高) - 顶部 input 的高(50) - 底部 pagination 的高(32) -->
         <el-table
           ref="tableRef"
-          row-key="username"
+          row-key="id"
           :data="memberList"
           height="310px"
           class="w-full"
