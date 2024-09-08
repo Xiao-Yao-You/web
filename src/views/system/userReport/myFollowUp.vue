@@ -54,8 +54,8 @@
             type="primary"
             @click="openHandleFollowUpForm(scope.row)"
             v-if="scope.row.replyStatus == 0"
-            :disabled="isSameOrBefore(scope.row.dateReport)"
           >
+            <!-- :disabled="isSameOrBefore(scope.row.dateReport)" -->
             跟进
           </el-button>
           <el-button
@@ -131,6 +131,11 @@ const openTransferForm = async (row: any) => {
 
 /** 处理转交 */
 const openHandleFollowUpForm = async (row: any) => {
+  /**当天的无法直接跟进 */
+  if (isSameOrBefore(row.dateReport)) {
+    message.warning('当前无法跟进本任务，请次日再进行操作')
+    return
+  }
   handleFollowUpRef.value.open(row)
 }
 
