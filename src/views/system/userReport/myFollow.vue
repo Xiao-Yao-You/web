@@ -47,13 +47,14 @@
       />
       <el-table-column label="工作内容" align="center" prop="content" />
       <el-table-column label="关联事件" align="center" prop="connectContent" width="180px" />
+      <el-table-column label="批复" align="center" prop="reply" />
       <el-table-column label="跟进状态" align="center" prop="replyStatus" width="180px">
         <template #default="scope">
           <el-tag type="primary" v-if="scope.row.replyStatus == 0">未跟进</el-tag>
           <el-tag type="warning" v-if="scope.row.replyStatus == 1">已跟进</el-tag>
         </template></el-table-column
       >
-      <el-table-column label="跟进情况" align="situation" prop="content" />
+      <el-table-column label="跟进情况" align="center" prop="situation" />
       <el-table-column label="操作" align="center">
         <template #default="scope">
           <el-button
