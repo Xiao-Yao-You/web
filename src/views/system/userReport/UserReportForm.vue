@@ -101,18 +101,20 @@
                 关注
               </el-button>
               <el-button
+                v-if="formType != 'view'"
                 link
                 type="primary"
+                :disabled="scope.row.attentionId"
                 @click="openUpdateProgressDrawer(scope.$index)"
-                v-if="formType != 'view'"
               >
                 编辑
               </el-button>
               <el-button
+                v-if="formType != 'view'"
                 link
                 type="danger"
+                :disabled="scope.row.attentionId"
                 @click="deleteProgress(scope.$index)"
-                v-if="formType != 'view'"
               >
                 删除
               </el-button>
@@ -124,9 +126,9 @@
           size="small"
           @click="openAddProgressDrawer()"
           v-if="formType != 'view'"
-          >添加一项进度</el-button
         >
-        <!-- <el-button color="red" size="small">-</el-button> -->
+          添加一项进度
+        </el-button>
       </el-form-item>
       <el-form-item label="工作计划" prop="workPlan">
         <el-table
