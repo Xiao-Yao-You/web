@@ -36,7 +36,7 @@
             disabled
           />
         </el-form-item>
-        <el-form-item label="关联事项" prop="connectContent">
+        <el-form-item label="跟进事项" prop="connectContent">
           <el-input
             type="textarea"
             v-model="summaryData.connectContent"

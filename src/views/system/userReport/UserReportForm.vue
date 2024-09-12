@@ -77,7 +77,7 @@
           <el-table-column type="index" label="序号" width="60" />
           <el-table-column prop="content" label="工作内容" />
           <el-table-column prop="situation" label="完成情况" />
-          <el-table-column prop="connectContent" label="关联事项" />
+          <el-table-column prop="connectContent" label="跟进事项" />
           <el-table-column label="操作" align="center">
             <template #default="scope">
               <el-button

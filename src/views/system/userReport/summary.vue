@@ -41,7 +41,7 @@
         <el-table-column label="工作内容" align="center" prop="content" />
         <el-table-column label="汇报人" align="center" prop="userNickName" />
         <el-table-column label="完成情况" align="center" prop="situation" />
-        <el-table-column label="关联事项" align="center" prop="connectContent" />
+        <el-table-column label="跟进事项" align="center" prop="connectContent" />
         <el-table-column label="操作" align="center">
           <template #default="scope">
             <el-button

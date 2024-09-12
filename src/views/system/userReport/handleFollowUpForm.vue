@@ -7,8 +7,8 @@
       label-width="100px"
       v-loading="formLoading"
     >
-      <el-divider content-position="left">关联事项</el-divider>
-      <el-form-item label="关联事项" prop="content">
+      <el-divider content-position="left">跟进事项</el-divider>
+      <el-form-item label="跟进事项" prop="content">
         <el-input
           type="textarea"
           v-model="formData.connectContent"
