@@ -58,18 +58,20 @@
       <el-table-column label="操作" align="center">
         <template #default="scope">
           <el-button
+            v-if="scope.row.replyStatus == 1"
+            v-hasPermi="['hk:report_job_schedule:query']"
             link
             type="primary"
             @click="viewFollow(scope.row.id)"
-            :disabled="scope.row.replyStatus == 0"
           >
             查看跟进
           </el-button>
           <el-button
+            v-else
+            v-hasPermi="['hk:report-attention:delete']"
             link
             type="primary"
             @click="deleteFollow(scope.row.id)"
-            v-if="scope.row.replyStatus == 0"
           >
             取消关注
           </el-button>
