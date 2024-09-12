@@ -117,7 +117,7 @@ const submitForm = async () => {
   formLoading.value = true
   try {
     const data = formData.value as unknown as workProgress
-    UserReportApi.createFollow(data)
+    await UserReportApi.createFollow(data)
 
     message.success(t('common.createSuccess'))
     dialogVisible.value = false
