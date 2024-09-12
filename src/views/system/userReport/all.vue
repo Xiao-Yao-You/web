@@ -114,7 +114,7 @@
           >
             编辑
           </el-button>
-          <el-button
+          <!-- <el-button
             link
             type="danger"
             @click="handleDelete(scope.row.id)"
@@ -125,7 +125,7 @@
             "
           >
             删除
-          </el-button>
+          </el-button> -->
         </template>
       </el-table-column>
     </el-table>
