@@ -39,6 +39,7 @@
             placeholder="请选择需要关联的事项"
             style="width: 100%"
             :disabled="controlType == 'view'"
+            clearable
             @change="selectConnect"
           >
             <el-option
@@ -78,18 +79,27 @@ import { UserReportApi } from '../../../api/system/userReport/index'
 /** 工作进度 表单 */
 defineOptions({ name: 'AddWorkProgressForm' })
 
+type FormType = Partial<
+  Pick<workProgress, 'content' | 'situation' | 'connectId' | 'connectContent'>
+>
+
 const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
 const direction = ref('rtl')
 const drawer = ref(false)
 const addProgressFormRef = ref()
 const emits = defineEmits<{
-  addprogress: [addProgress: workProgress]
-  updateprogress: [updateProgress: workProgress]
+  addprogress: [addProgress: FormType]
+  updateprogress: [updateProgress: FormType]
 }>()
 
 const options = ref([] as any)
 
-const progressData = ref({} as workProgress)
+const progressData = ref<FormType>({
+  content: '',
+  situation: '',
+  connectId: undefined,
+  connectContent: ''
+})
 
 /** 操作类型 */
 const controlType = ref('')
@@ -99,9 +109,14 @@ const progressRules = reactive({
 })
 
 /**改变选择 */
-const selectConnect = async (value: any) => {
-  const selectedLabel = options.value.find((option) => option.value === value).label
-  progressData.value.connectContent = selectedLabel
+const selectConnect = async (value: number | undefined) => {
+  if (value) {
+    const selectedLabel = options.value.find((option) => option.value === value).label
+    progressData.value.connectContent = selectedLabel
+  } else {
+    progressData.value.connectContent = ''
+    progressData.value.connectId = undefined
+  }
 }
 
 /**提交表单 */
@@ -122,6 +137,7 @@ const submit = async () => {
 
 /** 打开弹窗 */
 const open = async (type: string, process: workProgress) => {
+  resetForm()
   if (type === 'update' || type === 'view') {
     progressData.value = cloneDeep(process)
   }
@@ -149,5 +165,15 @@ const handleClose = async (done: () => void) => {
       // catch error
     })
 }
+
+const resetForm = () => {
+  progressData.value = {
+    content: '',
+    situation: '',
+    connectId: undefined,
+    connectContent: ''
+  }
+}
+
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 </script>
