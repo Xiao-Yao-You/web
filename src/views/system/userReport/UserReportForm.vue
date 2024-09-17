@@ -192,12 +192,13 @@
     </el-form>
     <template #footer>
       <el-button
-        @click="submitForm"
+        v-if="formType != 'view'"
         type="primary"
         :disabled="formLoading"
-        v-if="formType != 'view'"
-        >确 定</el-button
+        @click="submitForm"
       >
+        确 定
+      </el-button>
       <el-button @click="dialogVisible = false">取 消</el-button>
     </template>
     <AddWorkProgressForm

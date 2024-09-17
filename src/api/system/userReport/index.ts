@@ -1,5 +1,4 @@
 import request from '@/config/axios'
-import { type } from '../../../types/auto-imports'
 
 // 用户汇报 VO
 export interface UserReportVO {
@@ -125,8 +124,11 @@ export const UserReportApi = {
   },
 
   //查询跟进记录列表
-  getReportFollowUpUndo: async () => {
-    return await request.get({ url: `/report-attention/queryFollowUndo` })
+  getReportFollowUpUndo: async (connectId) => {
+    return await request.get({
+      url: `/report-attention/queryFollowUndo`,
+      params: { id: connectId }
+    })
   },
 
   //创建跟进

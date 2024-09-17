@@ -78,11 +78,8 @@ import { UserReportApi } from '../../../api/system/userReport/index'
 /** 工作进度 表单 */
 defineOptions({ name: 'AddWorkProgressForm' })
 
-const { t } = useI18n() // 国际化
-const message = useMessage() // 消息弹窗
-
 const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
-const direction = ref<DrawerProps['direction']>('rtl')
+const direction = ref('rtl')
 const drawer = ref(false)
 const addProgressFormRef = ref()
 const emits = defineEmits<{
@@ -128,9 +125,9 @@ const open = async (type: string, process: workProgress) => {
   if (type === 'update' || type === 'view') {
     progressData.value = cloneDeep(process)
   }
-  const data = await UserReportApi.getReportFollowUpUndo()
+  const data = await UserReportApi.getReportFollowUpUndo(process.connectId)
   options.value = data.map((item) => {
-    return { value: `${item.id}`, label: `${item.content}` }
+    return { value: item.id, label: item.content }
   })
   controlType.value = type
   drawer.value = true
