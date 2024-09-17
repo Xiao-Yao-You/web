@@ -1,5 +1,5 @@
 <template>
-  <Dialog :title="dialogTitle" v-model="dialogVisible" width="700px">
+  <Dialog title="汇报人员名单" v-model="dialogVisible" width="700px">
     <el-form
       ref="formRef"
       :model="formData"
@@ -38,17 +38,18 @@
       <el-button @click="submitForm" type="primary">确 定</el-button>
       <el-button @click="dialogVisible = false">取 消</el-button>
     </template>
-    <!-- 内部人员选择组件 -->
-    <MemberSelector
-      ref="memberRef"
-      title="内部与会人员选择"
-      :default-selected-list="originalMemberData"
-      @selected="onMemberSelected"
-    />
   </Dialog>
+
+  <!-- 内部人员选择组件 -->
+  <MemberSelector
+    ref="memberRef"
+    title="内部与会人员选择"
+    :default-selected-list="originalMemberData"
+    @selected="onMemberSelected"
+  />
 </template>
 <script setup lang="ts">
-import { UserReportApi, reportObjectSaveReqVOs } from '@/api/system/userReport'
+import { UserReportApi } from '@/api/system/userReport'
 import { useUserStore } from '@/store/modules/user'
 import { type UserVO } from '@/api/system/user'
 import { type JoinUser } from '@/api/system/meeting'
@@ -62,7 +63,6 @@ const { t } = useI18n() // 国际化
 const message = useMessage() // 消息弹窗
 
 const dialogVisible = ref(false) // 弹窗的是否展示
-const dialogTitle = ref('') // 弹窗的标题
 const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
 
 const userInfo = useUserStore().getUser
