@@ -79,6 +79,7 @@ export type JoinUser = {
 
 // 会议预约 VO
 export interface MeetingSubscribeVO {
+  id: number
   subject: string // 名称
   userNickName: string
   userPhone: string // 用户联系电话

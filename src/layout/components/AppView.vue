@@ -36,6 +36,8 @@ provide('reload', reload)
 <template>
   <section
     :class="[
+      'app-view',
+      'box-border',
       'p-[var(--app-content-padding)] w-[calc(100%-var(--app-content-padding)-var(--app-content-padding))] bg-[var(--app-content-bg-color)] dark:bg-[var(--el-bg-color)]',
       {
         '!min-h-[calc(100%-var(--app-content-padding)-var(--app-content-padding)-var(--app-footer-height))]':
@@ -70,3 +72,10 @@ provide('reload', reload)
   </section>
   <Footer v-if="footer" />
 </template>
+
+<style scoped lang="scss">
+section.app-view {
+  height: calc(100% - var(--app-footer-height));
+  min-height: 700px !important;
+}
+</style>
