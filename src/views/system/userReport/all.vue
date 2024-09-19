@@ -47,11 +47,12 @@
         >
           <Icon icon="ep:download" class="mr-5px" /> 导出
         </el-button>
-        <el-button type="success" plain @click="openSummaryForm">
-          <!-- v-hasPermi="['hk:user-summary:query']" -->
-          <Icon icon="ep:select" class="mr-5px" /> 每日汇总
-        </el-button>
-        <el-button type="warning" plain @click="openSettingPersonnel">
+        <el-badge is-dot :hidden="!props.badgeShow">
+          <el-button class="ml-12px" type="success" plain @click="openSummaryForm">
+            <Icon icon="ep:select" class="mr-5px" /> 每日汇总
+          </el-button>
+        </el-badge>
+        <el-button class="ml-12px" type="warning" plain @click="openSettingPersonnel">
           <Icon icon="ep:setting" class="mr-5px" /> 人员设置
         </el-button>
       </el-form-item>
@@ -152,6 +153,12 @@ import UserReportForm from './UserReportForm.vue'
 import Summary from './summary.vue'
 import { useUserStore } from '@/store/modules/user'
 import SettingPersonnelForm from './settingPersonnel.vue'
+import { propTypes } from '@/utils/propTypes'
+
+const props = defineProps({
+  badgeShow: propTypes.bool.def(false)
+})
+
 const userInfo = useUserStore().getUser
 
 /** 用户汇报 列表 */

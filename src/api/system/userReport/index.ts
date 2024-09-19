@@ -166,3 +166,8 @@ export const UserReportApi = {
     return await request.get({ url: `report-object/page` })
   }
 }
+
+// 获取“我的跟进”数量汇总信息
+export const getTrackInfo = () => {
+  return request.get({ url: '/user-report/queryOtherInfo' })
+}
