@@ -47,6 +47,7 @@
               :key="item.value"
               :label="item.label"
               :value="item.value"
+              :disabled="item.disabled"
             />
           </el-select>
         </el-form-item>
@@ -72,9 +73,11 @@
   </el-drawer>
 </template>
 <script setup lang="ts">
+import dayjs from 'dayjs'
 import { cloneDeep } from 'lodash-es'
-import { type workProgress } from '@/api/system/userReport'
 import { UserReportApi } from '../../../api/system/userReport/index'
+import { type workProgress } from '@/api/system/userReport'
+import type { DrawerProps } from 'element-plus'
 
 /** 工作进度 表单 */
 defineOptions({ name: 'AddWorkProgressForm' })
@@ -84,7 +87,7 @@ type FormType = Partial<
 >
 
 const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
-const direction = ref('rtl')
+const direction = ref<DrawerProps['direction']>('rtl')
 const drawer = ref(false)
 const addProgressFormRef = ref()
 const emits = defineEmits<{
@@ -143,7 +146,11 @@ const open = async (type: string, process: workProgress) => {
   }
   const data = await UserReportApi.getReportFollowUpUndo(process.connectId)
   options.value = data.map((item) => {
-    return { value: item.id, label: item.content }
+    return {
+      value: item.id,
+      label: item.content,
+      disabled: !dayjs().isAfter(dayjs(item.dateReport.join('-'), 'YYYY-M-D'), 'day')
+    }
   })
   controlType.value = type
   drawer.value = true
