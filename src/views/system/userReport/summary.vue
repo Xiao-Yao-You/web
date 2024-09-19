@@ -67,7 +67,7 @@
         @pagination="getList"
       />
     </ContentWrap>
-    <HandleFollow ref="handleFollowRef" @success="getList" />
+    <HandleFollow ref="handleFollowRef" @success="handleFollowSuccess" />
     <SummaryDetail ref="summaryDetailRef" />
     以下人员暂未提交当日工作汇报： <br />
     <span v-if="notSubmitUserList.length != 0"> {{ notSubmitUserList.join(',') }} </span>
@@ -75,37 +75,24 @@
   </Dialog>
 </template>
 <script setup lang="ts">
-import { useUserStore } from '@/store/modules/user'
 import HandleFollow from './handleFollow.vue'
 import SummaryDetail from './summaryDetail.vue'
 import { UserReportApi, UserReportVO } from '@/api/system/userReport'
+import { useReportStoreWithOut } from '@/store/modules/report'
 
 /** 用户汇报汇总 窗口 */
 defineOptions({ name: 'UserReportForm' })
 
-const { t } = useI18n() // 国际化
-const message = useMessage() // 消息弹窗
+const reportStore = useReportStoreWithOut()
 const loading = ref(false) // 列表的加载中
 const list = ref<UserReportVO[]>([]) // 列表的数据
 const notSubmitUserList = ref<string[]>([])
 const total = ref(0) // 列表的总页数
-
 const dialogVisible = ref(false) // 弹窗的是否展示
 const dialogTitle = ref('') // 弹窗的标题
-const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
-const formType = ref('') // 表单的类型：create - 新增；update - 修改
-const selectObj = ref()
-const userInfo = useUserStore().getUser
-const tableData = ref({})
-
-const formRef = ref() // 表单 Ref
 const handleFollowRef = ref()
 const summaryDetailRef = ref()
-
-const depts = ref<Tree[]>([])
-const reportObjects = ref<any[]>([])
 const queryFormRef = ref() // 搜索的表单
-
 const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
@@ -120,6 +107,12 @@ const openSummaryDetailForm = (row) => {
 /**打开关注的操作抽屉 */
 const openHandleFollowForm = (row) => {
   handleFollowRef.value.open(row, 1)
+}
+
+// 关注成功后的事件
+const handleFollowSuccess = () => {
+  getList()
+  reportStore.queryBadgeInfo() // 刷新徽标提示
 }
 
 /** 搜索按钮操作 */

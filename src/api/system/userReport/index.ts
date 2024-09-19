@@ -40,6 +40,7 @@ export interface workPlan {
 export interface transfer {
   id: number
   replyUserId: number
+  replyUserNickName: string
   transferRemark: string
 }
 

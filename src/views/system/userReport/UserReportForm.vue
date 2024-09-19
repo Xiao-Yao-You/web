@@ -207,7 +207,7 @@
       @updateprogress="updateWorkProgress"
     />
     <AddWorkPlanForm ref="addPlanFormRef" @addplan="addWorkPlan" @updateplan="updateWorkPlan" />
-    <HandleFollow ref="handleFollwRef" @success="resetData" />
+    <HandleFollow ref="handleFollwRef" @success="handleFollowSuccess" />
   </Dialog>
 </template>
 <script setup lang="ts">
@@ -223,6 +223,7 @@ import AddWorkProgressForm from './addWorkProgressForm.vue'
 import AddWorkPlanForm from './addWorkPlanForm.vue'
 import HandleFollow from './handleFollow.vue'
 import { useUserStore } from '@/store/modules/user'
+import { useReportStoreWithOut } from '@/store/modules/report'
 import { defaultProps, handleTree } from '@/utils/tree'
 import dayjs from 'dayjs'
 
@@ -231,6 +232,7 @@ defineOptions({ name: 'UserReportForm' })
 
 const { t } = useI18n() // 国际化
 const message = useMessage() // 消息弹窗
+const reportStore = useReportStoreWithOut()
 
 const dialogVisible = ref(false) // 弹窗的是否展示
 const dialogTitle = ref('') // 弹窗的标题
@@ -416,7 +418,8 @@ const open = async (type: string, id?: number) => {
   }
 }
 
-const resetData = async () => {
+// 处理关注成功的事件
+const handleFollowSuccess = async () => {
   const res = await UserReportApi.getUserReport(formId.value)
   res.dateReport = dayjs(res.dateReport).format('YYYY-MM-DD')
   list.value = res.userList.map((item) => {
@@ -424,6 +427,8 @@ const resetData = async () => {
   })
   reportObjects.value = list.value
   formData.value = res
+
+  reportStore.queryBadgeInfo() // 刷新徽标提示
 }
 
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗

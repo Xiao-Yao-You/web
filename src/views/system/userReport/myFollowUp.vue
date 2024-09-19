@@ -80,19 +80,20 @@
       @pagination="getList"
     />
   </ContentWrap>
-  <HandleFollowUpForm ref="handleFollowUpRef" @success="getList" />
-  <TransferForm ref="handleTransferRef" @success="getList" />
+  <HandleFollowUpForm ref="handleFollowUpRef" @success="handleSuccess" />
+  <TransferForm ref="handleTransferRef" @success="handleSuccess" />
   <transferRecordForm ref="transferRecordRef" @success="getList" />
 </template>
 
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
-import { dateFormatter, dateFormatter2 } from '@/utils/formatTime'
+import { dateFormatter2 } from '@/utils/formatTime'
 import { UserReportApi, UserReportVO } from '@/api/system/userReport'
 import HandleFollowUpForm from './handleFollowUpForm.vue'
 import TransferForm from './transferForm.vue'
 import transferRecordForm from './transferRecordForm.vue'
+import { useReportStoreWithOut } from '@/store/modules/report'
 
 dayjs.extend(customParseFormat)
 
@@ -100,7 +101,7 @@ dayjs.extend(customParseFormat)
 defineOptions({ name: 'MyFollow' })
 
 const message = useMessage() // 消息弹窗
-const { t } = useI18n() // 国际化
+const reportStore = useReportStoreWithOut()
 
 const loading = ref(true) // 列表的加载中
 const list = ref<UserReportVO[]>([]) // 列表的数据
@@ -137,6 +138,12 @@ const openHandleFollowUpForm = async (row: any) => {
     return
   }
   handleFollowUpRef.value.open(row)
+}
+
+// 处理跟进和转交成功
+const handleSuccess = () => {
+  getList()
+  reportStore.queryBadgeInfo() // 刷新徽标提示
 }
 
 /** 查询列表 */
