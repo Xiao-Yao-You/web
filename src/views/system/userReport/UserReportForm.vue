@@ -388,7 +388,6 @@ const formId = ref(0)
 const open = async (type: string, id?: number) => {
   dialogVisible.value = true
 
-  //reportObjects.value = []
   if (type == 'view') {
     dialogTitle.value = '详情'
   } else {
@@ -396,10 +395,10 @@ const open = async (type: string, id?: number) => {
   }
 
   formType.value = type
+  resetForm()
   /**查询当前用户所在的部门列表 */
   const deptList = await getDeptsByUserId(formData.value.userId)
   depts.value = handleTree(deptList)
-  resetForm()
   // 修改时，设置数据
   if (id) {
     formId.value = id
