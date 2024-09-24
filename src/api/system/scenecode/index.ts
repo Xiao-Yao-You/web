@@ -56,3 +56,8 @@ export const SceneCodeApi = {
     return await request.download({ url: `/system/scene-code/export-excel`, params })
   }
 }
+
+// 获得全量单据编码类型列表
+export const getSceneCodeAll = async () => {
+  return request.get<SceneCodeVO[]>({ url: '/system/scene-code/getAll' })
+}

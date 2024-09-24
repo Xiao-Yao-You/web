@@ -44,8 +44,8 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="关联设备" prop="capacity" :disabled="formType === 'child'">
-        <!-- <el-select v-model="formData.type" placeholder="选择问题类型">
+      <el-form-item label="关联设备" prop="capacity">
+        <!-- <el-select v-model="formData.type" placeholder="选择问题类型" :disabled="formType === 'child'">
           <el-option
             v-for="item in IssueTypeOptions"
             :key="item.value"
@@ -126,7 +126,7 @@ const open = async (type: string, id?: number) => {
   dialogTitle.value = t('action.' + type)
   formType.value = type
   resetForm()
-  // 修改时，设置数据
+  // 根据 id 获取详情
   if (!id) return
   formLoading.value = true
   try {
@@ -155,6 +155,8 @@ defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 // 提交表单
 const emit = defineEmits(['success']) // 定义 success 事件，用于操作成功后的回调
 const submitForm = async () => {
+  if (formType.value === 'detail') return
+
   await formRef.value.validate()
   formLoading.value = true
   try {
