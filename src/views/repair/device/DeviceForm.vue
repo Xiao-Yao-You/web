@@ -87,7 +87,7 @@ const sceneCodeOptions = ref<OptionItem<number>[]>([])
 const formType = ref('') // create-新增, child-添加子类, update-编辑, detail-详情
 const formLoading = ref(false)
 const formData = ref({
-  id: -1,
+  id: undefined as unknown as number,
   name: '',
   status: CommonStatusEnum.ENABLE,
   remark: '',
@@ -100,11 +100,6 @@ const formRules = reactive({
   name: [{ required: true, message: '设备类型不能为空', trigger: 'blur' }]
 })
 const formRef = ref() // 表单 Ref
-
-// 判断是新增表单还是编辑表单（类型导航守卫）
-function isEditForm(formData: RepairDevice | DevicePayload): formData is RepairDevice {
-  return (formData as RepairDevice).id > 0
-}
 
 // 打开弹窗
 const open = async (type: string, id?: number) => {
@@ -129,6 +124,11 @@ const open = async (type: string, id?: number) => {
 }
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 
+// 判断是新增表单还是编辑表单（类型导航守卫）
+function isEditForm(formData: RepairDevice | DevicePayload): formData is RepairDevice {
+  return !!(formData as RepairDevice).id
+}
+
 // 提交表单
 const emit = defineEmits(['success']) // 定义 success 事件，用于操作成功后的回调
 const submitForm = async () => {
@@ -137,10 +137,9 @@ const submitForm = async () => {
   await formRef.value.validate()
   formLoading.value = true
   // 处理表单:
-  const { sceneCode, labelSceneCode, id, ...rest } = formData.value
+  const { sceneCode, labelSceneCode, ...rest } = formData.value
   const data = {
     ...rest,
-    id: id > 0 ? id : undefined,
     sceneCodeId: sceneCode?.value,
     sceneName: sceneCode?.label,
     labelSceneCodeId: labelSceneCode?.value,
@@ -164,7 +163,7 @@ const submitForm = async () => {
 // 重置表单
 const resetForm = () => {
   formData.value = {
-    id: -1,
+    id: undefined as unknown as number,
     name: '',
     status: CommonStatusEnum.ENABLE,
     remark: '',

@@ -1,16 +1,19 @@
 import request from '@/config/axios'
 import { IssueTypeEnum } from './constant'
 
-export interface RepairIssuesPage extends PageParam {
-  name: string // 问题类型
+export interface IssuesAllParams {
+  name?: string // 问题类型
 }
+
+export interface RepairIssuesPage extends PageParam, IssuesAllParams {}
 
 export type RepairIssue = {
   id: number
   name: string
-  parentId: number | undefined
+  parentId?: number
   type: IssueTypeEnum
-  device: string
+  deviceTypeId: number
+  deviceTypeName?: string
   description: string
   solution: string
 }
@@ -19,7 +22,7 @@ export type IssuePayload = {
   name: string
   parentId?: number
   type: IssueTypeEnum
-  device: string
+  deviceTypeId: number
   description?: string
   solution?: string
 }
@@ -33,9 +36,10 @@ export const getRepairIssuesPage = (params: RepairIssuesPage) => {
 }
 
 // 获取全量问题
-export const getRepairIssuesAll = () => {
+export const getRepairIssuesAll = (params?: IssuesAllParams) => {
   return request.get<RepairIssue[]>({
-    url: '/operation-question-type/getAll'
+    url: '/operation-question-type/getAll',
+    params
   })
 }
 
