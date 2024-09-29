@@ -126,3 +126,12 @@ export const getRepairDeviceAll = () => {
     url: '/operation-device-type/getAll'
   })
 }
+
+// 批量生成标签
+export type LabelItem = Record<'name' | 'labelCode', string>
+export const printBatchLabels = (params: Record<'id' | 'num', Numeric>): Promise<LabelItem[]> => {
+  return request.get<LabelItem[]>({
+    url: '/operation-device-type/batchPrintLabelCode',
+    params
+  })
+}

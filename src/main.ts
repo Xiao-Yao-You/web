@@ -19,6 +19,9 @@ import { setupElementPlus } from '@/plugins/elementPlus'
 // 引入 form-create
 import { setupFormCreate } from '@/plugins/formCreate'
 
+// 引入 hiprint
+import { setupHiprint } from '@/plugins/hiprint'
+
 // 引入全局样式
 import '@/styles/index.scss'
 
@@ -55,6 +58,8 @@ const setupAll = async () => {
   setupElementPlus(app)
 
   setupFormCreate(app)
+
+  setupHiprint(app)
 
   setupRouter(app)
 

@@ -1,6 +1,14 @@
 <script setup lang="ts">
-import { getRepairDevicePage, deleteDeviceType, type RepairDevice } from '@/api/repair'
+import { ElMessageBox } from 'element-plus'
+import {
+  getRepairDevicePage,
+  deleteDeviceType,
+  printBatchLabels,
+  type RepairDevice,
+  type LabelItem
+} from '@/api/repair'
 import DeviceForm from './DeviceForm.vue'
+import PrintDialog from './PrintDialog.vue'
 
 defineOptions({
   name: 'RepairDevice'
@@ -8,9 +16,11 @@ defineOptions({
 
 const message = useMessage()
 
-const loading = ref(true)
+const pageLoading = ref(true)
 const list = ref<RepairDevice[]>([])
 const total = ref(0)
+const batchLabelList = ref<LabelItem[]>([]) // 批量的标签打印信息
+const printRef = ref()
 const queryFormRef = ref()
 const queryParams = reactive({
   pageNo: 1,
@@ -20,13 +30,13 @@ const queryParams = reactive({
 
 // 查询列表
 const getList = async () => {
-  loading.value = true
+  pageLoading.value = true
   try {
     const data = await getRepairDevicePage(queryParams)
     list.value = data.list || []
     total.value = data.total
   } finally {
-    loading.value = false
+    pageLoading.value = false
   }
 }
 
@@ -52,6 +62,35 @@ const handleDelete = async (id: number) => {
   await deleteDeviceType(id)
   message.success('删除成功')
   getList()
+}
+
+const print = (id: number) => {
+  ElMessageBox.prompt('请输入打印数量', '系统提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    inputPattern: /^([1-9]|[1-9][0-9])$/,
+    inputErrorMessage: '1-99内的数字',
+    beforeClose(action, instance, done) {
+      if (action === 'confirm') {
+        instance.confirmButtonLoading = true
+        printBatchLabels({ id, num: instance.inputValue })
+          .then((res) => {
+            if (Array.isArray(res) && res.length) {
+              batchLabelList.value = res
+              printRef.value.open()
+            } else {
+              message.warning('没有可打印的标签')
+            }
+            done()
+          })
+          .finally(() => {
+            instance.confirmButtonLoading = false
+          })
+      } else {
+        done()
+      }
+    }
+  })
 }
 
 onMounted(() => {
@@ -84,7 +123,7 @@ onMounted(() => {
 
   <!-- 列表 -->
   <ContentWrap>
-    <el-table v-loading="loading" :data="list" stripe show-overflow-tooltip>
+    <el-table v-loading="pageLoading" :data="list" stripe>
       <el-table-column type="index" align="center" width="60" />
       <el-table-column label="类型名称" align="center" prop="name" />
       <el-table-column label="设备编码" align="center" prop="sceneName" />
@@ -99,10 +138,11 @@ onMounted(() => {
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="remark" />
-      <el-table-column label="操作" align="center">
+      <el-table-column label="操作" align="center" fixed="right" min-width="200">
         <template #default="{ row: { id } }">
           <el-button link type="primary" @click="openForm('detail', id)">详情</el-button>
           <el-button link type="primary" @click="openForm('update', id)">编辑</el-button>
+          <el-button link type="primary" @click="print(id)">打印</el-button>
           <el-button link type="danger" @click="handleDelete(id)">删除</el-button>
         </template>
       </el-table-column>
@@ -118,4 +158,7 @@ onMounted(() => {
 
   <!-- 表单弹窗：添加/修改 -->
   <DeviceForm ref="formRef" @success="getList" />
+
+  <!-- 打印弹窗 -->
+  <PrintDialog ref="printRef" :labels="batchLabelList" />
 </template>
