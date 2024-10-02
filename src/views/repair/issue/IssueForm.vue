@@ -41,7 +41,7 @@
         <el-select
           v-model="formData.deviceTypeId"
           placeholder="选择设备类型"
-          :disabled="formData.parentId"
+          :disabled="!!formData.parentId"
           filterable
         >
           <el-option
