@@ -83,7 +83,7 @@ onMounted(() => {
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
         <el-button type="primary" plain @click="openForm('create')">
-          <Icon icon="ep:plus" class="mr-5px" /> 新增
+          <Icon icon="ep:plus" class="mr-5px" /> 新增主地点
         </el-button>
         <el-button plain type="danger" @click="toggleExpandAll">
           <Icon class="mr-5px" icon="ep:sort" />
@@ -116,7 +116,7 @@ onMounted(() => {
       <el-table-column label="操作" align="center">
         <template #default="{ row: { id, status } }">
           <el-button link type="primary" @click="openForm('detail', id)"> 详情 </el-button>
-          <el-button link type="primary" @click="openForm('child', id)"> 子分类 </el-button>
+          <el-button link type="primary" @click="openForm('child', id)"> 添加子类 </el-button>
           <el-button link type="primary" @click="openForm('update', id)"> 编辑 </el-button>
           <el-button link type="danger" @click="handleDelete(id)" :disabled="!status">
             删除

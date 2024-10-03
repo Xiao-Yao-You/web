@@ -27,7 +27,7 @@
           }"
           check-strictly
           node-key="id"
-          :disabled="!!formData.parentAddressId"
+          :disabled="formType === 'create'"
         />
       </el-form-item>
       <el-form-item label="区域硬件负责人" prop="hardwareUser">

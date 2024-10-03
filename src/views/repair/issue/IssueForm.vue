@@ -24,7 +24,7 @@
           :props="defaultProps"
           check-strictly
           node-key="id"
-          :disabled="formData.parentId"
+          :disabled="formType === 'create'"
         />
       </el-form-item>
       <el-form-item v-if="formData.parentId" label="问题类型" prop="type">
