@@ -49,14 +49,14 @@ const render = ({ name, labelCode }: LabelItem) => {
   if (panel) {
     // 添加二维码
     panel.addPrintText({
-      options: { width: 60, height: 60, top: 10, left: 10, title: labelCode, textType: 'qrcode' }
+      options: { width: 60, height: 60, top: 20, left: 20, title: labelCode, textType: 'qrcode' }
     })
     // 添加文字
     panel.addPrintText({
       options: {
         title: 'IT 设备管理标识',
-        top: 10,
-        left: 80,
+        top: 20,
+        left: 90,
         width: 110,
         textAlign: 'left',
         fontWeight: 700,
@@ -66,8 +66,8 @@ const render = ({ name, labelCode }: LabelItem) => {
     panel.addPrintText({
       options: {
         title: name,
-        top: 35,
-        left: 80,
+        top: 45,
+        left: 90,
         width: 100,
         textAlign: 'left',
         fontWeight: 500,
@@ -77,8 +77,8 @@ const render = ({ name, labelCode }: LabelItem) => {
     panel.addPrintText({
       options: {
         title: labelCode,
-        top: 60,
-        left: 80,
+        top: 70,
+        left: 90,
         width: 100,
         textAlign: 'left',
         fontWeight: 500,
@@ -128,7 +128,7 @@ onMounted(() => {
   <Dialog title="打印" v-model="dialogVisible" width="500px">
     <el-scrollbar max-height="500px" :view-style="{ padding: '15px', position: 'relative' }">
       <div ref="hiprintRef" id="hiprint-printTemplate"></div>
-      <div class="mask absolute"></div>
+      <div class="mask-cover absolute"></div>
     </el-scrollbar>
     <template #footer>
       <el-button type="primary" @click.stop="onPrint" v-loading="printLoading">
@@ -150,7 +150,7 @@ onMounted(() => {
   margin-bottom: 30px;
 }
 
-.mask {
+.mask-cover {
   top: 0;
   left: 0;
   right: 0;
