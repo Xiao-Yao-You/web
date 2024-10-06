@@ -16,7 +16,7 @@
           <el-option :label="t(`map.${ZoneType['00']}`)" :value="ZoneType.NanTong" />
         </el-select>
       </el-form-item>
-      <el-form-item label="所属厂区" prop="factoryCode">
+      <el-form-item label="所在厂区" prop="factoryCode">
         <el-select v-model="formData.factoryCode">
           <el-option
             v-for="opt in FactoryOptions"
@@ -150,7 +150,7 @@ const formData = ref<Partial<MapPoint>>({
 })
 const formRef = ref() // 表单 Ref
 const formRules = reactive({
-  factoryCode: [{ required: true, message: '所属厂区不能为空' }],
+  factoryCode: [{ required: true, message: '所在厂区不能为空' }],
   name: [{ required: true, message: '提货地名不能为空' }],
   markName: [{ required: true, message: '墙标名不能为空' }],
   type: [{ required: true, message: '地点类型不能为空' }],

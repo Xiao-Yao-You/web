@@ -17,11 +17,10 @@
         />
       </el-form-item>
       <el-form-item label="设备编码规则" prop="sceneCode">
-        <el-select v-model="formData.sceneCode" placeholder="选择编码" filterable>
+        <el-select v-model="formData.sceneCode" placeholder="选择编码" value-key="value" filterable>
           <el-option
             v-for="item in sceneCodeOptions"
             :key="item.value"
-            value-key="value"
             :label="item.label"
             :value="item"
           />
@@ -31,11 +30,15 @@
         <el-input :model-value="formData.currentCode || '自动生成'" disabled />
       </el-form-item>
       <el-form-item label="标签编码规则" prop="labelSceneCode">
-        <el-select v-model="formData.labelSceneCode" placeholder="选择编码" filterable>
+        <el-select
+          v-model="formData.labelSceneCode"
+          placeholder="选择编码"
+          value-key="value"
+          filterable
+        >
           <el-option
             v-for="item in sceneCodeOptions"
             :key="item.value"
-            value-key="value"
             :label="item.label"
             :value="item"
           />

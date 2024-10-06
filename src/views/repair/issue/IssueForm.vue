@@ -45,10 +45,10 @@
           filterable
         >
           <el-option
-            v-for="item in deviceTypeOptions"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id"
+            v-for="item in repairStore.deviceOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
           />
         </el-select>
       </el-form-item>
@@ -77,10 +77,8 @@ import {
   createIssue,
   getIssueDetail,
   updateIssue,
-  getRepairDeviceAll,
   type RepairIssue,
-  type IssuePayload,
-  type RepairDevice
+  type IssuePayload
 } from '@/api/repair'
 import { IssueTypeOptions, IssueTypeEnum } from '@/api/repair/constant'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
@@ -96,7 +94,6 @@ const repairStore = useRepairStoreWithOut()
 
 const dialogVisible = ref(false) // 弹窗的是否展示
 const dialogTitle = ref('') // 弹窗的标题
-const deviceTypeOptions = ref<RepairDevice[]>([]) // 问题选项
 const formType = ref('') // create-新增, child-添加子分类, update-编辑, detail-详情
 const formLoading = ref(false)
 const formData = ref({
@@ -191,8 +188,6 @@ const resetForm = () => {
 }
 
 onMounted(() => {
-  getRepairDeviceAll().then((list) => {
-    deviceTypeOptions.value = list
-  })
+  repairStore.fetchDevicesAll()
 })
 </script>

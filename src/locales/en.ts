@@ -112,6 +112,16 @@ export default {
     large: 'Large',
     small: 'Small'
   },
+  level: {
+    Height: 'Height',
+    Middle: 'Middle',
+    Low: 'Low'
+  },
+  usingStatus: {
+    InUse: 'In Use',
+    Idle: 'Idle',
+    Scrap: 'Scrap'
+  },
   login: {
     welcome: 'Welcome to the system',
     message: 'Backstage management system',

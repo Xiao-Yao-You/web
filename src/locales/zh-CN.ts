@@ -112,6 +112,16 @@ export default {
     large: '大',
     small: '小'
   },
+  level: {
+    Height: '高',
+    Middle: '中',
+    Low: '低'
+  },
+  usingStatus: {
+    InUse: '使用中',
+    Idle: '闲置',
+    Scrap: '报废'
+  },
   login: {
     welcome: '欢迎使用本系统',
     message: '开箱即用的中后台管理系统',
@@ -454,7 +464,8 @@ export default {
     NanTong: '南通',
     HengKe: '恒科',
     XuanDa: '轩达',
-    Public: '公共'
+    Public: '公共',
+    Other: '其他'
   },
   position: {
     Headquarter: '指挥部',
