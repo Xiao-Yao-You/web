@@ -122,10 +122,25 @@
 
   <!-- 列表 -->
   <ContentWrap>
-    <el-table v-loading="loading" :data="list" stripe show-overflow-tooltip>
+    <el-table
+      v-loading="loading"
+      :data="list"
+      stripe
+      show-overflow-tooltip
+      @filter-change="onFilterChange"
+    >
       <el-table-column type="index" align="center" width="40" fixed="left" />
       <el-table-column label="设备名称" align="center" prop="name" width="100" fixed="left" />
-      <el-table-column label="设备状态" align="center" prop="status" width="80" fixed="left">
+      <el-table-column
+        label="设备状态"
+        align="center"
+        prop="status"
+        column-key="status"
+        width="100"
+        fixed="left"
+        :filter-multiple="false"
+        :filters="filterOptions"
+      >
         <template #default="{ row: { status } }">
           <el-text :type="status ? (status == 1 ? 'success' : 'danger') : 'warning'">
             {{ t(`usingStatus.${UsingStatus[status]}`) }}
@@ -215,7 +230,13 @@ import {
   // exportRepairArchive,
   type RepairArchive
 } from '@/api/repair'
-import { UsingStatus, EffectLevelEnum, CompanyOptions, CompanyEnum } from '@/api/repair/constant'
+import {
+  UsingStatus,
+  EffectLevelEnum,
+  CompanyOptions,
+  CompanyEnum,
+  UsingStatusOptions
+} from '@/api/repair/constant'
 import ArchiveForm from './ArchiveForm.vue'
 // import download from '@/utils/download'
 
@@ -241,10 +262,21 @@ const queryParams = reactive({
   ip1: undefined,
   macAddress1: undefined,
   company: undefined,
-  deviceType: undefined as undefined | OptionItem<number>
+  deviceType: undefined as undefined | OptionItem<number>,
+  status: undefined as undefined | string
 })
 const queryFormRef = ref() // 搜索的表单
 // const exportLoading = ref(false) // 导出的加载中
+
+/** 表格过滤 */
+const filterOptions = UsingStatusOptions.map((item) => ({
+  text: item.label,
+  value: item.value.toString()
+}))
+const onFilterChange = ({ status }: any) => {
+  queryParams.status = status[0]
+  handleQuery()
+}
 
 /** 查询列表 */
 const getList = async () => {
