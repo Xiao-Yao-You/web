@@ -190,6 +190,7 @@ import {
   EffectLevelEnum,
   UsingStatus
 } from '@/api/repair/constant'
+import { dateTransfer } from '@/views/system/meeting/subscribe/hook/useMeetingStatus'
 import type { AccessoryItem, PictureItem } from '@/api/repair'
 import type { UploadFiles } from 'element-plus'
 
@@ -259,7 +260,18 @@ const open = async (type: string, id?: number) => {
   if (id) {
     formLoading.value = true
     try {
-      formData.value = await getRepairArchive(id)
+      const { manufactureDate, warrantyDate, deviceType, deviceTypeName, effectLevel, ...rest } =
+        await getRepairArchive(id)
+      formData.value = {
+        manufactureDate: dateTransfer(manufactureDate),
+        warrantyDate: dateTransfer(warrantyDate),
+        deviceType: {
+          value: deviceType,
+          label: deviceTypeName
+        },
+        effectLevel: Number(effectLevel),
+        ...rest
+      }
     } finally {
       formLoading.value = false
     }
@@ -270,8 +282,7 @@ defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 /** 提交表单 */
 const emit = defineEmits(['success']) // 定义 success 事件，用于操作成功后的回调
 const submitForm = async () => {
-  // await formRef.value.validate()
-  console.log('formData', formData)
+  await formRef.value.validate()
   const { deviceType, pictureList, ...rest } = formData.value
   const data = {
     ...rest,

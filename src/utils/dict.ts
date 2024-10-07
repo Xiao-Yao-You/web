@@ -210,5 +210,9 @@ export enum DICT_TYPE {
 
   // ========== ERP - 企业资源计划模块  ==========
   ERP_AUDIT_STATUS = 'erp_audit_status', // ERP 审批状态
-  ERP_STOCK_RECORD_BIZ_TYPE = 'erp_stock_record_biz_type' // 库存明细的业务类型
+  ERP_STOCK_RECORD_BIZ_TYPE = 'erp_stock_record_biz_type', // 库存明细的业务类型
+
+  // ========== 运维工单  ==========
+  HK_DEVICE_SCRAP_METHOD = 'hk_device_scrap_method',
+  HK_DEVICE_SCRAP_TYPE = 'hk_device_scrap_type'
 }

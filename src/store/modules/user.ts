@@ -6,7 +6,7 @@ import { getInfo, loginOut } from '@/api/login'
 
 const { wsCache } = useCache()
 
-interface UserVO {
+export interface UserVO {
   id: number
   avatar: string
   nickname: string
@@ -14,7 +14,7 @@ interface UserVO {
   mobile: string
 }
 
-interface UserInfoVO {
+export interface UserInfoVO {
   // USER 缓存
   permissions: string[]
   roles: string[]

@@ -191,20 +191,26 @@
         width="180px"
       />
       <el-table-column label="操作" align="center" fixed="right" min-width="250">
-        <template #default="scope">
-          <el-button link type="primary" @click="openForm('update', scope.row.id)">
-            详情
-          </el-button>
-          <el-button link type="primary" @click="openForm('update', scope.row.id)">
-            编辑
-          </el-button>
-          <el-button link type="primary" @click="openForm('update', scope.row.id)">
+        <template #default="{ row }">
+          <el-button link type="primary" @click="openForm('update', row.id)"> 详情 </el-button>
+          <el-button link type="primary" @click="openForm('update', row.id)"> 编辑 </el-button>
+          <el-button
+            link
+            type="primary"
+            @click="openForm('update', row.id)"
+            :disabled="row.status === UsingStatus.Scrap"
+          >
             分配
           </el-button>
-          <el-button link type="primary" @click="openForm('update', scope.row.id)">
+          <el-button
+            link
+            type="primary"
+            @click="openScrapForm(row)"
+            :disabled="row.status === UsingStatus.Scrap"
+          >
             报废
           </el-button>
-          <el-button link type="danger" @click="handleDelete(scope.row.id)"> 删除 </el-button>
+          <el-button link type="danger" @click="handleDelete(row.id)"> 删除 </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -217,8 +223,13 @@
     />
   </ContentWrap>
 
-  <!-- 表单弹窗：添加/修改 -->
+  <!-- 新增、编辑表单 -->
   <ArchiveForm ref="formRef" @success="getList" />
+
+  <!-- 报废表单 -->
+  <ScrapForm ref="scrapRef" @success="getList" />
+
+  <!-- 分配表单 -->
 </template>
 
 <script setup lang="ts">
@@ -238,6 +249,7 @@ import {
   UsingStatusOptions
 } from '@/api/repair/constant'
 import ArchiveForm from './ArchiveForm.vue'
+import ScrapForm from './ScrapForm.vue'
 // import download from '@/utils/download'
 
 /** 运维设备档案 列表 */
@@ -335,6 +347,12 @@ const handleDelete = async (id: number) => {
 //     exportLoading.value = false
 //   }
 // }
+
+/** 报废 */
+const scrapRef = ref()
+const openScrapForm = ({ code, name, id }: RepairArchive) => {
+  scrapRef.value.open({ code, name, id })
+}
 
 /** 初始化 **/
 onMounted(() => {

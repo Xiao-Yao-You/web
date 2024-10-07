@@ -308,3 +308,18 @@ export const deleteRepairArchive = (id: number) => {
 export const exportRepairArchive = (params) => {
   return request.download({ url: '/operation-device/export-excel', params })
 }
+
+// 报废设备
+export interface ScrapPayload {
+  id: number
+  scrapDate: string
+  scrapType: number
+  scrapUserId: number
+  scrapDealType: number
+  scrapRemark: string
+  pictureList: PictureItem[]
+}
+
+export const scrapDevice = (data: ScrapPayload) => {
+  return request.put({ url: '/operation-device/scrap', data })
+}
