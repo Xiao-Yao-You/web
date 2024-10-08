@@ -56,8 +56,8 @@
           show-word-limit
         />
       </el-form-item>
-      <el-form-item label="编号名称" prop="numberName">
-        <el-select v-model="formData.numberName" placeholder="请选择编号名称" clearable>
+      <el-form-item label="编码规则" prop="numberName">
+        <el-select v-model="formData.numberName" placeholder="请选择编码规则" clearable>
           <el-option
             v-for="item in numberNameOptions"
             :key="item.value"
@@ -175,13 +175,12 @@ import DeviceConfigForm from './DeviceConfigForm.vue'
 import {
   getRepairArchive,
   createRepairArchive,
-  updateRepairArchive,
-  ArchivePayload
+  updateRepairArchive
+  // ArchivePayload
 } from '@/api/repair'
 import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
 import { CommonStatusEnum } from '@/utils/constants'
-import { getDictDataByType } from '@/api/system/dict/dict.data'
 import {
   EffectLevelOptions,
   CompanyOptions,
@@ -191,8 +190,9 @@ import {
   UsingStatus
 } from '@/api/repair/constant'
 import { dateTransfer } from '@/views/system/meeting/subscribe/hook/useMeetingStatus'
-import type { AccessoryItem, PictureItem } from '@/api/repair'
+import type { AccessoryItem } from '@/api/repair'
 import type { UploadFiles } from 'element-plus'
+import { getSceneCodeAll } from '@/api/system/scenecode'
 
 /** 运维设备档案 表单 */
 defineOptions({ name: 'RepairArchiveForm' })
@@ -204,7 +204,7 @@ const repairStore = useRepairStoreWithOut()
 
 const dialogVisible = ref(false) // 弹窗的是否展示
 const dialogTitle = ref('') // 弹窗的标题
-const numberNameOptions = ref<OptionItem[]>([]) // 编号名称选择项
+const numberNameOptions = ref<OptionItem[]>([]) // 编码规则选择项
 const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
 const formType = ref('') // 表单的类型：create - 新增；update - 修改
 const formData = ref({
@@ -232,7 +232,7 @@ const formRules = reactive({
   deviceType: [{ required: true, message: '设备类型不能为空', trigger: 'change' }],
   model: [{ required: true, message: '设备型号不能为空', trigger: 'blur' }],
   serialNumber: [{ required: true, message: '序列号不能为空', trigger: 'blur' }],
-  numberName: [{ required: true, message: '编号名称不能为空', trigger: 'blur' }],
+  numberName: [{ required: true, message: '编码规则不能为空', trigger: 'blur' }],
   macAddress1: [{ required: true, message: 'mac地址1不能为空', trigger: 'blur' }],
   manufactureDate: [{ required: true, message: '生产日期不能为空', trigger: 'blur' }],
   company: [{ required: true, message: '所在厂区不能为空', trigger: 'change' }],
@@ -263,8 +263,8 @@ const open = async (type: string, id?: number) => {
       const { manufactureDate, warrantyDate, deviceType, deviceTypeName, effectLevel, ...rest } =
         await getRepairArchive(id)
       formData.value = {
-        manufactureDate: dateTransfer(manufactureDate),
-        warrantyDate: dateTransfer(warrantyDate),
+        manufactureDate: dateTransfer(manufactureDate).format('YYYY-MM-DD'),
+        warrantyDate: dateTransfer(warrantyDate).format('YYYY-MM-DD'),
         deviceType: {
           value: deviceType,
           label: deviceTypeName
@@ -301,8 +301,8 @@ const submitForm = async () => {
       await createRepairArchive(data)
       message.success(t('common.createSuccess'))
     } else {
-      // await updateRepairArchive(data)
-      // message.success(t('common.updateSuccess'))
+      await updateRepairArchive(data)
+      message.success(t('common.updateSuccess'))
     }
     dialogVisible.value = false
     emit('success')
@@ -336,11 +336,10 @@ const resetForm = () => {
 }
 
 onMounted(() => {
-  // todo: 从数据字典中获取资产编号的列表
-  getDictDataByType('hk_meeting_equipment_type').then(({ list }) => {
+  getSceneCodeAll().then((list) => {
     numberNameOptions.value = list.map((item) => ({
-      value: item.value,
-      label: item.label
+      label: item.description,
+      value: item.id
     }))
   })
 })

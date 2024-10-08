@@ -4,6 +4,9 @@
  * 枚举类
  */
 
+// 部门顶层节点（南通信改）
+export const TOP_DEPARTMENT_ID = 499
+
 // ========== COMMON 模块 ==========
 // 全局通用状态枚举
 export const CommonStatusEnum = {

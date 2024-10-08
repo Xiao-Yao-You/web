@@ -233,7 +233,7 @@ export interface RepairArchive {
   company: number // 所属单位 0:恒科,1:轩达,2:其他
   serialNumber: string // 序列号
   effectLevel: string // 影响程度
-  numberName: string // 编号名称
+  numberName: string // 编码规则
   assetNumber: string // 资产编号
   macAddress1: string // mac地址1
   macAddress2: string // mac地址2
@@ -295,7 +295,7 @@ export const createRepairArchive = (data: ArchivePayload) => {
 }
 
 // 修改运维设备档案
-export const updateRepairArchive = (data: RepairArchive) => {
+export const updateRepairArchive = (data: ArchivePayload) => {
   return request.put({ url: '/operation-device/update', data })
 }
 
@@ -322,4 +322,23 @@ export interface ScrapPayload {
 
 export const scrapDevice = (data: ScrapPayload) => {
   return request.put({ url: '/operation-device/scrap', data })
+}
+
+// 分配设备
+export interface DistributePayload {
+  id: number
+  deptId: number
+  deptName: string
+  userId: number
+  addressId: number
+  location: string
+  ip1: string
+  ip2: string
+  registerUserId: number
+  registerDate: string
+  pictureList: PictureItem[]
+}
+
+export const distributeDevice = (data: DistributePayload) => {
+  return request.put({ url: '/operation-device/register', data })
 }

@@ -7,6 +7,7 @@
       ref="queryFormRef"
       :inline="true"
       label-width="100px"
+      :rules="{ ip1: [{ pattern: isIPV4, message: 'IP 格式不正确' }] }"
     >
       <el-form-item label="设备名称" prop="name">
         <el-input
@@ -197,7 +198,7 @@
           <el-button
             link
             type="primary"
-            @click="openForm('update', row.id)"
+            @click="openDistributeForm(row)"
             :disabled="row.status === UsingStatus.Scrap"
           >
             分配
@@ -230,6 +231,7 @@
   <ScrapForm ref="scrapRef" @success="getList" />
 
   <!-- 分配表单 -->
+  <DistributeForm ref="distributeRef" @success="getList" />
 </template>
 
 <script setup lang="ts">
@@ -250,6 +252,8 @@ import {
 } from '@/api/repair/constant'
 import ArchiveForm from './ArchiveForm.vue'
 import ScrapForm from './ScrapForm.vue'
+import DistributeForm from './DistributeForm.vue'
+import { isIPV4 } from '@/utils/is'
 // import download from '@/utils/download'
 
 /** 运维设备档案 列表 */
@@ -263,6 +267,7 @@ const repairStore = useRepairStoreWithOut()
 const loading = ref(true) // 列表的加载中
 const list = ref<RepairArchive[]>([]) // 列表的数据
 const total = ref(0) // 列表的总页数
+const queryFormRef = ref() // 搜索的表单
 const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
@@ -277,7 +282,6 @@ const queryParams = reactive({
   deviceType: undefined as undefined | OptionItem<number>,
   status: undefined as undefined | string
 })
-const queryFormRef = ref() // 搜索的表单
 // const exportLoading = ref(false) // 导出的加载中
 
 /** 表格过滤 */
@@ -292,6 +296,7 @@ const onFilterChange = ({ status }: any) => {
 
 /** 查询列表 */
 const getList = async () => {
+  await queryFormRef.value.validate()
   loading.value = true
   try {
     const { deviceType, ...rest } = queryParams
@@ -352,6 +357,12 @@ const handleDelete = async (id: number) => {
 const scrapRef = ref()
 const openScrapForm = ({ code, name, id }: RepairArchive) => {
   scrapRef.value.open({ code, name, id })
+}
+
+/** 分配 */
+const distributeRef = ref()
+const openDistributeForm = ({ code, name, id }: RepairArchive) => {
+  distributeRef.value.open({ code, name, id })
 }
 
 /** 初始化 **/

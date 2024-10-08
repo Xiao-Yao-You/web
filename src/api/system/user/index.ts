@@ -33,11 +33,6 @@ export const getUserPage = (params: UserQueryParams, signal?: AbortSignal) => {
   })
 }
 
-// 查询所有用户列表
-export const getAllUser = () => {
-  return request.get({ url: '/system/user/all' })
-}
-
 // 查询用户详情
 export const getUser = (id: number) => {
   return request.get<UserVO>({ url: '/system/user/get?id=' + id })
@@ -92,6 +87,16 @@ export const getSimpleUserList = (): Promise<UserVO[]> => {
 }
 
 // 查询所有用户列表
-export const getAll = (nickname: string) => {
-  return request.get({ url: '/system/user/getAllUser?nickname=' + nickname })
+type UserParams = Partial<{
+  nickname: string
+  deptId: number
+}>
+export const getAll = <T extends string | UserParams>(query: T) => {
+  const params = {} as UserParams
+  if (typeof query === 'string') {
+    params.nickname = query
+  } else {
+    Object.assign(params, query)
+  }
+  return request.get({ url: '/system/user/getAllUser', params })
 }
