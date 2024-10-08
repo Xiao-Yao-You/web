@@ -8,6 +8,12 @@
 export const TOP_DEPARTMENT_ID = 499
 
 // ========== COMMON 模块 ==========
+export enum CommonLevelEnum {
+  Low,
+  Middle,
+  Height
+}
+
 // 全局通用状态枚举
 export const CommonStatusEnum = {
   ENABLE: 0, // 开启

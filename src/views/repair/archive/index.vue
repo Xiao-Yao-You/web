@@ -180,7 +180,7 @@
       <el-table-column label="二维码标签号" align="center" prop="labelCode" width="120" />
       <el-table-column label="影响程度" align="center" prop="effectLevel">
         <template #default="{ row: { effectLevel } }">
-          {{ t(`level.${EffectLevelEnum[effectLevel]}`) }}
+          <dict-tag :type="DICT_TYPE.LEVEL" :value="effectLevel" />
         </template>
       </el-table-column>
       <el-table-column label="资产编号" align="center" prop="assetNumber" />
@@ -243,17 +243,12 @@ import {
   // exportRepairArchive,
   type RepairArchive
 } from '@/api/repair'
-import {
-  UsingStatus,
-  EffectLevelEnum,
-  CompanyOptions,
-  CompanyEnum,
-  UsingStatusOptions
-} from '@/api/repair/constant'
+import { UsingStatus, CompanyOptions, CompanyEnum, UsingStatusOptions } from '@/api/repair/constant'
 import ArchiveForm from './ArchiveForm.vue'
 import ScrapForm from './ScrapForm.vue'
 import DistributeForm from './DistributeForm.vue'
 import { isIPV4 } from '@/utils/is'
+import { DICT_TYPE } from '@/utils/dict'
 // import download from '@/utils/download'
 
 /** 运维设备档案 列表 */

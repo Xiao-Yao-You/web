@@ -105,6 +105,7 @@ export enum DICT_TYPE {
   COMMON_STATUS = 'common_status',
   TERMINAL = 'terminal', // 终端
   DATE_INTERVAL = 'date_interval', // 数据间隔
+  LEVEL = 'hk_level', // 通用等级程度（高中低）
 
   // ========== SYSTEM 模块 ==========
   SYSTEM_USER_SEX = 'system_user_sex',
@@ -213,6 +214,7 @@ export enum DICT_TYPE {
   ERP_STOCK_RECORD_BIZ_TYPE = 'erp_stock_record_biz_type', // 库存明细的业务类型
 
   // ========== 运维工单  ==========
-  HK_DEVICE_SCRAP_METHOD = 'hk_device_scrap_method',
-  HK_DEVICE_SCRAP_TYPE = 'hk_device_scrap_type'
+  HK_DEVICE_SCRAP_METHOD = 'hk_device_scrap_method', // 设备报废处理方式
+  HK_DEVICE_SCRAP_TYPE = 'hk_device_scrap_type', // 设备报废类型
+  HK_WORK_ORDER_STATUS = 'hk_work_order_status' // 工单状态
 }

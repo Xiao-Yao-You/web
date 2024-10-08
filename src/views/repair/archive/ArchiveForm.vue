@@ -95,10 +95,10 @@
       <el-form-item label="影响程度" prop="effectLevel">
         <el-select v-model="formData.effectLevel" placeholder="请选择影响程度" clearable>
           <el-option
-            v-for="opt in EffectLevelOptions"
-            :key="opt.value"
-            :label="opt.label"
-            :value="opt.value"
+            v-for="dict in getIntDictOptions(DICT_TYPE.LEVEL)"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
           />
         </el-select>
       </el-form-item>
@@ -180,19 +180,13 @@ import {
 } from '@/api/repair'
 import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
-import { CommonStatusEnum } from '@/utils/constants'
-import {
-  EffectLevelOptions,
-  CompanyOptions,
-  PictureType,
-  CompanyEnum,
-  EffectLevelEnum,
-  UsingStatus
-} from '@/api/repair/constant'
+import { CommonStatusEnum, CommonLevelEnum } from '@/utils/constants'
+import { CompanyOptions, PictureType, CompanyEnum, UsingStatus } from '@/api/repair/constant'
 import { dateTransfer } from '@/views/system/meeting/subscribe/hook/useMeetingStatus'
 import type { AccessoryItem } from '@/api/repair'
 import type { UploadFiles } from 'element-plus'
 import { getSceneCodeAll } from '@/api/system/scenecode'
+import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 
 /** 运维设备档案 表单 */
 defineOptions({ name: 'RepairArchiveForm' })
@@ -218,7 +212,7 @@ const formData = ref({
   macAddress1: '',
   macAddress2: '',
   company: undefined as unknown as CompanyEnum,
-  effectLevel: undefined as unknown as EffectLevelEnum,
+  effectLevel: undefined as unknown as CommonLevelEnum,
   assetNumber: '',
   manufactureDate: '',
   warrantyDate: '',
@@ -324,7 +318,7 @@ const resetForm = () => {
     macAddress1: '',
     macAddress2: '',
     company: undefined as unknown as CompanyEnum,
-    effectLevel: undefined as unknown as EffectLevelEnum,
+    effectLevel: undefined as unknown as CommonLevelEnum,
     assetNumber: '',
     manufactureDate: '',
     warrantyDate: '',

@@ -1,6 +1,8 @@
 import request from '@/config/axios'
-import { IssueTypeEnum, CompanyEnum, EffectLevelEnum, PictureType } from './constant'
+import { IssueTypeEnum, CompanyEnum, PictureType } from './constant'
+import { CommonLevelEnum } from '@/utils/constants'
 
+/** =========== 问题 ============== */
 export interface IssuesAllParams {
   name?: string // 问题类型
 }
@@ -62,6 +64,8 @@ export const getIssueDetail = (id: number) => {
 export const updateIssue = (data: RepairIssue) => {
   return request.put({ url: '/operation-question-type/update', data })
 }
+
+/** =========== 设备类型 ============== */
 
 export type RepairDevicePage = RepairIssuesPage
 
@@ -136,6 +140,8 @@ export const printBatchLabels = (params: Record<'id' | 'num', Numeric>): Promise
   })
 }
 
+/** =========== 地点 ============== */
+
 export interface LocationAllParams extends PageParam {
   addressName?: string
 }
@@ -191,6 +197,8 @@ export const updateLocation = (data: RepairLocation) => {
 export const getLocationDetail = (id: number) => {
   return request.get<RepairLocation>({ url: `/operation-address/get?id=${id}` })
 }
+
+/** =========== 档案 ============== */
 
 export type RepairArchivePage = PageParam &
   Partial<{
@@ -267,7 +275,7 @@ export type ArchivePayload = {
   macAddress1: string
   macAddress2?: string
   company: CompanyEnum
-  effectLevel: EffectLevelEnum
+  effectLevel: CommonLevelEnum
   assetNumber: string
   manufactureDate: string
   warrantyDate: string
@@ -341,4 +349,45 @@ export interface DistributePayload {
 
 export const distributeDevice = (data: DistributePayload) => {
   return request.put({ url: '/operation-device/register', data })
+}
+
+/** =========== 工单 ============== */
+export type RepairOrderPage = PageParam &
+  Partial<{
+    title: string
+    status: string
+    questionType: string
+    level: string
+    submitUserNickName: string
+  }>
+
+export interface RepairOrder {
+  id: number
+  title: string
+  status: string
+  deviceId: number
+  labelCode: string
+  deviceName: string
+  addressId: number
+  location: string
+  submitUserId: number
+  submitUserNickName: string
+  submitUserMobile: string
+  requestType: string
+  questionType: string
+  level: string
+  desc: string
+  type: string
+  sourceType: string
+  dealUserId: number
+  dealUserNickName: string
+  createTime: string
+}
+
+// 获取工单分页
+export const getRepairOrder = (params: RepairOrderPage) => {
+  return request.get<{ list: RepairOrder[]; total: number }>({
+    url: '/operation-order/page',
+    params
+  })
 }

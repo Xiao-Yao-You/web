@@ -1,8 +1,8 @@
 // 问题类型
 export enum IssueTypeEnum {
-  Software,
-  Hardware,
-  Other
+  Software = '0',
+  Hardware = '1',
+  Other = '2'
 }
 
 export const IssueTypeOptions = [
@@ -22,19 +22,6 @@ export const CompanyOptions = [
   { label: '恒科', value: CompanyEnum.HengKe },
   { label: '轩达', value: CompanyEnum.XuanDa },
   { label: '其他', value: CompanyEnum.Other }
-]
-
-// 影响程度
-export enum EffectLevelEnum {
-  Low,
-  Middle,
-  Height
-}
-
-export const EffectLevelOptions = [
-  { label: '高', value: EffectLevelEnum.Height },
-  { label: '中', value: EffectLevelEnum.Middle },
-  { label: '低', value: EffectLevelEnum.Low }
 ]
 
 // 使用状态
