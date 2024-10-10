@@ -5,6 +5,12 @@ export enum IssueTypeEnum {
   Other = '2'
 }
 
+export const IssueTypeLabel = {
+  '0': '软件',
+  '1': '硬件',
+  '2': '其他'
+}
+
 export const IssueTypeOptions = [
   { label: '软件', value: IssueTypeEnum.Software },
   { label: '硬件', value: IssueTypeEnum.Hardware },

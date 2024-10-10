@@ -54,8 +54,7 @@
       <el-form-item label="所在地点" prop="addressId">
         <el-tree-select
           v-model="formData.addressId"
-          :data="repairStore.locationsMenu"
-          :default-expanded-keys="[0]"
+          :data="repairStore.locationsTree"
           :props="{
             label: 'addressName',
             value: 'id'
@@ -96,7 +95,7 @@
 </template>
 <script setup lang="ts">
 import { Calendar } from '@element-plus/icons-vue'
-import { distributeDevice, type DistributePayload } from '@/api/repair'
+import { distributeDevice, getRepairArchive, type DistributePayload } from '@/api/repair'
 import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
 import { PictureType } from '@/api/repair/constant'
 import { useUserStore } from '@/store/modules/user'
@@ -149,11 +148,18 @@ const formRef = ref() // 表单 Ref
 /** 打开弹窗 */
 const open = async ({ code, name, id }) => {
   dialogVisible.value = true
-  Object.assign(formData.value, {
-    id,
-    code,
-    name
-  })
+  formLoading.value = true
+  try {
+    const res = await getRepairArchive(id)
+    console.log('🚀 ~ res:', res)
+    Object.assign(formData.value, {
+      id,
+      code,
+      name
+    })
+  } finally {
+    formLoading.value = false
+  }
 }
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 

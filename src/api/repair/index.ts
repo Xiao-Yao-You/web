@@ -198,7 +198,7 @@ export const getLocationDetail = (id: number) => {
   return request.get<RepairLocation>({ url: `/operation-address/get?id=${id}` })
 }
 
-/** =========== 档案 ============== */
+/** =========== 设备档案 ============== */
 
 export type RepairArchivePage = PageParam &
   Partial<{
@@ -294,7 +294,14 @@ export const getRepairArchivePage = (params: RepairArchivePage) => {
 
 // 查询运维设备档案详情
 export const getRepairArchive = (id: number) => {
-  return request.get({ url: '/operation-device/get?id=' + id })
+  return request.get<RepairArchive>({ url: '/operation-device/get?id=' + id })
+}
+
+// 根据二维码标签号查询设备详情
+export const getArchiveByLabelCode = (labelCode: string) => {
+  return request.get<RepairArchive>({
+    url: '/operation-device/getByLabelCode?labelCode=' + labelCode
+  })
 }
 
 // 新增运维设备档案
@@ -364,30 +371,59 @@ export type RepairOrderPage = PageParam &
 export interface RepairOrder {
   id: number
   title: string
-  status: string
-  deviceId: number
-  labelCode: string
-  deviceName: string
-  addressId: number
-  location: string
-  submitUserId: number
+  labelCode?: string // 二维码标签号
+  deviceName?: string // 设备名称
+  addressId: number // 设备地点
+  location: string // 设备位置
+  submitUserId: number // 报修人
   submitUserNickName: string
-  submitUserMobile: string
-  requestType: string
-  questionType: string
-  level: string
+  submitUserMobile: string // 报修人电话
+  requestType: string // 请求（问题）类型
+  questionType: string // 问题管理中的某个具体问题的 id
+  level: CommonLevelEnum // 紧急程度
   desc: string
-  type: string
-  sourceType: string
-  dealUserId: number
-  dealUserNickName: string
-  createTime: string
+  [key: string]: any
 }
 
 // 获取工单分页
-export const getRepairOrder = (params: RepairOrderPage) => {
+export const getRepairOrderPage = (params: RepairOrderPage) => {
   return request.get<{ list: RepairOrder[]; total: number }>({
     url: '/operation-order/page',
     params
   })
+}
+
+export interface OrderPayload {
+  id?: number
+  title: string
+  labelCode?: string
+  deviceName: string
+  deviceId?: number
+  addressId: number
+  location: string
+  submitUserId: number
+  submitUserMobile: string
+  requestType: string
+  questionType: number
+  level: CommonLevelEnum
+  description: string
+  // status: string
+  // submitUserNickName: string
+  // type: string
+  // sourceType: string
+  // dealUserId: number
+  // dealUserNickName: string
+}
+
+// 创建工单
+export const createRepairOrder = (data: OrderPayload) => {
+  return request.post({
+    url: '/operation-order/create',
+    data
+  })
+}
+
+// 查询工单详情
+export const getRepairOrder = (id: number) => {
+  return request.get<RepairOrder>({ url: '/operation-order/get?id=' + id })
 }

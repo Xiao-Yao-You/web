@@ -52,7 +52,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="问题描述" prop="status">
+      <el-form-item label="问题描述" prop="description">
         <el-input
           v-model="formData.description"
           placeholder="请输入问题描述"
