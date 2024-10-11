@@ -106,7 +106,7 @@ onMounted(() => {
       <el-table-column label="问题名称" prop="name" show-overflow-tooltip width="250" />
       <el-table-column label="问题类型" align="center" prop="type">
         <template #default="{ row: { type } }">
-          {{ IssueTypeOptions[type].label }}
+          {{ type ? IssueTypeOptions[type].label : '/' }}
         </template>
       </el-table-column>
       <el-table-column label="设备类型" align="center" prop="deviceTypeName" />
