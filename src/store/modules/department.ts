@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { store } from '../index'
 import { handleTree } from '@/utils/tree'
 import { getSimpleDeptList, type DeptVO } from '@/api/system/dept'
-import { TOP_DEPARTMENT_ID } from '@/utils/constants'
+import { DEPARTMENT_ID } from '@/utils/constants'
 
 interface DeptState {
   deptList: DeptVO[]
@@ -22,7 +22,7 @@ export const useDeptStore = defineStore('dept', {
     // 一级部门选择列表
     topDeptOptions(state) {
       return state.deptList
-        .filter((item) => item.parentId === TOP_DEPARTMENT_ID)
+        .filter((item) => item.parentId === DEPARTMENT_ID.TOP)
         .map((item) => ({
           label: item.name,
           value: item.id

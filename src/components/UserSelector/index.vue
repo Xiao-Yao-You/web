@@ -7,7 +7,7 @@ import { handleTree } from '@/utils/tree'
 import { useIcon } from '@/hooks/web/useIcon'
 import { remove } from 'lodash-es'
 import { isUnDef } from '@/utils/is'
-import { TOP_DEPARTMENT_ID } from '@/utils/constants'
+import { DEPARTMENT_ID } from '@/utils/constants'
 
 interface QueryParams extends PageParam {
   nickname: undefined | string
@@ -35,8 +35,8 @@ const CloseIcon = useIcon({ icon: 'ep:circle-close' })
 
 //#region 部门树相关
 const deptName = ref('')
-const expandedKeys = ref([TOP_DEPARTMENT_ID])
-const checkedKeys = ref([TOP_DEPARTMENT_ID])
+const expandedKeys = ref([DEPARTMENT_ID.TOP])
+const checkedKeys = ref([DEPARTMENT_ID.TOP])
 const treeRef = ref<InstanceType<typeof ElTree>>()
 const deptList = ref<Tree[]>([]) // 树形结构
 const queryParams = reactive<QueryParams>({
@@ -162,7 +162,7 @@ const open = () => {
 
   // 设置初始的 deptId，获取对应人员列表
   if (isUnDef(queryParams.deptId)) {
-    queryParams.deptId = TOP_DEPARTMENT_ID
+    queryParams.deptId = DEPARTMENT_ID.TOP
     getMembers()
   }
 

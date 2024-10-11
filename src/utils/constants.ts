@@ -4,8 +4,11 @@
  * 枚举类
  */
 
-// 部门顶层节点（南通信改）
-export const TOP_DEPARTMENT_ID = 499
+// 用到的常量部门 ID
+export const DEPARTMENT_ID = {
+  TOP: 499, // 顶层主类目（南通恒科新材料有限公司）
+  INFORMATION: 732 // 信息部
+}
 
 // ========== COMMON 模块 ==========
 export enum CommonLevelEnum {
