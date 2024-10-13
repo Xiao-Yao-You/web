@@ -54,7 +54,8 @@ export default {
     updateTime: 'Update Time',
     copy: 'Copy',
     copySuccess: 'Copy Success',
-    copyError: 'Copy Error'
+    copyError: 'Copy Error',
+    notSpace: 'No Space'
   },
   lock: {
     lockScreen: 'Lock screen',

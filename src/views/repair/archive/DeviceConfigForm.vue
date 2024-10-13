@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useValidator } from '@/hooks/web/useValidator'
 import type { AccessoryItem } from '@/api/repair'
 
 defineOptions({
@@ -9,6 +10,8 @@ const emit = defineEmits<{
   confirm: [form: AccessoryItem]
 }>()
 
+const { notSpace } = useValidator()
+
 const dialogVisible = ref(false)
 const formRef = ref()
 const formData = ref({
@@ -18,8 +21,8 @@ const formData = ref({
   remark: '' // 备注
 })
 const formRules = reactive({
-  accessoryDesc: [{ required: true, message: '配件不能为空', trigger: 'blur' }],
-  model: [{ required: true, message: '型号不能为空', trigger: 'blur' }]
+  accessoryDesc: [{ required: true, message: '配件不能为空', trigger: 'blur' }, notSpace()],
+  model: [{ required: true, message: '型号不能为空', trigger: 'blur' }, notSpace()]
 })
 
 const open = () => {
