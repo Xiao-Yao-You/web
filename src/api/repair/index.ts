@@ -259,15 +259,16 @@ export interface RepairArchive {
   registerUserId: number // 设备分配登记人
   registerUserName: number // 设备分配登记人
   registerDate: number // 设备分配登记时间
-  scrapDate: Date // 报废时间
+  scrapDate: number[] // 报废时间
   scrapType: string // 报废类型
   scrapUserId: number // 报废处理人
-  scrapDealTyep: string // 报废处理方式
+  scrapUserName: string // 报废处理人
+  scrapDealType: string // 报废处理方式
   scrapRemark: string // 报废说明
   pictureList: PictureItem[]
   devicePictureList: PictureItem[] // 设备图片
   distributePictureList: PictureItem[] // 现场图片
-  scrapPic: PictureItem[] // 报废图片
+  scrapPictureList: PictureItem[] // 报废图片
   accessoryList: AccessoryItem[]
 }
 

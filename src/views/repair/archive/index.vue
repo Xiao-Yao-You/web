@@ -203,12 +203,8 @@
           >
             分配
           </el-button>
-          <el-button
-            link
-            type="primary"
-            @click="openScrapForm(row)"
-            :disabled="row.status === UsingStatus.Scrap"
-          >
+          <el-button link type="primary" @click="openScrapForm(row)">
+            <!-- :disabled="row.status === UsingStatus.Scrap" -->
             报废
           </el-button>
           <el-button link type="danger" @click="handleDelete(row.id)"> 删除 </el-button>
@@ -350,8 +346,8 @@ const handleDelete = async (id: number) => {
 
 /** 报废 */
 const scrapRef = ref()
-const openScrapForm = ({ code, name, id }: RepairArchive) => {
-  scrapRef.value.open({ code, name, id })
+const openScrapForm = ({ code, name, id, status }: RepairArchive) => {
+  scrapRef.value.open({ code, name, id, status })
 }
 
 /** 分配 */

@@ -1,10 +1,10 @@
 <template>
   <Dialog
-    title="设备报废"
+    :title="`设备报废${isScrapped ? '信息' : ''}`"
     v-model="dialogVisible"
     scroll
-    :close-on-click-modal="false"
-    :close-on-press-escape="false"
+    :close-on-click-modal="isScrapped"
+    :close-on-press-escape="isScrapped"
   >
     <el-form
       ref="formRef"
@@ -12,6 +12,7 @@
       :rules="formRules"
       label-width="100px"
       v-loading="formLoading"
+      :disabled="isScrapped"
     >
       <el-form-item label="设备名称" prop="name">
         <el-input :model-value="formData.name" disabled />
@@ -54,8 +55,10 @@
       <el-form-item label="报废说明" prop="scrapRemark">
         <el-input
           v-model="formData.scrapRemark"
+          type="textarea"
+          :rows="2"
           placeholder="请输入报废说明"
-          maxlength="20"
+          maxlength="200"
           show-word-limit
         />
       </el-form-item>
@@ -70,12 +73,13 @@
   </Dialog>
 </template>
 <script setup lang="ts">
-import { scrapDevice } from '@/api/repair'
+import { scrapDevice, getRepairArchive } from '@/api/repair'
 import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
-import { PictureType } from '@/api/repair/constant'
+import { PictureType, UsingStatus } from '@/api/repair/constant'
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import { useUserStore } from '@/store/modules/user'
 import { formatDate } from '@/utils/formatTime'
+import { dateTransfer } from '@/views/system/meeting/subscribe/hook/useMeetingStatus'
 import type { UserVO } from '@/store/modules/user'
 import type { UploadFiles } from 'element-plus'
 
@@ -87,6 +91,7 @@ const userInfo = useUserStore().getUser
 
 const dialogVisible = ref(false) // 弹窗的是否展示
 const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
+const isScrapped = ref()
 const formData = ref({
   id: undefined as unknown as number,
   code: '',
@@ -107,8 +112,10 @@ const formRules = reactive({
 const formRef = ref() // 表单 Ref
 
 /** 打开弹窗 */
-const open = async ({ code, name, id }) => {
+const open = async ({ code, name, id, status }) => {
+  resetForm()
   dialogVisible.value = true
+  isScrapped.value = status === UsingStatus.Scrap
   Object.assign(formData.value, {
     id,
     code,
@@ -118,6 +125,22 @@ const open = async ({ code, name, id }) => {
       nickname: userInfo.nickname
     }
   })
+  // 已报废则回显报废信息
+  if (isScrapped.value) {
+    try {
+      const res = await getRepairArchive(id)
+      Object.assign(formData.value, {
+        scrapDate: dateTransfer(res.scrapDate),
+        scrapType: +res.scrapType,
+        scrapUser: { id: res.scrapUserId, nickname: res.scrapUserName },
+        scrapDealType: +res.scrapDealType,
+        scrapRemark: res.scrapRemark,
+        pictureList: res.scrapPictureList
+      })
+    } finally {
+      formLoading.value = false
+    }
+  }
 }
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 
@@ -140,7 +163,6 @@ const submitForm = async () => {
     await scrapDevice(data)
     message.success('设备报废成功')
     dialogVisible.value = false
-    resetForm()
     emit('success')
   } finally {
     formLoading.value = false

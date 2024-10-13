@@ -135,6 +135,7 @@ const formRef = ref() // 表单 Ref
 
 /** 打开弹窗 */
 const open = async ({ code, name, id }) => {
+  resetForm()
   dialogVisible.value = true
   formLoading.value = true
   try {
@@ -150,7 +151,7 @@ const open = async ({ code, name, id }) => {
       location: res.location,
       ip1: res.ip1,
       ip2: res.ip2,
-      pictureList: res.distributePictureList
+      pictureList: res.distributePictureList || []
     })
   } finally {
     formLoading.value = false
@@ -192,7 +193,6 @@ const submitForm = async () => {
     await distributeDevice(data)
     message.success('设备分配成功')
     dialogVisible.value = false
-    resetForm()
     emit('success')
   } finally {
     formLoading.value = false
