@@ -19,7 +19,7 @@
           class="!w-150px"
         >
           <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.HK_WORK_ORDER_STATUS)"
+            v-for="dict in getIntDictOptions(DICT_TYPE.REPAIR_ORDER_HANDLE_TYPE)"
             :key="dict.value"
             :label="dict.label"
             :value="dict.value"
@@ -78,7 +78,7 @@
       <el-table-column label="工单标题" prop="title" width="120" fixed="left" />
       <el-table-column label="工单状态" align="center" prop="status" width="100" fixed="left">
         <template #default="{ row: { status } }">
-          <dict-tag :type="DICT_TYPE.HK_WORK_ORDER_STATUS" :value="status" />
+          <dict-tag :type="DICT_TYPE.REPAIR_ORDER_HANDLE_TYPE" :value="status" />
         </template>
       </el-table-column>
       <el-table-column label="工单编号" align="center" prop="code" />
@@ -116,8 +116,8 @@
           <el-button link type="primary" @click="receiveOrder(row.id)">领单</el-button>
           <el-button link type="primary" @click="openTransferForm(row)">转交</el-button>
           <el-button link type="primary" @click="openStartForm(row.id)">开始</el-button>
-          <el-button link type="primary">挂起</el-button>
-          <el-button link type="primary">完成</el-button>
+          <el-button link type="primary" @click="onHangUp(row)">挂起</el-button>
+          <el-button link type="primary" @click="openCompleteForm(row.id)">完成</el-button>
           <el-button link type="danger" @click="handleRevoke(row.id)">撤销</el-button>
           <!-- <el-button link type="primary">流转记录</el-button> -->
         </template>
@@ -143,6 +143,9 @@
 
   <!-- 开始 -->
   <OrderStartForm ref="startRef" @success="getList" />
+
+  <!-- 结束 -->
+  <OrderCompleteForm ref="completeRef" @success="getList" />
 </template>
 
 <script setup lang="ts">
@@ -150,6 +153,7 @@ import { ElMessageBox } from 'element-plus'
 import OrderForm from './OrderForm.vue'
 import OrderDispatchForm from './OrderDispatchForm.vue'
 import OrderTransferForm from './OrderTransferForm.vue'
+import OrderCompleteForm from './OrderCompleteForm.vue'
 import OrderStartForm from './OrderStartForm.vue'
 import { getRepairOrderPage, handleRepairOrder, type RepairOrder } from '@/api/repair'
 import { IssueTypeLabel, OperateType } from '@/api/repair/constant'
@@ -185,7 +189,11 @@ const getList = async () => {
   await queryFormRef.value.validate()
   loading.value = true
   try {
-    const data = await getRepairOrderPage(queryParams)
+    const { status, ...rest } = queryParams
+    const data = await getRepairOrderPage({
+      ...rest,
+      status: status ? '0' + status : undefined
+    })
     list.value = data.list
     total.value = data.total
   } finally {
@@ -280,7 +288,34 @@ const openStartForm = (id: number) => {
   startRef.value.open(id)
 }
 
+/** 挂起 */
+const onHangUp = ({ title, id }: RepairOrder) => {
+  ElMessageBox.confirm(`确定挂起 “${title}” 的工单`, '系统提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    beforeClose(action, instance, done) {
+      if (action === 'confirm') {
+        instance.confirmButtonLoading = true
+        handleRepairOrder({ id, operateType: OperateType.HangUp })
+          .then(() => {
+            message.success('挂起成功')
+            done()
+          })
+          .finally(() => {
+            instance.confirmButtonLoading = false
+          })
+      } else {
+        done()
+      }
+    }
+  })
+}
+
 /** 完成 */
+const completeRef = ref()
+const openCompleteForm = ({ id, code, status }: RepairOrder) => {
+  completeRef.value.open({ id, code, status })
+}
 
 onMounted(() => {
   repairStore.fetchIssuesAll()

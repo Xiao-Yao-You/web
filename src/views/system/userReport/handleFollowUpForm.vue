@@ -60,7 +60,6 @@
 <script setup lang="ts">
 import { UserReportApi, UserReportVO, type workProgress } from '@/api/system/userReport'
 import { getDeptsByUserId } from '@/api/system/dept'
-import { useUserStore } from '@/store/modules/user'
 import { defaultProps, handleTree } from '@/utils/tree'
 import dayjs from 'dayjs'
 import { isArray } from '../../../utils/is'
@@ -78,7 +77,6 @@ const dialogTitle = ref('') // 弹窗的标题
 const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
 const formType = ref('') // 表单的类型：create - 新增；update - 修改
 const selectObj = ref()
-const userInfo = useUserStore().getUser
 const formData = ref({} as workProgress)
 const formRules = reactive({
   userNickName: [{ required: true, message: '汇报人不能为空', trigger: 'blur' }],

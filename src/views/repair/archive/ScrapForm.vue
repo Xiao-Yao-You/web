@@ -35,7 +35,7 @@
       <el-form-item label="报废类型" prop="scrapType">
         <el-select v-model="formData.scrapType" placeholder="请选择报废类型" clearable>
           <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.HK_DEVICE_SCRAP_TYPE)"
+            v-for="dict in getIntDictOptions(DICT_TYPE.REPAIR_DEVICE_SCRAP_TYPE)"
             :key="dict.value"
             :label="dict.label"
             :value="dict.value"
@@ -45,7 +45,7 @@
       <el-form-item label="处理方式" prop="scrapDealType">
         <el-select v-model="formData.scrapDealType" placeholder="请选择处理方式" clearable>
           <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.HK_DEVICE_SCRAP_METHOD)"
+            v-for="dict in getIntDictOptions(DICT_TYPE.REPAIR_DEVICE_SCRAP_METHOD)"
             :key="dict.value"
             :label="dict.label"
             :value="dict.value"
