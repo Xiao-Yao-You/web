@@ -216,6 +216,7 @@ export type RepairArchivePage = PageParam &
 export type PictureItem = {
   id?: number
   deviceId?: number
+  name?: string
   type: PictureType
   url: string
 }
@@ -245,8 +246,8 @@ export interface RepairArchive {
   assetNumber: string // 资产编号
   macAddress1: string // mac地址1
   macAddress2: string // mac地址2
-  manufactureDate: Date // 生产日期
-  warrantyDate: Date // 质保日期
+  manufactureDate: number[] // 生产日期
+  warrantyDate: number[] // 质保日期
   needCheckFlag: number // 是否需要巡检，0:是 1:否
   deptId: number // 设备部门
   deptName: string // 设备部门名称
@@ -256,12 +257,15 @@ export interface RepairArchive {
   ip1: string // ip1
   ip2: string // ip2
   registerUserId: number // 设备分配登记人
-  registerDate: Date // 设备分配登记时间
+  registerUserName: number // 设备分配登记人
+  registerDate: number[] // 设备分配登记时间
   scrapDate: Date // 报废时间
   scrapType: string // 报废类型
   scrapUserId: number // 报废处理人
   scrapDealTyep: string // 报废处理方式
   scrapRemark: string // 报废说明
+  pictureList: PictureItem[]
+  accessoryList: AccessoryItem[]
 }
 
 export type ArchivePayload = {
@@ -426,4 +430,24 @@ export const createRepairOrder = (data: OrderPayload) => {
 // 查询工单详情
 export const getRepairOrder = (id: number) => {
   return request.get<RepairOrder>({ url: '/operation-order/get?id=' + id })
+}
+
+// 删除工单
+export const deleteRepairOrder = (id: number) => {
+  return request.delete({ url: '/operation-order/delete?id=' + id })
+}
+
+// 处理工单
+export interface HandlePayload {
+  id: number
+  operateType: string
+  code?: string
+  userId?: number
+  userNickName?: string
+  url?: PictureItem[]
+  remark?: string
+}
+
+export const handleRepairOrder = (data: HandlePayload) => {
+  return request.put({ url: '/operation-order/operateOrder', data })
 }

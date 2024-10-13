@@ -38,7 +38,12 @@
           value-key="id"
           clearable
         >
-          <el-option v-for="item in userList" :key="item.id" :label="item.nickname" :value="item" />
+          <el-option
+            v-for="item in employeeStore.infoEmployees"
+            :key="item.id"
+            :label="item.nickname"
+            :value="item"
+          />
         </el-select>
       </el-form-item>
       <el-form-item label="区域软件负责人" prop="softUser">
@@ -49,7 +54,12 @@
           value-key="id"
           clearable
         >
-          <el-option v-for="item in userList" :key="item.id" :label="item.nickname" :value="item" />
+          <el-option
+            v-for="item in employeeStore.infoEmployees"
+            :key="item.id"
+            :label="item.nickname"
+            :value="item"
+          />
         </el-select>
       </el-form-item>
       <el-form-item label="启用状态" prop="status">
@@ -81,8 +91,9 @@ import {
   type LocationPayload
 } from '@/api/repair'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
+import { useEmployeeStoreWithOut } from '@/store/modules/employee'
 import { CommonStatusEnum } from '@/utils/constants'
-import { getUserPage, type UserVO } from '@/api/system/user'
+import { type UserVO } from '@/api/system/user'
 
 /** 会议室管理 表单 */
 defineOptions({ name: 'RepairLocationForm' })
@@ -91,6 +102,7 @@ const { t } = useI18n() // 国际化
 const message = useMessage() // 消息弹窗
 
 const repairStore = useRepairStoreWithOut()
+const employeeStore = useEmployeeStoreWithOut()
 
 const dialogVisible = ref(false) // 弹窗的是否展示
 const dialogTitle = ref('') // 弹窗的标题
@@ -111,7 +123,6 @@ const formRules = reactive({
   hardwareUser: [{ required: true, message: '硬件负责人不能为空', trigger: 'blur' }]
 })
 const formRef = ref() // 表单 Ref
-const userList = ref<UserVO[]>([]) // 信息部人员列表
 
 // 打开弹窗
 const open = async (type: string, id?: number) => {
@@ -200,12 +211,6 @@ const resetForm = () => {
 }
 
 onMounted(() => {
-  getUserPage({
-    pageNo: 1,
-    pageSize: 50,
-    deptId: 732
-  }).then((data) => {
-    userList.value = data.list
-  })
+  employeeStore.fetchInfoEmployees()
 })
 </script>

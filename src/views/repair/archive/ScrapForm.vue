@@ -132,7 +132,7 @@ const submitForm = async () => {
     pictureList: pictureList.map((p) => ({
       name: p.name,
       url: p.url!,
-      type: PictureType.Device
+      type: PictureType.Scrap
     }))
   }
   formLoading.value = true

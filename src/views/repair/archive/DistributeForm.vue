@@ -104,6 +104,7 @@ import { useRepairStoreWithOut } from '@/store/modules/repair'
 import { formatDate } from '@/utils/formatTime'
 import { isIPV4 } from '@/utils/is'
 import { getAll } from '@/api/system/user'
+import { dateTransfer } from '@/views/system/meeting/subscribe/hook/useMeetingStatus'
 import type { UploadFiles } from 'element-plus'
 
 /** 分配表单 */
@@ -151,11 +152,21 @@ const open = async ({ code, name, id }) => {
   formLoading.value = true
   try {
     const res = await getRepairArchive(id)
-    console.log('🚀 ~ res:', res)
+    // 兼容再分配时，获取之前的分配信息
+
     Object.assign(formData.value, {
       id,
       code,
-      name
+      name,
+      dept: { value: res.deptId, label: res.deptName },
+      userId: res.userId,
+      addressId: res.addressId,
+      location: res.location,
+      ip1: res.ip1,
+      ip2: res.ip2,
+      registerUser: { id: res.registerUserId, nickname: res.registerUserName },
+      registerDate: dateTransfer(res.registerDate),
+      pictureList: res.pictureList
     })
   } finally {
     formLoading.value = false
@@ -190,7 +201,7 @@ const submitForm = async () => {
     pictureList: pictureList.map((p) => ({
       name: p.name,
       url: p.url!,
-      type: PictureType.Device
+      type: PictureType.Scene
     }))
   }
   formLoading.value = true

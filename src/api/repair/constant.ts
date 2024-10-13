@@ -49,3 +49,25 @@ export enum PictureType {
   Scene, // 现场照片
   Scrap // 报废照片
 }
+
+// 工单处理类型
+export enum OperateType {
+  Dispatch = '00',
+  Receive = '01',
+  Transfer = '02',
+  Confirm = '03',
+  HangUp = '04',
+  Finish = '05',
+  NoHandle = '0501',
+  UnableFix = '0502',
+  Revoke = '06',
+  '00' = '派单',
+  '01' = '领单',
+  '02' = '转交',
+  '03' = '现场确认',
+  '04' = '挂起',
+  '05' = '已完成',
+  '0501' = '无需处理',
+  '0502' = '无法排除故障',
+  '06' = '撤销'
+}

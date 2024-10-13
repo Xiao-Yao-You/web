@@ -56,6 +56,7 @@
           check-strictly
           node-key="id"
           placeholder="请选择设备所在地点"
+          disabled
         />
       </el-form-item>
       <el-form-item label="设备具体位置" prop="location">
@@ -64,6 +65,7 @@
           placeholder="请输入设备具体位置"
           maxlength="20"
           show-word-limit
+          disabled
         />
       </el-form-item>
       <el-form-item label="报修人" prop="submitUserId">
@@ -149,7 +151,7 @@ import { getAll } from '@/api/system/user'
 import { createRepairOrder, getRepairOrder, getArchiveByLabelCode } from '@/api/repair'
 import { isMobilePhone } from '@/utils/is'
 import { CommonLevelEnum } from '@/utils/constants'
-import type { ElFormItem } from 'element-plus'
+import type { ElFormItem, FormInstance } from 'element-plus'
 
 defineOptions({
   name: 'OrderForm'
@@ -161,7 +163,7 @@ const repairStore = useRepairStoreWithOut()
 
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
-const formRef = ref()
+const formRef = ref<FormInstance>()
 const formLoading = ref(false)
 const formType = ref('') // create、detail
 const formData = ref({
@@ -182,6 +184,7 @@ const formData = ref({
 })
 const formRules = reactive({
   title: [{ required: true, message: '工单标题不能为空', trigger: 'blur' }],
+  labelCode: [{ required: true, message: '二维码标签不能为空', trigger: 'blur' }],
   deviceName: [{ required: true, message: '设备名称不能为空', trigger: 'blur' }],
   addressId: [{ required: true, message: '设备地点不能为空', trigger: 'blur' }],
   location: [{ required: true, message: '设备位置不能为空', trigger: 'blur' }],
@@ -231,8 +234,13 @@ const onLabelChange = async (value: string) => {
     try {
       const info = await getArchiveByLabelCode(value)
       if (!info) throw new Error('not found')
-      formData.value.deviceName = info.name
-      formData.value.deviceId = info.id
+      Object.assign(formData.value, {
+        deviceName: info.name,
+        deviceId: info.id,
+        addressId: info.addressId,
+        location: info.location
+      })
+      formRef.value?.validateField('deviceName')
     } catch (e) {
       disabled.value = false
       labelRef.value!.validateMessage = '当前二维码不存在'
@@ -264,7 +272,7 @@ const searchRemoteUser = async (query: string) => {
 /** 提交表单 */
 const emit = defineEmits(['success'])
 const submitForm = async () => {
-  await formRef.value.validate()
+  await formRef.value?.validate()
   const { code, ...data } = formData.value
   formLoading.value = true
   try {
@@ -302,10 +310,4 @@ const resetForm = () => {
   }
   formRef.value?.resetFields()
 }
-
-onMounted(() => {
-  repairStore.fetchLocationsAll()
-})
 </script>
-
-<style scoped></style>

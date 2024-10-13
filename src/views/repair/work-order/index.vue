@@ -87,7 +87,7 @@
           {{ IssueTypeLabel[scope.row.requestType] }}
         </template>
       </el-table-column>
-      <el-table-column label="问题类型" align="center" prop="questionType" />
+      <el-table-column label="问题类型" align="center" prop="questionTypeStr" width="100" />
       <el-table-column label="紧急程度" align="center" prop="level">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.LEVEL" :value="scope.row.level" />
@@ -110,15 +110,15 @@
       <el-table-column label="完成时间" align="center" prop="completeTime" />
       <!-- <el-table-column label="服务评分" align="center" prop="" /> -->
       <el-table-column label="操作" align="center" fixed="right" min-width="400">
-        <template #default="{ row: { id } }">
-          <el-button link type="primary" @click="openForm('detail', id)"> 详情 </el-button>
-          <el-button link type="primary">派单</el-button>
-          <el-button link type="primary">领单</el-button>
-          <el-button link type="primary">转交</el-button>
-          <el-button link type="primary">开始</el-button>
+        <template #default="{ row }">
+          <el-button link type="primary" @click="openForm('detail', row.id)">详情</el-button>
+          <el-button link type="primary" @click="openDispatchForm(row)">派单</el-button>
+          <el-button link type="primary" @click="receiveOrder(row.id)">领单</el-button>
+          <el-button link type="primary" @click="openTransferForm(row)">转交</el-button>
+          <el-button link type="primary" @click="openStartForm(row.id)">开始</el-button>
           <el-button link type="primary">挂起</el-button>
           <el-button link type="primary">完成</el-button>
-          <el-button link type="danger">撤销</el-button>
+          <el-button link type="danger" @click="handleRevoke(row.id)">撤销</el-button>
           <!-- <el-button link type="primary">流转记录</el-button> -->
         </template>
       </el-table-column>
@@ -134,22 +134,38 @@
 
   <!-- 新增、编辑表单 -->
   <OrderForm ref="formRef" @success="getList" />
+
+  <!-- 派单 -->
+  <OrderDispatchForm ref="dispatchRef" @success="getList" />
+
+  <!-- 转交 -->
+  <OrderTransferForm ref="transferRef" @success="getList" />
+
+  <!-- 开始 -->
+  <OrderStartForm ref="startRef" @success="getList" />
 </template>
 
 <script setup lang="ts">
+import { ElMessageBox } from 'element-plus'
 import OrderForm from './OrderForm.vue'
-import { getRepairOrderPage, type RepairOrder } from '@/api/repair'
-import { IssueTypeLabel } from '@/api/repair/constant'
+import OrderDispatchForm from './OrderDispatchForm.vue'
+import OrderTransferForm from './OrderTransferForm.vue'
+import OrderStartForm from './OrderStartForm.vue'
+import { getRepairOrderPage, handleRepairOrder, type RepairOrder } from '@/api/repair'
+import { IssueTypeLabel, OperateType } from '@/api/repair/constant'
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
 import { defaultProps } from '@/utils/tree'
 import { formatDate } from '@/utils/formatTime'
+import { useEmployeeStoreWithOut } from '@/store/modules/employee'
 
 defineOptions({
   name: 'RepairWorkOrder'
 })
 
+const message = useMessage()
 const repairStore = useRepairStoreWithOut()
+const employeeStore = useEmployeeStoreWithOut()
 
 const loading = ref(true)
 const list = ref<RepairOrder[]>([])
@@ -195,10 +211,81 @@ const openForm = (type: string, id?: number) => {
   formRef.value.open(type, id)
 }
 
+/** 撤销 */
+const handleRevoke = async (id: number) => {
+  ElMessageBox.prompt('请输入撤销原因', '系统提示', {
+    confirmButtonText: '撤销',
+    cancelButtonText: '取消',
+    beforeClose(action, instance, done) {
+      if (action === 'confirm') {
+        instance.confirmButtonLoading = true
+        handleRepairOrder({ id, operateType: OperateType.Revoke })
+          .then(() => {
+            message.success('撤销成功')
+            done()
+            handleQuery()
+          })
+          .finally(() => {
+            instance.confirmButtonLoading = false
+          })
+      } else {
+        done()
+      }
+    }
+  })
+}
+
+/** 派单 */
+const dispatchRef = ref()
+const openDispatchForm = (row: RepairOrder) => {
+  dispatchRef.value.open({ id: row.id, code: row.code })
+}
+
+/** 领单 */
+const receiveOrder = (id: number) => {
+  ElMessageBox.confirm('领单后将开始记录工单处置时长，是否确定领单并开始执行工单？', '系统提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    beforeClose(action, instance, done) {
+      if (action === 'confirm') {
+        instance.confirmButtonLoading = true
+        handleRepairOrder({ id, operateType: OperateType.Receive })
+          .then(() => {
+            message.success('领单成功')
+            done()
+          })
+          .finally(() => {
+            instance.confirmButtonLoading = false
+          })
+      } else {
+        done()
+      }
+    }
+  })
+}
+
+/** 工单转交 */
+const transferRef = ref()
+const openTransferForm = (row: RepairOrder) => {
+  transferRef.value.open({
+    id: row.id,
+    code: row.code,
+    questionType: row.questionType
+  })
+}
+
+/** 开始接单 */
+const startRef = ref()
+const openStartForm = (id: number) => {
+  startRef.value.open(id)
+}
+
+/** 完成 */
+
 onMounted(() => {
   repairStore.fetchIssuesAll()
+  repairStore.fetchLocationsAll()
+  employeeStore.fetchInfoEmployees()
   getList()
 })
 </script>
-
-<style scoped></style>

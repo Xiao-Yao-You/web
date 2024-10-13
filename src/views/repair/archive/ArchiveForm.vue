@@ -184,7 +184,7 @@ import { CommonStatusEnum, CommonLevelEnum } from '@/utils/constants'
 import { CompanyOptions, PictureType, CompanyEnum, UsingStatus } from '@/api/repair/constant'
 import { dateTransfer } from '@/views/system/meeting/subscribe/hook/useMeetingStatus'
 import type { AccessoryItem } from '@/api/repair'
-import type { UploadFiles } from 'element-plus'
+import type { UploadFile, UploadFiles } from 'element-plus'
 import { getSceneCodeAll } from '@/api/system/scenecode'
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 
@@ -202,8 +202,8 @@ const numberNameOptions = ref<OptionItem[]>([]) // 编码规则选择项
 const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
 const formType = ref('') // 表单的类型：create - 新增；update - 修改
 const formData = ref({
-  id: undefined,
-  code: undefined,
+  id: undefined as unknown as number,
+  code: undefined as unknown as string,
   name: '',
   deviceType: undefined as unknown as OptionItem<number>,
   model: '',
@@ -254,8 +254,16 @@ const open = async (type: string, id?: number) => {
   if (id) {
     formLoading.value = true
     try {
-      const { manufactureDate, warrantyDate, deviceType, deviceTypeName, effectLevel, ...rest } =
-        await getRepairArchive(id)
+      const {
+        manufactureDate,
+        warrantyDate,
+        deviceType,
+        deviceTypeName,
+        effectLevel,
+        pictureList,
+        ...rest
+      } = await getRepairArchive(id)
+
       formData.value = {
         manufactureDate: dateTransfer(manufactureDate).format('YYYY-MM-DD'),
         warrantyDate: dateTransfer(warrantyDate).format('YYYY-MM-DD'),
@@ -264,6 +272,7 @@ const open = async (type: string, id?: number) => {
           label: deviceTypeName
         },
         effectLevel: Number(effectLevel),
+        pictureList: pictureList.map((p) => ({ url: p.url, name: p?.name }) as UploadFile),
         ...rest
       }
     } finally {
@@ -308,8 +317,8 @@ const submitForm = async () => {
 /** 重置表单 */
 const resetForm = () => {
   formData.value = {
-    id: undefined,
-    code: undefined,
+    id: undefined as unknown as number,
+    code: undefined as unknown as string,
     name: '',
     deviceType: undefined as unknown as OptionItem<number>,
     model: '',
