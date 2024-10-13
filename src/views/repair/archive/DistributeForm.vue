@@ -104,7 +104,6 @@ import { useRepairStoreWithOut } from '@/store/modules/repair'
 import { formatDate } from '@/utils/formatTime'
 import { isIPV4 } from '@/utils/is'
 import { getAll } from '@/api/system/user'
-import { dateTransfer } from '@/views/system/meeting/subscribe/hook/useMeetingStatus'
 import type { UploadFiles } from 'element-plus'
 
 /** 分配表单 */
@@ -164,8 +163,7 @@ const open = async ({ code, name, id }) => {
       location: res.location,
       ip1: res.ip1,
       ip2: res.ip2,
-      registerUser: { id: res.registerUserId, nickname: res.registerUserName },
-      registerDate: dateTransfer(res.registerDate),
+      registerDate: formatDate(res.registerDate),
       pictureList: res.pictureList
     })
   } finally {

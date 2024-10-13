@@ -258,7 +258,7 @@ export interface RepairArchive {
   ip2: string // ip2
   registerUserId: number // 设备分配登记人
   registerUserName: number // 设备分配登记人
-  registerDate: number[] // 设备分配登记时间
+  registerDate: number // 设备分配登记时间
   scrapDate: Date // 报废时间
   scrapType: string // 报废类型
   scrapUserId: number // 报废处理人
