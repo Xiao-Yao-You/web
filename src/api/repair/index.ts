@@ -265,6 +265,9 @@ export interface RepairArchive {
   scrapDealTyep: string // 报废处理方式
   scrapRemark: string // 报废说明
   pictureList: PictureItem[]
+  devicePictureList: PictureItem[] // 设备图片
+  distributePictureList: PictureItem[] // 现场图片
+  scrapPic: PictureItem[] // 报废图片
   accessoryList: AccessoryItem[]
 }
 
@@ -353,8 +356,6 @@ export interface DistributePayload {
   location: string
   ip1: string
   ip2: string
-  registerUserId: number
-  registerDate: string
   pictureList: PictureItem[]
 }
 

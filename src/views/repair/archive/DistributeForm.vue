@@ -77,12 +77,6 @@
       <el-form-item label="IP 地址2" prop="ip2">
         <el-input v-model="formData.ip2" placeholder="请输入 IP 地址2" />
       </el-form-item>
-      <el-form-item label="登记人" prop="registerUser">
-        <el-input :model-value="formData.registerUser.nickname" disabled />
-      </el-form-item>
-      <el-form-item label="登记时间" prop="registerDate">
-        <el-input :model-value="formData.registerDate" disabled :suffix-icon="Calendar" />
-      </el-form-item>
       <el-form-item label="现场照片" prop="pictureList">
         <BatchPicturesUploader v-model:fileList="formData.pictureList" />
       </el-form-item>
@@ -94,14 +88,11 @@
   </Dialog>
 </template>
 <script setup lang="ts">
-import { Calendar } from '@element-plus/icons-vue'
-import { distributeDevice, getRepairArchive, type DistributePayload } from '@/api/repair'
+import { distributeDevice, getRepairArchive } from '@/api/repair'
 import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
 import { PictureType } from '@/api/repair/constant'
-import { useUserStore } from '@/store/modules/user'
 import { useDeptStoreWithOut } from '@/store/modules/department'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
-import { formatDate } from '@/utils/formatTime'
 import { isIPV4 } from '@/utils/is'
 import { getAll } from '@/api/system/user'
 import type { UploadFiles } from 'element-plus'
@@ -110,7 +101,6 @@ import type { UploadFiles } from 'element-plus'
 defineOptions({ name: 'DistributeForm' })
 
 const message = useMessage()
-const userInfo = useUserStore().getUser
 const deptStore = useDeptStoreWithOut()
 const repairStore = useRepairStoreWithOut()
 
@@ -128,8 +118,6 @@ const formData = ref({
   location: undefined as unknown as string,
   ip1: '',
   ip2: '',
-  registerUser: userInfo,
-  registerDate: formatDate(new Date()),
   pictureList: undefined as unknown as UploadFiles
 })
 const formRules = reactive({
@@ -152,7 +140,6 @@ const open = async ({ code, name, id }) => {
   try {
     const res = await getRepairArchive(id)
     // 兼容再分配时，获取之前的分配信息
-
     Object.assign(formData.value, {
       id,
       code,
@@ -163,8 +150,7 @@ const open = async ({ code, name, id }) => {
       location: res.location,
       ip1: res.ip1,
       ip2: res.ip2,
-      registerDate: formatDate(res.registerDate),
-      pictureList: res.pictureList
+      pictureList: res.distributePictureList
     })
   } finally {
     formLoading.value = false
@@ -190,14 +176,13 @@ watchEffect(() => {
 const emit = defineEmits(['success']) // 定义 success 事件，用于操作成功后的回调
 const submitForm = async () => {
   await formRef.value.validate()
-  const { code, name, registerUser, pictureList, dept, ...rest } = formData.value
+  const { code, name, pictureList, dept, ...rest } = formData.value
   const data = {
     ...rest,
     deptId: dept.value,
     deptName: dept.label,
-    registerUserId: registerUser.id,
     pictureList: pictureList.map((p) => ({
-      name: p.name,
+      name: p.name || '',
       url: p.url!,
       type: PictureType.Scene
     }))
@@ -226,8 +211,6 @@ const resetForm = () => {
     location: undefined as unknown as string,
     ip1: '',
     ip2: '',
-    registerUser: userInfo,
-    registerDate: formatDate(new Date()),
     pictureList: undefined as unknown as UploadFiles
   }
   formRef.value?.resetFields()
