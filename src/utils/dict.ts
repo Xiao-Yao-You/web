@@ -2,7 +2,7 @@
  * 数据字典工具类
  */
 import { useDictStoreWithOut } from '@/store/modules/dict'
-import { ElementPlusInfoType } from '@/types/elementPlus'
+import type { TagProps } from 'element-plus'
 
 const dictStore = useDictStoreWithOut()
 
@@ -16,7 +16,7 @@ export interface DictDataType {
   dictType: string
   label: string
   value: string | number | boolean
-  colorType: ElementPlusInfoType | ''
+  colorType: TagProps['type'] | ''
   cssClass: string
 }
 
@@ -24,7 +24,7 @@ export interface NumberDictDataType extends DictDataType {
   value: number
 }
 
-export const getDictOptions = (dictType: string) => {
+export const getDictOptions = (dictType: string): DictDataType[] => {
   return dictStore.getDictByType(dictType) || []
 }
 
@@ -217,5 +217,6 @@ export enum DICT_TYPE {
   REPAIR_DEVICE_SCRAP_METHOD = 'repair_device_scrap_method', // 设备报废处理方式
   REPAIR_DEVICE_SCRAP_TYPE = 'repair_device_scrap_type', // 设备报废类型
   REPAIR_ORDER_HANDLE_TYPE = 'repair_order_handle_type', // 工单处理类型
-  REPAIR_ORDER_COMPLETE_TYPE = 'repair_order_complete_type' // 工单处理结果类型
+  REPAIR_ORDER_COMPLETE_TYPE = 'repair_order_complete_type', // 工单处理结果类型
+  REPAIR_ORDER_STATUS = 'repair_order_status' // 工单处理状态
 }

@@ -44,8 +44,15 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="CSS Class" prop="cssClass">
-        <el-input v-model="formData.cssClass" placeholder="请输入 CSS Class" />
+      <el-form-item
+        label="CSS Class"
+        prop="cssClass"
+        :rules="{ pattern: isHexColor, trigger: ['change'], message: '请输入16进制颜色码' }"
+      >
+        <el-input
+          v-model="formData.cssClass"
+          placeholder="例：#409EFF，会作用在 Tag 组件的 'color' 属性上"
+        />
       </el-form-item>
       <el-form-item label="备注" prop="remark">
         <el-input v-model="formData.remark" placeholder="请输入内容" type="textarea" />
@@ -58,6 +65,7 @@
   </Dialog>
 </template>
 <script lang="ts" setup>
+import { isHexColor } from '@/utils/is'
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import * as DictDataApi from '@/api/system/dict/dict.data'
 import { CommonStatusEnum } from '@/utils/constants'
@@ -78,7 +86,7 @@ const formData = ref({
   value: '',
   dictType: '',
   status: CommonStatusEnum.ENABLE,
-  colorType: '',
+  colorType: 'primary',
   cssClass: '',
   remark: ''
 })
@@ -92,10 +100,10 @@ const formRef = ref() // 表单 Ref
 
 // 数据标签回显样式
 const colorTypeOptions = readonly([
-  {
-    value: 'default',
-    label: '默认'
-  },
+  // {
+  //   value: 'default',
+  //   label: '默认'
+  // },
   {
     value: 'primary',
     label: '主要'
@@ -174,7 +182,7 @@ const resetForm = () => {
     value: '',
     dictType: '',
     status: CommonStatusEnum.ENABLE,
-    colorType: '',
+    colorType: 'primary',
     cssClass: '',
     remark: ''
   }
