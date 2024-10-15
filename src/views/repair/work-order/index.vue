@@ -19,7 +19,7 @@
           class="!w-150px"
         >
           <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.REPAIR_ORDER_HANDLE_TYPE)"
+            v-for="dict in getIntDictOptions(DICT_TYPE.REPAIR_ORDER_STATUS)"
             :key="dict.value"
             :label="dict.label"
             :value="dict.value"
@@ -78,7 +78,7 @@
       <el-table-column label="工单标题" prop="title" width="120" fixed="left" />
       <el-table-column label="工单状态" align="center" prop="status" width="100" fixed="left">
         <template #default="{ row: { status } }">
-          <dict-tag :type="DICT_TYPE.REPAIR_ORDER_HANDLE_TYPE" :value="status" />
+          <dict-tag :type="DICT_TYPE.REPAIR_ORDER_STATUS" :value="status" />
         </template>
       </el-table-column>
       <el-table-column label="工单编号" align="center" prop="code" />
