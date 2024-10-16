@@ -50,8 +50,8 @@ export enum PictureType {
   Scrap // 报废照片
 }
 
-// 工单处理类型
-export enum OperateType {
+// 工单处理状态
+export enum OperateStatus {
   Dispatch = '00',
   Receive = '01',
   Transfer = '02',
@@ -60,14 +60,34 @@ export enum OperateType {
   Finish = '05',
   NoHandle = '0501',
   UnableFix = '0502',
-  Revoke = '06',
-  '00' = '派单',
-  '01' = '领单',
-  '02' = '转交',
-  '03' = '现场确认',
-  '04' = '挂起',
-  '05' = '已完成',
-  '0501' = '无需处理',
-  '0502' = '无法排除故障',
-  '06' = '撤销'
+  Revoke = '06'
+  // '00' = '派单',
+  // '01' = '领单',
+  // '02' = '转交',
+  // '03' = '现场确认',
+  // '04' = '挂起',
+  // '05' = '已完成',
+  // '0501' = '无需处理',
+  // '0502' = '无法排除故障',
+  // '06' = '撤销'
+}
+
+// 工单处理类型
+export enum OperateMethod {
+  Create = 'CHUANGJIAN',
+  Dispatch = 'PAIDAN',
+  Receive = 'LINGDAN',
+  Transfer = 'ZHUANJIAO',
+  Confirm = 'XIANCHNAGQUEREN',
+  HangUp = 'GUAQI',
+  Finish = 'WANCHENG',
+  Revoke = 'CHEXIAO'
+  // 'CHUANGJIAN' = '创建',
+  // 'PAIDAN' = '派单',
+  // 'LINGDAN' = '领单',
+  // 'ZHUANJIAO' = '转交',
+  // 'XIANCHNAGQUEREN' = '现场确认',
+  // 'GUAQI' = '挂起',
+  // 'WANCHENG' = '已完成',
+  // 'CHEXIAO' = '撤销'
 }

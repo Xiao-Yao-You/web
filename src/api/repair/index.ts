@@ -1,5 +1,5 @@
 import request from '@/config/axios'
-import { IssueTypeEnum, CompanyEnum, PictureType } from './constant'
+import { IssueTypeEnum, CompanyEnum, PictureType, OperateMethod, OperateStatus } from './constant'
 import { CommonLevelEnum } from '@/utils/constants'
 
 /** =========== 问题 ============== */
@@ -377,6 +377,7 @@ export type RepairOrderPage = PageParam &
 export interface RepairOrder {
   id: number
   title: string
+  status: OperateStatus
   labelCode?: string // 二维码标签号
   deviceName?: string // 设备名称
   addressId: number // 设备地点
@@ -413,7 +414,7 @@ export interface OrderPayload {
   questionType: number
   level: CommonLevelEnum
   description: string
-  // status: string
+  operateMethod: OperateMethod
   // submitUserNickName: string
   // type: string
   // sourceType: string
@@ -442,12 +443,12 @@ export const deleteRepairOrder = (id: number) => {
 // 处理工单
 export interface HandlePayload {
   id: number
-  operateType: string
   code?: string
   userId?: number
   userNickName?: string
   url?: PictureItem[]
   remark?: string
+  operateMethod: OperateMethod
 }
 
 export const handleRepairOrder = (data: HandlePayload) => {

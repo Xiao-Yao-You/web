@@ -1,5 +1,5 @@
 <template>
-  <Dialog title="开始" v-model="dialogVisible" :fullscreen="false" :draggable="false">
+  <Dialog title="现场确认" v-model="dialogVisible" :fullscreen="false" :draggable="false">
     <el-form ref="formRef" :model="formData" :rules="formRules" v-loading="loading">
       <el-form-item label="现场照片" prop="url">
         <BatchPicturesUploader v-model:fileList="formData.url" />
@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import { handleRepairOrder, type AccessoryItem } from '@/api/repair'
-import { OperateType } from '@/api/repair/constant'
+import { OperateMethod } from '@/api/repair/constant'
 import { PictureType } from '@/api/repair/constant'
 import type { UploadFiles } from 'element-plus'
 
@@ -80,12 +80,12 @@ const onConfirm = async () => {
       url: p.url!,
       type: PictureType.Scene
     })),
-    operateType: OperateType.Confirm
+    operateMethod: OperateMethod.Confirm
   }
   loading.value = true
   try {
     await handleRepairOrder(data)
-    message.success('转交成功')
+    message.success('现场确认成功')
     onCancel()
   } finally {
     loading.value = false

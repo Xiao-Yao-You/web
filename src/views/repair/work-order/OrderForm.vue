@@ -144,7 +144,7 @@
 
 <script setup lang="ts">
 import { useRepairStoreWithOut } from '@/store/modules/repair'
-import { IssueTypeOptions, IssueTypeEnum } from '@/api/repair/constant'
+import { IssueTypeOptions, IssueTypeEnum, OperateMethod } from '@/api/repair/constant'
 import { defaultProps } from '@/utils/tree'
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import { getAll } from '@/api/system/user'
@@ -277,11 +277,11 @@ const submitForm = async () => {
   formLoading.value = true
   try {
     if (formType.value === 'create') {
-      await createRepairOrder(data)
+      await createRepairOrder({
+        ...data,
+        operateMethod: OperateMethod.Create
+      })
       message.success(t('common.createSuccess'))
-    } else {
-      // await updateRepairArchive(data)
-      // message.success(t('common.updateSuccess'))
     }
     dialogVisible.value = false
     emit('success')

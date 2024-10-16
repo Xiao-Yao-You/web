@@ -40,7 +40,7 @@
 <script setup lang="ts">
 import { useEmployeeStoreWithOut } from '@/store/modules/employee'
 import { handleRepairOrder, type AccessoryItem } from '@/api/repair'
-import { OperateType } from '@/api/repair/constant'
+import { OperateMethod } from '@/api/repair/constant'
 import { type UserVO } from '@/api/system/user'
 
 defineOptions({
@@ -96,7 +96,7 @@ const onConfirm = async () => {
     ...rest,
     userId: repairer.id,
     userNickName: repairer.nickname,
-    operateType: OperateType.Dispatch
+    operateMethod: OperateMethod.Dispatch
   }
   loading.value = true
   try {

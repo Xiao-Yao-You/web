@@ -216,7 +216,7 @@ export enum DICT_TYPE {
   // ========== 运维工单  ==========
   REPAIR_DEVICE_SCRAP_METHOD = 'repair_device_scrap_method', // 设备报废处理方式
   REPAIR_DEVICE_SCRAP_TYPE = 'repair_device_scrap_type', // 设备报废类型
-  REPAIR_ORDER_HANDLE_TYPE = 'repair_order_handle_type', // 工单处理类型
+  REPAIR_ORDER_HANDLE_TYPE = 'repair_order_handle_type', // 工单处理方式
   REPAIR_ORDER_COMPLETE_TYPE = 'repair_order_complete_type', // 工单处理结果类型
   REPAIR_ORDER_STATUS = 'repair_order_status' // 工单处理状态
 }

@@ -51,7 +51,7 @@
 import { useRepairStoreWithOut } from '@/store/modules/repair'
 import { useEmployeeStoreWithOut } from '@/store/modules/employee'
 import { handleRepairOrder, type AccessoryItem } from '@/api/repair'
-import { OperateType } from '@/api/repair/constant'
+import { OperateMethod } from '@/api/repair/constant'
 import { defaultProps } from '@/utils/tree'
 import { type UserVO } from '@/api/system/user'
 
@@ -116,7 +116,7 @@ const onConfirm = async () => {
     ...rest,
     userId: user.id,
     userNickName: user.nickname,
-    operateType: OperateType.Transfer
+    operateMethod: OperateMethod.Transfer
   }
   loading.value = true
   try {

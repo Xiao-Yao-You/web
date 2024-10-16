@@ -49,7 +49,7 @@
 import { Calendar } from '@element-plus/icons-vue'
 import { useEmployeeStoreWithOut } from '@/store/modules/employee'
 import { handleRepairOrder, type AccessoryItem } from '@/api/repair'
-import { OperateType } from '@/api/repair/constant'
+import { OperateMethod, OperateStatus } from '@/api/repair/constant'
 import { useUserStore } from '@/store/modules/user'
 import { formatDate } from '@/utils/formatTime'
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
@@ -87,18 +87,18 @@ const formRules = reactive({
   remark: [{ required: true, message: '处理说明不能为空', trigger: 'blur' }]
 })
 
-const open = (payload: { id: number; code: string; status: number }) => {
+const open = (payload: { id: number; code: string; status: OperateStatus }) => {
   resetForm()
-  const status = ('0' + payload.status) as OperateType
   formData.value.id = payload.id
   formData.value.code = payload.code
   dialogVisible.value = true
   // prettier-ignore
   isCompleted.value = [
-    OperateType.Finish,
-    OperateType.NoHandle,
-    OperateType.UnableFix
-  ].includes(status)
+  OperateStatus.Finish,
+  OperateStatus.NoHandle,
+  OperateStatus.UnableFix,
+  OperateStatus.Revoke,
+  ].includes(payload.status)
 }
 defineExpose({ open })
 
@@ -120,7 +120,7 @@ const onConfirm = async () => {
     ...rest,
     operateUserId: operateUser.id,
     operateUserNickName: operateUser.nickname,
-    operateType: '0' + operateType
+    operateMethod: OperateMethod.Finish
   }
   loading.value = true
   try {

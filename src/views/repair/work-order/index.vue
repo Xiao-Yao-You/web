@@ -115,9 +115,9 @@
           <el-button link type="primary" @click="openDispatchForm(row)">派单</el-button>
           <el-button link type="primary" @click="receiveOrder(row.id)">领单</el-button>
           <el-button link type="primary" @click="openTransferForm(row)">转交</el-button>
-          <el-button link type="primary" @click="openStartForm(row.id)">开始</el-button>
+          <el-button link type="primary" @click="openStartForm(row.id)">确认</el-button>
           <el-button link type="primary" @click="onHangUp(row)">挂起</el-button>
-          <el-button link type="primary" @click="openCompleteForm(row.id)">完成</el-button>
+          <el-button link type="primary" @click="openCompleteForm(row)">完成</el-button>
           <el-button link type="danger" @click="handleRevoke(row.id)">撤销</el-button>
           <!-- <el-button link type="primary">流转记录</el-button> -->
         </template>
@@ -156,7 +156,7 @@ import OrderTransferForm from './OrderTransferForm.vue'
 import OrderCompleteForm from './OrderCompleteForm.vue'
 import OrderStartForm from './OrderStartForm.vue'
 import { getRepairOrderPage, handleRepairOrder, type RepairOrder } from '@/api/repair'
-import { IssueTypeLabel, OperateType } from '@/api/repair/constant'
+import { IssueTypeLabel, OperateMethod } from '@/api/repair/constant'
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
 import { defaultProps } from '@/utils/tree'
@@ -227,7 +227,7 @@ const handleRevoke = async (id: number) => {
     beforeClose(action, instance, done) {
       if (action === 'confirm') {
         instance.confirmButtonLoading = true
-        handleRepairOrder({ id, operateType: OperateType.Revoke })
+        handleRepairOrder({ id, operateMethod: OperateMethod.Revoke })
           .then(() => {
             message.success('撤销成功')
             done()
@@ -257,7 +257,7 @@ const receiveOrder = (id: number) => {
     beforeClose(action, instance, done) {
       if (action === 'confirm') {
         instance.confirmButtonLoading = true
-        handleRepairOrder({ id, operateType: OperateType.Receive })
+        handleRepairOrder({ id, operateMethod: OperateMethod.Receive })
           .then(() => {
             message.success('领单成功')
             done()
@@ -296,7 +296,7 @@ const onHangUp = ({ title, id }: RepairOrder) => {
     beforeClose(action, instance, done) {
       if (action === 'confirm') {
         instance.confirmButtonLoading = true
-        handleRepairOrder({ id, operateType: OperateType.HangUp })
+        handleRepairOrder({ id, operateMethod: OperateMethod.HangUp })
           .then(() => {
             message.success('挂起成功')
             done()
