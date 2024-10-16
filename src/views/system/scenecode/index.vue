@@ -91,10 +91,11 @@
           <el-button
             link
             type="primary"
-            :disabled="scope.row.useStatus"
             @click="openForm('update', scope.row.id)"
             v-hasPermi="['system:scene-code:update']"
           >
+            <!-- :disabled="scope.row.useStatus"
+             -->
             编辑
           </el-button>
           <el-button

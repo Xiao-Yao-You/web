@@ -452,5 +452,6 @@ export interface HandlePayload {
 }
 
 export const handleRepairOrder = (data: HandlePayload) => {
-  return request.put({ url: '/operation-order/operateOrder', data })
+  // return request.put({ url: '/operation-order/operateOrder', data })
+  return request.put({ url: '/operation-order/workOrderCirculation', data })
 }
