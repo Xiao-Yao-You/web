@@ -87,15 +87,10 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list">
-      <el-table-column align="center" label="字典编号" prop="id" />
-      <el-table-column align="center" label="字典名称" prop="name" show-overflow-tooltip />
-      <el-table-column align="center" label="字典类型" prop="type" width="300" />
-      <el-table-column align="center" label="状态" prop="status">
-        <template #default="scope">
-          <dict-tag :type="DICT_TYPE.COMMON_STATUS" :value="scope.row.status" />
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="备注" prop="remark" />
+      <el-table-column align="center" label="字典编号" prop="id" width="100" />
+      <el-table-column label="字典名称" prop="name" show-overflow-tooltip />
+      <el-table-column label="字典类型" prop="type" />
+      <el-table-column label="备注" prop="remark" />
       <el-table-column
         :formatter="dateFormatter"
         align="center"
@@ -103,7 +98,12 @@
         prop="createTime"
         width="180"
       />
-      <el-table-column align="center" label="操作">
+      <el-table-column align="center" label="状态" prop="status" width="100">
+        <template #default="scope">
+          <dict-tag :type="DICT_TYPE.COMMON_STATUS" :value="scope.row.status" />
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="操作" fixed="right" width="150">
         <template #default="scope">
           <el-button
             v-hasPermi="['system:dict:update']"
