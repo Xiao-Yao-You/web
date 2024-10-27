@@ -56,6 +56,16 @@
           show-word-limit
         />
       </el-form-item>
+      <el-form-item label="二维码编号" prop="labelCode">
+        <el-select v-model="formData.labelCode" placeholder="请选择二维码" clearable>
+          <el-option
+            v-for="item in labelCodeOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item label="编码规则" prop="numberName">
         <el-select v-model="formData.numberName" placeholder="请选择编码规则" clearable>
           <el-option
@@ -171,6 +181,7 @@
   <DeviceConfigForm ref="configRef" @confirm="(value) => void formData.accessoryList.push(value)" />
 </template>
 <script setup lang="ts">
+import { ElMessageBox } from 'element-plus'
 import DeviceConfigForm from './DeviceConfigForm.vue'
 import {
   getRepairArchive,
@@ -182,11 +193,13 @@ import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
 import { CommonStatusEnum, CommonLevelEnum } from '@/utils/constants'
 import { CompanyOptions, PictureType, CompanyEnum, UsingStatus } from '@/api/repair/constant'
+import { getUseableLabelCode } from '@/api/repair'
 import { dateTransfer } from '@/views/system/meeting/subscribe/hook/useMeetingStatus'
-import type { AccessoryItem } from '@/api/repair'
-import type { UploadFile, UploadFiles } from 'element-plus'
 import { getSceneCodeAll } from '@/api/system/scenecode'
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
+
+import type { AccessoryItem } from '@/api/repair'
+import type { UploadFile, UploadFiles } from 'element-plus'
 
 /** 运维设备档案 表单 */
 defineOptions({ name: 'RepairArchiveForm' })
@@ -199,6 +212,7 @@ const repairStore = useRepairStoreWithOut()
 const dialogVisible = ref(false) // 弹窗的是否展示
 const dialogTitle = ref('') // 弹窗的标题
 const numberNameOptions = ref<OptionItem[]>([]) // 编码规则选择项
+const labelCodeOptions = ref<OptionItem[]>([]) // 二维码选择项
 const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
 const formType = ref('') // 表单的类型：create - 新增；update - 修改
 const formData = ref({
@@ -208,6 +222,7 @@ const formData = ref({
   deviceType: undefined as unknown as OptionItem<number>,
   model: '',
   serialNumber: '',
+  labelCode: undefined as string | undefined,
   numberName: '',
   macAddress1: '',
   macAddress2: '',
@@ -219,7 +234,6 @@ const formData = ref({
   needCheckFlag: CommonStatusEnum.ENABLE,
   pictureList: undefined as unknown as UploadFiles,
   accessoryList: [] as AccessoryItem[]
-  // labelCode: undefined,
 })
 const formRules = reactive({
   name: [{ required: true, message: '设备名称不能为空', trigger: 'blur' }],
@@ -286,20 +300,33 @@ defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 const emit = defineEmits(['success']) // 定义 success 事件，用于操作成功后的回调
 const submitForm = async () => {
   await formRef.value.validate()
-  const { deviceType, pictureList, ...rest } = formData.value
-  const data = {
-    status: UsingStatus.Idle, // 新增时为闲置，其他情况直接 rest 覆盖
-    deviceType: deviceType.value,
-    deviceTypeName: deviceType.label,
-    pictureList: pictureList.map((p) => ({
-      name: p.name,
-      url: p.url!,
-      type: PictureType.Device
-    })),
-    ...rest
-  }
-  formLoading.value = true
+
   try {
+    // 二维码绑定提醒
+    const { deviceType, pictureList, ...rest } = formData.value
+    if (!rest.labelCode) {
+      await ElMessageBox.confirm('您没有绑定二维码标签，将自动生成。', '系统提示', {
+        confirmButtonText: '知道了',
+        cancelButtonText: '去选择',
+        type: 'warning'
+      })
+    }
+
+    // 处理 formData 数据
+    const data = {
+      status: UsingStatus.Idle, // 新增时为闲置，其他情况直接 rest 覆盖
+      deviceType: deviceType.value,
+      deviceTypeName: deviceType.label,
+      pictureList: pictureList.map((p) => ({
+        name: p.name,
+        url: p.url!,
+        type: PictureType.Device
+      })),
+      ...rest
+    }
+
+    // 发送请求
+    formLoading.value = true
     if (formType.value === 'create') {
       await createRepairArchive(data)
       message.success(t('common.createSuccess'))
@@ -323,6 +350,7 @@ const resetForm = () => {
     deviceType: undefined as unknown as OptionItem<number>,
     model: '',
     serialNumber: '',
+    labelCode: undefined,
     numberName: '',
     macAddress1: '',
     macAddress2: '',
@@ -343,6 +371,12 @@ onMounted(() => {
     numberNameOptions.value = list.map((item) => ({
       label: item.description,
       value: item.id
+    }))
+  })
+  getUseableLabelCode().then((list) => {
+    labelCodeOptions.value = (list || []).map((item) => ({
+      label: item.code,
+      value: item.code
     }))
   })
 })

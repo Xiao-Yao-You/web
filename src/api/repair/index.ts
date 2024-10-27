@@ -278,6 +278,7 @@ export type ArchivePayload = {
   deviceType: number
   deviceTypeName: string
   model: string
+  labelCode?: string
   serialNumber: string
   numberName: string
   macAddress1: string
@@ -451,8 +452,11 @@ export interface HandlePayload {
   remark?: string
   operateMethod: OperateMethod
 }
-
 export const handleRepairOrder = (data: HandlePayload) => {
-  // return request.put({ url: '/operation-order/operateOrder', data })
   return request.put({ url: '/operation-order/workOrderCirculation', data })
+}
+
+// 获取可用二维码列表
+export const getUseableLabelCode = () => {
+  return request.get<{ code: string }[]>({ url: '/operation-device/getUseableLabelCode' })
 }
