@@ -260,20 +260,20 @@ const open = async (type: string, id?: number) => {
         deviceType,
         deviceTypeName,
         effectLevel,
-        pictureList,
+        devicePictureList,
         ...rest
       } = await getRepairArchive(id)
 
       formData.value = {
+        ...rest,
         manufactureDate: dateTransfer(manufactureDate).format('YYYY-MM-DD'),
         warrantyDate: dateTransfer(warrantyDate).format('YYYY-MM-DD'),
         deviceType: {
           value: deviceType,
           label: deviceTypeName
         },
-        effectLevel: Number(effectLevel),
-        pictureList: pictureList.map((p) => ({ url: p.url, name: p?.name }) as UploadFile),
-        ...rest
+        effectLevel,
+        pictureList: devicePictureList.map((p) => ({ url: p.url, name: p?.name }) as UploadFile)
       }
     } finally {
       formLoading.value = false
@@ -288,7 +288,7 @@ const submitForm = async () => {
   await formRef.value.validate()
   const { deviceType, pictureList, ...rest } = formData.value
   const data = {
-    ...rest,
+    status: UsingStatus.Idle, // 新增时为闲置，其他情况直接 rest 覆盖
     deviceType: deviceType.value,
     deviceTypeName: deviceType.label,
     pictureList: pictureList.map((p) => ({
@@ -296,7 +296,7 @@ const submitForm = async () => {
       url: p.url!,
       type: PictureType.Device
     })),
-    status: UsingStatus.Idle
+    ...rest
   }
   formLoading.value = true
   try {

@@ -26,6 +26,7 @@
           value-key="value"
           clearable
           filterable
+          @change="formData.userId = undefined"
         >
           <el-option
             v-for="item in deptStore.topDeptOptions"
@@ -113,7 +114,7 @@ const formData = ref({
   code: '',
   name: '',
   dept: undefined as unknown as OptionItem<number>,
-  userId: undefined as unknown as number,
+  userId: undefined as number | undefined,
   addressId: undefined as unknown as number,
   location: undefined as unknown as string,
   ip1: '',
@@ -160,18 +161,22 @@ const open = async ({ code, name, id }) => {
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 
 // 根据使用部门切换使用人列表
-watchEffect(() => {
-  if (formData.value.dept) {
-    userLoading.value = true
-    getAll({ deptId: formData.value.dept.value, nickname: '' })
-      .then((res) => {
-        userOptions.value = res
-      })
-      .finally(() => {
-        userLoading.value = false
-      })
+watch(
+  () => formData.value.dept,
+  (newDept) => {
+    if (newDept) {
+      userOptions.value = []
+      userLoading.value = true
+      getAll({ deptId: newDept.value, nickname: '' })
+        .then((res) => {
+          userOptions.value = res
+        })
+        .finally(() => {
+          userLoading.value = false
+        })
+    }
   }
-})
+)
 
 /** 提交表单 */
 const emit = defineEmits(['success']) // 定义 success 事件，用于操作成功后的回调
@@ -206,7 +211,7 @@ const resetForm = () => {
     code: '',
     name: '',
     dept: undefined as unknown as OptionItem<number>,
-    userId: undefined as unknown as number,
+    userId: undefined as number | undefined,
     addressId: undefined as unknown as number,
     location: undefined as unknown as string,
     ip1: '',

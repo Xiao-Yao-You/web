@@ -82,12 +82,12 @@
         </template>
       </el-table-column>
       <el-table-column label="工单编号" align="center" prop="code" />
-      <el-table-column label="请求类型" align="center" prop="requestType">
+      <el-table-column label="请求类型" align="center" prop="requestType" width="80">
         <template #default="scope">
           {{ IssueTypeLabel[scope.row.requestType] }}
         </template>
       </el-table-column>
-      <el-table-column label="问题类型" align="center" prop="questionTypeStr" width="100" />
+      <el-table-column label="问题类型" align="center" prop="questionTypeStr" width="120" />
       <el-table-column label="紧急程度" align="center" prop="level">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.LEVEL" :value="scope.row.level" />
@@ -100,8 +100,16 @@
       <el-table-column label="个人处置时长" align="center" prop="dealConsume" />
       <el-table-column label="挂起时长" align="center" prop="hangUpConsume" />
       <el-table-column label="处理人" align="center" prop="delUserNickName" />
-      <el-table-column label="任务类型" align="center" prop="type" />
-      <el-table-column label="工单来源" align="center" prop="sourceType" />
+      <el-table-column label="任务类型" align="center" prop="type" width="100">
+        <template #default="{ row: { type } }">
+          {{ OrderTakeType[type] }}
+        </template>
+      </el-table-column>
+      <el-table-column label="工单来源" align="center" prop="sourceType">
+        <template #default="{ row: { sourceType } }">
+          {{ RepairSourceType[sourceType] }}
+        </template>
+      </el-table-column>
       <el-table-column label="发起时间" align="center" prop="createTime" width="180">
         <template #default="{ row: { createTime } }">
           {{ formatDate(createTime) }}
@@ -156,7 +164,12 @@ import OrderTransferForm from './OrderTransferForm.vue'
 import OrderCompleteForm from './OrderCompleteForm.vue'
 import OrderStartForm from './OrderStartForm.vue'
 import { getRepairOrderPage, handleRepairOrder, type RepairOrder } from '@/api/repair'
-import { IssueTypeLabel, OperateMethod } from '@/api/repair/constant'
+import {
+  IssueTypeLabel,
+  OperateMethod,
+  OrderTakeType,
+  RepairSourceType
+} from '@/api/repair/constant'
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
 import { defaultProps } from '@/utils/tree'

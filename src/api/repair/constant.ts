@@ -72,7 +72,7 @@ export enum OperateStatus {
   // '06' = '撤销'
 }
 
-// 工单处理类型
+// 工单处理方式
 export enum OperateMethod {
   Create = 'CHUANGJIAN',
   Dispatch = 'PAIDAN',
@@ -90,4 +90,22 @@ export enum OperateMethod {
   // 'GUAQI' = '挂起',
   // 'WANCHENG' = '已完成',
   // 'CHEXIAO' = '撤销'
+}
+
+// 工单报修方式
+export const RepairSourceType = {
+  Online: 1,
+  Offline: 2,
+  '1': '线上',
+  '2': '线下'
+}
+
+// 接单方式
+export enum OrderTakeType {
+  Active = '00',
+  Assign = '01',
+  Transfer = '02',
+  '00' = '主动接单',
+  '01' = '指派工单',
+  '02' = '转交工单'
 }

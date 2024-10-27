@@ -241,7 +241,7 @@ export interface RepairArchive {
   status: number // 状态 0:在用,1:闲置,2:报废
   company: number // 所属单位 0:恒科,1:轩达,2:其他
   serialNumber: string // 序列号
-  effectLevel: string // 影响程度
+  effectLevel: number // 影响程度
   numberName: string // 编码规则
   assetNumber: string // 资产编号
   macAddress1: string // mac地址1
@@ -352,7 +352,7 @@ export interface DistributePayload {
   id: number
   deptId: number
   deptName: string
-  userId: number
+  userId: number | undefined
   addressId: number
   location: string
   ip1: string
@@ -415,6 +415,7 @@ export interface OrderPayload {
   level: CommonLevelEnum
   description: string
   operateMethod: OperateMethod
+  sourceType: number
   // submitUserNickName: string
   // type: string
   // sourceType: string

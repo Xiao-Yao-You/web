@@ -94,10 +94,10 @@ const open = (payload: { id: number; code: string; status: OperateStatus }) => {
   dialogVisible.value = true
   // prettier-ignore
   isCompleted.value = [
-  OperateStatus.Finish,
-  OperateStatus.NoHandle,
-  OperateStatus.UnableFix,
-  OperateStatus.Revoke,
+    OperateStatus.Finish,
+    OperateStatus.NoHandle,
+    OperateStatus.UnableFix,
+    OperateStatus.Revoke,
   ].includes(payload.status)
 }
 defineExpose({ open })

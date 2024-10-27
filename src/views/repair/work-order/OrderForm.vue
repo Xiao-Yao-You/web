@@ -144,11 +144,16 @@
 
 <script setup lang="ts">
 import { useRepairStoreWithOut } from '@/store/modules/repair'
-import { IssueTypeOptions, IssueTypeEnum, OperateMethod } from '@/api/repair/constant'
 import { defaultProps } from '@/utils/tree'
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import { getAll } from '@/api/system/user'
 import { createRepairOrder, getRepairOrder, getArchiveByLabelCode } from '@/api/repair'
+import {
+  IssueTypeOptions,
+  IssueTypeEnum,
+  OperateMethod,
+  RepairSourceType
+} from '@/api/repair/constant'
 import { isMobilePhone } from '@/utils/is'
 import { CommonLevelEnum } from '@/utils/constants'
 import type { ElFormItem, FormInstance } from 'element-plus'
@@ -279,7 +284,8 @@ const submitForm = async () => {
     if (formType.value === 'create') {
       await createRepairOrder({
         ...data,
-        operateMethod: OperateMethod.Create
+        operateMethod: OperateMethod.Create,
+        sourceType: RepairSourceType.Offline
       })
       message.success(t('common.createSuccess'))
     }
