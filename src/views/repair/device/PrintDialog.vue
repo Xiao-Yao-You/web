@@ -3,10 +3,8 @@ import { hiprint } from 'vue-plugin-hiprint'
 import { type LabelItem } from '@/api/repair'
 
 const dialogVisible = ref(false)
-// const drawerVisible = ref(false)
-// const previewLoading = ref(false)
 const printLoading = ref(false)
-const hiprintRef = ref(null)
+const hiprintRef = ref<HTMLDivElement>()
 const hiprintInstance = ref<any>(null)
 
 defineOptions({
@@ -16,18 +14,13 @@ defineOptions({
 const props = withDefaults(defineProps<{ labels: LabelItem[] }>(), { labels: () => [] })
 
 const open = async () => {
+  init() // 重置标签容器
   dialogVisible.value = true
   nextTick(() => {
     props.labels.forEach((label) => {
       render(label)
     })
-    // 移除内置类名，显式所有标签
-    const panels = document.querySelector('#hiprint-printTemplate')?.children
-    if (panels) {
-      for (let i = 0; i < panels.length; i++) {
-        panels[i].classList.remove('hipanel-disable')
-      }
-    }
+    showPanel()
   })
 }
 defineExpose({ open })
@@ -35,7 +28,8 @@ defineExpose({ open })
 // hiprint 初始化
 const init = () => {
   hiprint.init()
-  hiprintInstance.value = markRaw(new hiprint.PrintTemplate())
+  hiprintInstance.value = markRaw(new hiprint.PrintTemplate({ history: false }))
+  console.log(hiprintInstance)
 }
 
 // hiprint 函数式编辑（内容写死，不需要用户自定义编辑）
@@ -119,9 +113,15 @@ const onPrint = () => {
   )
 }
 
-onMounted(() => {
-  init()
-})
+// 移除内置样式，展示所有标签（垃圾文档找不到方法，只能先这样 (╬◣д◢)）
+const showPanel = () => {
+  if (hiprintRef.value) {
+    const panels = hiprintRef.value.children
+    for (let i = 0; i < panels.length; i++) {
+      panels[i].classList.remove('hipanel-disable')
+    }
+  }
+}
 </script>
 
 <template>
