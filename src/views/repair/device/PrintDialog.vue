@@ -13,11 +13,12 @@ defineOptions({
 
 const props = withDefaults(defineProps<{ labels: LabelItem[] }>(), { labels: () => [] })
 
-const open = async () => {
-  init() // 重置标签容器
+const open = async (labels?: LabelItem[]) => {
   dialogVisible.value = true
   nextTick(() => {
-    props.labels.forEach((label) => {
+    init() // 重置标签容器
+    const labelList = labels || props.labels
+    labelList.forEach((label) => {
       render(label)
     })
     showPanel()
@@ -29,7 +30,6 @@ defineExpose({ open })
 const init = () => {
   hiprint.init()
   hiprintInstance.value = markRaw(new hiprint.PrintTemplate({ history: false }))
-  console.log(hiprintInstance)
 }
 
 // hiprint 函数式编辑（内容写死，不需要用户自定义编辑）

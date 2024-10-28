@@ -16,7 +16,18 @@
           <el-descriptions-item label="设备类型"> {{ info.deviceTypeName }} </el-descriptions-item>
           <el-descriptions-item label="设备型号"> {{ info.model }} </el-descriptions-item>
           <el-descriptions-item label="序列号"> {{ info.serialNumber }} </el-descriptions-item>
-          <el-descriptions-item label="二维码编号"> {{ info.labelCode }} </el-descriptions-item>
+          <el-descriptions-item label="二维码编号">
+            {{ info.labelCode }}
+            <el-button
+              size="small"
+              link
+              type="primary"
+              style="vertical-align: text-bottom"
+              @click="printRef?.open([{ name: info.deviceTypeName, labelCode: info.labelCode }])"
+            >
+              打印
+            </el-button>
+          </el-descriptions-item>
           <el-descriptions-item label="编码规则"> {{ info.numberNameStr }} </el-descriptions-item>
           <el-descriptions-item label="MAC 地址1"> {{ info.macAddress1 }} </el-descriptions-item>
           <el-descriptions-item label="MAC 地址2"> {{ info.macAddress2 }} </el-descriptions-item>
@@ -92,6 +103,8 @@
       </el-tab-pane>
     </el-tabs>
   </Dialog>
+
+  <PrintDialog ref="printRef" />
 </template>
 
 <script setup lang="ts">
@@ -99,6 +112,7 @@ import { ElLoading } from 'element-plus'
 import { getRepairArchive, type RepairArchive } from '@/api/repair'
 import { DICT_TYPE, getDictLabel } from '@/utils/dict'
 import { formatDate } from '@/utils/formatTime'
+import PrintDialog from '../device/PrintDialog.vue'
 
 defineOptions({
   name: 'ArchiveDetail'
@@ -138,6 +152,9 @@ const resetInfo = () => {
 }
 
 const activeTab = ref('basic') // basic | distribute
+
+// 打印二维码
+const printRef = ref()
 </script>
 
 <style scoped></style>
