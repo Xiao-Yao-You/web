@@ -193,7 +193,7 @@
       />
       <el-table-column label="操作" align="center" fixed="right" min-width="250">
         <template #default="{ row }">
-          <el-button link type="primary" @click="openForm('update', row.id)"> 详情 </el-button>
+          <el-button link type="primary" @click="openDetail(row.id)"> 详情 </el-button>
           <el-button link type="primary" @click="openForm('update', row.id)"> 编辑 </el-button>
           <el-button
             link
@@ -220,6 +220,9 @@
     />
   </ContentWrap>
 
+  <!-- 详情表单 -->
+  <ArchiveDetail ref="detailRef" />
+
   <!-- 新增、编辑表单 -->
   <ArchiveForm ref="formRef" @success="getList" />
 
@@ -243,6 +246,7 @@ import { UsingStatus, CompanyOptions, CompanyEnum, UsingStatusOptions } from '@/
 import ArchiveForm from './ArchiveForm.vue'
 import ScrapForm from './ScrapForm.vue'
 import DistributeForm from './DistributeForm.vue'
+import ArchiveDetail from './ArchiveDetail.vue'
 import { isIPV4 } from '@/utils/is'
 import { DICT_TYPE } from '@/utils/dict'
 // import download from '@/utils/download'
@@ -343,6 +347,12 @@ const handleDelete = async (id: number) => {
 //     exportLoading.value = false
 //   }
 // }
+
+/** 详情 */
+const detailRef = ref()
+const openDetail = (id: number) => {
+  detailRef.value.open(id)
+}
 
 /** 报废 */
 const scrapRef = ref()

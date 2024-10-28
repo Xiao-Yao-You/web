@@ -106,6 +106,7 @@ export enum DICT_TYPE {
   TERMINAL = 'terminal', // 终端
   DATE_INTERVAL = 'date_interval', // 数据间隔
   LEVEL = 'hk_level', // 通用等级程度（高中低）
+  COMPANY = 'hk_company', // 通用等级程度（高中低）
 
   // ========== SYSTEM 模块 ==========
   SYSTEM_USER_SEX = 'system_user_sex',

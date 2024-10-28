@@ -16,10 +16,12 @@ const dialogImageUrl = ref('')
 const dialogVisible = ref(false)
 
 const handleSuccess: UploadProps['onSuccess'] = (_response, _uploadFile, uploadFiles) => {
-  fileList.value = uploadFiles.map((file) => ({
-    name: file.name,
-    url: (file.response as IResponse).data
-  }))
+  fileList.value = uploadFiles.map((file) => {
+    return {
+      name: file.name,
+      url: (file?.response as IResponse)?.data ?? file?.url
+    }
+  })
 }
 
 const handlePictureCardPreview: UploadProps['onPreview'] = (uploadFile) => {

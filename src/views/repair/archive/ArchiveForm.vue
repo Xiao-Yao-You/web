@@ -57,7 +57,7 @@
         />
       </el-form-item>
       <el-form-item label="二维码编号" prop="labelCode">
-        <el-select v-model="formData.labelCode" placeholder="请选择二维码" clearable>
+        <el-select v-model="formData.labelCode" placeholder="请选择可用的二维码" clearable>
           <el-option
             v-for="item in labelCodeOptions"
             :key="item.value"

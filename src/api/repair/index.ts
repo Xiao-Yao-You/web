@@ -242,7 +242,8 @@ export interface RepairArchive {
   company: number // 所属单位 0:恒科,1:轩达,2:其他
   serialNumber: string // 序列号
   effectLevel: number // 影响程度
-  numberName: string // 编码规则
+  numberName: string // 编码规则 ID
+  numberNameStr: string // 编码规则
   assetNumber: string // 资产编号
   macAddress1: string // mac地址1
   macAddress2: string // mac地址2
@@ -251,7 +252,9 @@ export interface RepairArchive {
   needCheckFlag: number // 是否需要巡检，0:是 1:否
   deptId: number // 设备部门
   deptName: string // 设备部门名称
-  userId: number // 使用人
+  userId: number // 使用人 ID
+  userNickName: number // 使用人
+  address: string // 使用地点
   addressId: number // 使用地点
   location: string // 设备位置
   ip1: string // ip1
