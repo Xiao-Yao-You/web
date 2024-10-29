@@ -87,29 +87,29 @@
           {{ IssueTypeLabel[scope.row.requestType] }}
         </template>
       </el-table-column>
-      <el-table-column label="问题类型" align="center" prop="questionTypeStr" width="120" />
+      <el-table-column label="问题类型" align="center" prop="questionTypeStr" width="140" />
       <el-table-column label="紧急程度" align="center" prop="level">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.LEVEL" :value="scope.row.level" />
         </template>
       </el-table-column>
       <el-table-column label="报修人" align="center" prop="submitUserNickName" />
-      <el-table-column label="响应时长" align="center" prop="allocationConsume">
+      <el-table-column label="响应时长" align="center" prop="allocationConsume" width="120">
         <template #default="{ row: { allocationConsume } }">
           {{ allocationConsume ? formatPast2(allocationConsume) : '/' }}
         </template>
       </el-table-column>
-      <el-table-column label="个人处置时长" align="center" prop="dealConsume" width="110">
+      <el-table-column label="个人处置时长" align="center" prop="dealConsume" width="120">
         <template #default="{ row: { dealConsume } }">
           {{ dealConsume ? formatPast2(dealConsume) : '/' }}
         </template>
       </el-table-column>
-      <el-table-column label="挂起时长" align="center" prop="hangUpConsume">
+      <el-table-column label="挂起时长" align="center" prop="hangUpConsume" width="120">
         <template #default="{ row: { hangUpConsume } }">
           {{ hangUpConsume ? formatPast2(hangUpConsume) : '/' }}
         </template>
       </el-table-column>
-      <el-table-column label="处置总时长" align="center" width="110">
+      <el-table-column label="处置总时长" align="center" prop="completeConsume" width="120">
         <template #default="{ row: { completeConsume } }">
           {{ completeConsume ? formatPast2(completeConsume) : '/' }}
         </template>
@@ -274,8 +274,8 @@ const handleRevoke = async (id: number) => {
         handleRepairOrder({ id, operateMethod: OperateMethod.Revoke })
           .then(() => {
             message.success('撤销成功')
-            done()
             handleQuery()
+            done()
           })
           .finally(() => {
             instance.confirmButtonLoading = false
@@ -304,6 +304,7 @@ const receiveOrder = (id: number) => {
         handleRepairOrder({ id, operateMethod: OperateMethod.Receive })
           .then(() => {
             message.success('领单成功')
+            handleQuery()
             done()
           })
           .finally(() => {
@@ -343,6 +344,7 @@ const onHangUp = ({ title, id }: RepairOrder) => {
         handleRepairOrder({ id, operateMethod: OperateMethod.HangUp })
           .then(() => {
             message.success('挂起成功')
+            handleQuery()
             done()
           })
           .finally(() => {

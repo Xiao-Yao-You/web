@@ -33,10 +33,6 @@ defineOptions({
 
 const message = useMessage()
 
-const emit = defineEmits<{
-  confirm: [form: AccessoryItem]
-}>()
-
 const dialogVisible = ref(false)
 const loading = ref(false)
 const formRef = ref()
@@ -70,6 +66,7 @@ const onCancel = () => {
   resetForm()
 }
 
+const emit = defineEmits(['success'])
 const onConfirm = async () => {
   await formRef.value.validate()
   const { pictureList, ...rest } = formData.value
@@ -86,6 +83,7 @@ const onConfirm = async () => {
   try {
     await handleRepairOrder(data)
     message.success('现场确认成功')
+    emit('success')
     onCancel()
   } finally {
     loading.value = false

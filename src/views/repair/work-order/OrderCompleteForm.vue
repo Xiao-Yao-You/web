@@ -62,10 +62,6 @@ const userInfo = useUserStore().getUser
 const employeeStore = useEmployeeStoreWithOut()
 const message = useMessage()
 
-const emit = defineEmits<{
-  confirm: [form: AccessoryItem]
-}>()
-
 // 处理结果
 const resultOptions = getIntDictOptions(DICT_TYPE.REPAIR_ORDER_COMPLETE_TYPE)
 const defaultType = resultOptions[0]?.value
@@ -113,6 +109,7 @@ const resetForm = () => {
   }
 }
 
+const emit = defineEmits(['success'])
 const onConfirm = async () => {
   await formRef.value.validate()
   const { operateUser, operateType, ...rest } = formData.value
@@ -126,6 +123,7 @@ const onConfirm = async () => {
   try {
     await handleRepairOrder(data)
     message.success('工单已完成，等待发起人确认')
+    emit('success')
   } finally {
     loading.value = false
   }
