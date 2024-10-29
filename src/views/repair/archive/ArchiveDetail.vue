@@ -30,7 +30,9 @@
           </el-descriptions-item>
           <el-descriptions-item label="编码规则"> {{ info.numberNameStr }} </el-descriptions-item>
           <el-descriptions-item label="MAC 地址1"> {{ info.macAddress1 }} </el-descriptions-item>
-          <el-descriptions-item label="MAC 地址2"> {{ info.macAddress2 }} </el-descriptions-item>
+          <el-descriptions-item label="MAC 地址2" min-width="110">
+            {{ info.macAddress2 }}
+          </el-descriptions-item>
           <el-descriptions-item label="所在厂区">
             {{ getDictLabel(DICT_TYPE.COMPANY, info.company) }}
           </el-descriptions-item>

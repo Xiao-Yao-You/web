@@ -75,7 +75,7 @@
   <ContentWrap>
     <el-table v-loading="loading" :data="list" stripe show-overflow-tooltip>
       <el-table-column type="index" align="center" width="40" fixed="left" />
-      <el-table-column label="工单标题" prop="title" width="120" fixed="left" />
+      <el-table-column label="工单标题" prop="title" width="150" fixed="left" />
       <el-table-column label="工单状态" align="center" prop="status" width="100" fixed="left">
         <template #default="{ row: { status } }">
           <dict-tag :type="DICT_TYPE.REPAIR_ORDER_STATUS" :value="status" />
@@ -94,15 +94,40 @@
         </template>
       </el-table-column>
       <el-table-column label="报修人" align="center" prop="submitUserNickName" />
-      <el-table-column label="响应时长" align="center" prop="allocationConsume" />
-      <!-- todo: 处置总时长: 发起时间 → 完成时间（没有完成时间，则显示处置中） -->
-      <!-- <el-table-column label="处置总时长" align="center" prop="dealConsume" /> -->
-      <el-table-column label="个人处置时长" align="center" prop="dealConsume" />
-      <el-table-column label="挂起时长" align="center" prop="hangUpConsume" />
-      <el-table-column label="处理人" align="center" prop="delUserNickName" />
+      <el-table-column label="响应时长" align="center" prop="allocationConsume">
+        <template #default="{ row: { allocationConsume } }">
+          {{ allocationConsume ? formatPast2(allocationConsume) : '/' }}
+        </template>
+      </el-table-column>
+      <el-table-column label="个人处置时长" align="center" prop="dealConsume" width="110">
+        <template #default="{ row: { dealConsume } }">
+          {{ dealConsume ? formatPast2(dealConsume) : '/' }}
+        </template>
+      </el-table-column>
+      <el-table-column label="挂起时长" align="center" prop="hangUpConsume">
+        <template #default="{ row: { hangUpConsume } }">
+          {{ hangUpConsume ? formatPast2(hangUpConsume) : '/' }}
+        </template>
+      </el-table-column>
+      <el-table-column label="处置总时长" align="center" width="110">
+        <template #default="{ row: { completeConsume } }">
+          {{ completeConsume ? formatPast2(completeConsume) : '/' }}
+        </template>
+      </el-table-column>
+      <el-table-column label="处理人" align="center" prop="dealUserNickName">
+        <template #default="{ row: { dealUserNickName } }">
+          {{ dealUserNickName || '/' }}
+        </template>
+      </el-table-column>
       <el-table-column label="任务类型" align="center" prop="type" width="100">
+        <template #header>
+          任务类型
+          <el-tooltip effect="dark" content="领单方式" placement="top-start">
+            <InfoIcon />
+          </el-tooltip>
+        </template>
         <template #default="{ row: { type } }">
-          {{ OrderTakeType[type] }}
+          {{ OrderTakeType[type] || '/' }}
         </template>
       </el-table-column>
       <el-table-column label="工单来源" align="center" prop="sourceType">
@@ -115,7 +140,11 @@
           {{ formatDate(createTime) }}
         </template>
       </el-table-column>
-      <el-table-column label="完成时间" align="center" prop="completeTime" />
+      <el-table-column label="完成时间" align="center" prop="completeTime" width="180">
+        <template #default="{ row: { completeTime } }">
+          {{ formatDate(completeTime) || '/' }}
+        </template>
+      </el-table-column>
       <!-- <el-table-column label="服务评分" align="center" prop="" /> -->
       <el-table-column label="操作" align="center" fixed="right" min-width="400">
         <template #default="{ row }">
@@ -173,8 +202,9 @@ import {
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
 import { defaultProps } from '@/utils/tree'
-import { formatDate } from '@/utils/formatTime'
+import { formatDate, formatPast2 } from '@/utils/formatTime'
 import { useEmployeeStoreWithOut } from '@/store/modules/employee'
+import { useIcon } from '@/hooks/web/useIcon'
 
 defineOptions({
   name: 'RepairWorkOrder'
@@ -183,6 +213,7 @@ defineOptions({
 const message = useMessage()
 const repairStore = useRepairStoreWithOut()
 const employeeStore = useEmployeeStoreWithOut()
+const InfoIcon = useIcon({ icon: 'ep:info-filled', size: 14 })
 
 const loading = ref(true)
 const list = ref<RepairOrder[]>([])

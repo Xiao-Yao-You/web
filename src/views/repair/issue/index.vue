@@ -1,3 +1,62 @@
+<template>
+  <ContentWrap>
+    <!-- 搜索工作栏 -->
+    <el-form class="-mb-15px" :model="queryParams" ref="queryFormRef" :inline="true">
+      <el-form-item label="问题名称" prop="name">
+        <el-input
+          v-model="queryParams.name"
+          placeholder="请输入问题名称"
+          clearable
+          @keyup.enter="handleQuery"
+          class="!w-180px"
+        />
+      </el-form-item>
+      <el-form-item>
+        <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
+        <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
+        <el-button type="primary" plain @click="openForm('create')">
+          <Icon icon="ep:plus" class="mr-5px" /> 新增主问题
+        </el-button>
+        <el-button plain type="danger" @click="toggleExpandAll">
+          <Icon class="mr-5px" icon="ep:sort" />
+          展开/折叠
+        </el-button>
+      </el-form-item>
+    </el-form>
+  </ContentWrap>
+
+  <!-- 列表 -->
+  <ContentWrap>
+    <el-table
+      v-if="refreshTable"
+      v-loading="loading"
+      :data="tree"
+      row-key="id"
+      :default-expand-all="isExpandAll"
+    >
+      <el-table-column label="问题名称" prop="name" show-overflow-tooltip width="250" />
+      <el-table-column label="问题类型" align="center" prop="type">
+        <template #default="{ row: { type } }">
+          {{ type ? IssueTypeOptions[type].label : '/' }}
+        </template>
+      </el-table-column>
+      <el-table-column label="设备类型" align="center" prop="deviceTypeName" />
+      <el-table-column label="问题描述" align="center" prop="description" />
+      <el-table-column label="操作" align="center">
+        <template #default="{ row: { id } }">
+          <el-button link type="primary" @click="openForm('detail', id)"> 详情 </el-button>
+          <el-button link type="primary" @click="openForm('child', id)"> 添加子类 </el-button>
+          <el-button link type="primary" @click="openForm('update', id)"> 编辑 </el-button>
+          <el-button link type="danger" @click="handleDelete(id)"> 删除 </el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+  </ContentWrap>
+
+  <!-- 表单弹窗：添加/修改 -->
+  <IssueForm ref="formRef" @success="getIssuesMenu" />
+</template>
+
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { deleteIssue, type IssuesAllParams } from '@/api/repair'
@@ -66,62 +125,3 @@ onMounted(() => {
   getIssuesMenu()
 })
 </script>
-
-<template>
-  <ContentWrap>
-    <!-- 搜索工作栏 -->
-    <el-form class="-mb-15px" :model="queryParams" ref="queryFormRef" :inline="true">
-      <el-form-item label="问题名称" prop="name">
-        <el-input
-          v-model="queryParams.name"
-          placeholder="请输入问题名称"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-180px"
-        />
-      </el-form-item>
-      <el-form-item>
-        <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
-        <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
-        <el-button type="primary" plain @click="openForm('create')">
-          <Icon icon="ep:plus" class="mr-5px" /> 新增主问题
-        </el-button>
-        <el-button plain type="danger" @click="toggleExpandAll">
-          <Icon class="mr-5px" icon="ep:sort" />
-          展开/折叠
-        </el-button>
-      </el-form-item>
-    </el-form>
-  </ContentWrap>
-
-  <!-- 列表 -->
-  <ContentWrap>
-    <el-table
-      v-if="refreshTable"
-      v-loading="loading"
-      :data="tree"
-      row-key="id"
-      :default-expand-all="isExpandAll"
-    >
-      <el-table-column label="问题名称" prop="name" show-overflow-tooltip width="250" />
-      <el-table-column label="问题类型" align="center" prop="type">
-        <template #default="{ row: { type } }">
-          {{ type ? IssueTypeOptions[type].label : '/' }}
-        </template>
-      </el-table-column>
-      <el-table-column label="设备类型" align="center" prop="deviceTypeName" />
-      <el-table-column label="问题描述" align="center" prop="description" />
-      <el-table-column label="操作" align="center">
-        <template #default="{ row: { id } }">
-          <el-button link type="primary" @click="openForm('detail', id)"> 详情 </el-button>
-          <el-button link type="primary" @click="openForm('child', id)"> 添加子类 </el-button>
-          <el-button link type="primary" @click="openForm('update', id)"> 编辑 </el-button>
-          <el-button link type="danger" @click="handleDelete(id)"> 删除 </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-  </ContentWrap>
-
-  <!-- 表单弹窗：添加/修改 -->
-  <IssueForm ref="formRef" @success="getIssuesMenu" />
-</template>

@@ -136,8 +136,15 @@
     </el-form>
 
     <template #footer>
-      <el-button @click="submitForm" type="primary" :disabled="formLoading">确 定</el-button>
-      <el-button @click="dialogVisible = false">取 消</el-button>
+      <el-button
+        v-if="formType === 'create'"
+        @click="submitForm"
+        type="primary"
+        :disabled="formLoading"
+      >
+        确 定
+      </el-button>
+      <el-button @click="closeDialog">取 消</el-button>
     </template>
   </Dialog>
 </template>
@@ -274,25 +281,29 @@ const searchRemoteUser = async (query: string) => {
   }
 }
 
+const closeDialog = () => {
+  dialogVisible.value = false
+}
+
 /** 提交表单 */
 const emit = defineEmits(['success'])
 const submitForm = async () => {
-  await formRef.value?.validate()
-  const { code, ...data } = formData.value
-  formLoading.value = true
-  try {
-    if (formType.value === 'create') {
+  if (formType.value === 'create') {
+    await formRef.value?.validate()
+    const { code, ...data } = formData.value
+    formLoading.value = true
+    try {
       await createRepairOrder({
         ...data,
         operateMethod: OperateMethod.Create,
         sourceType: RepairSourceType.Offline
       })
       message.success(t('common.createSuccess'))
+      closeDialog()
+      emit('success')
+    } finally {
+      formLoading.value = false
     }
-    dialogVisible.value = false
-    emit('success')
-  } finally {
-    formLoading.value = false
   }
 }
 

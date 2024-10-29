@@ -100,12 +100,12 @@ export const RepairSourceType = {
   '2': '线下'
 }
 
-// 接单方式
+// 领单方式
 export enum OrderTakeType {
   Active = '00',
   Assign = '01',
   Transfer = '02',
-  '00' = '主动接单',
+  '00' = '主动领单',
   '01' = '指派工单',
   '02' = '转交工单'
 }

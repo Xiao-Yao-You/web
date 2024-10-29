@@ -63,12 +63,8 @@ export const defaultShortcuts = [
  * @description format 季度 + 星期 + 几周："YYYY-mm-dd HH:MM:SS WWW QQQQ ZZZ"
  * @returns 返回拼接后的时间字符串
  */
-export function formatDate(date: dayjs.ConfigType, format?: string): string {
-  // 日期不存在，则返回空
-  if (!date) return ''
-
-  // 日期存在，则进行格式化
-  return date ? dayjs(date).format(format ?? 'YYYY-MM-DD HH:mm:ss') : ''
+export function formatDate(date: dayjs.ConfigType, format = 'YYYY-MM-DD HH:mm:ss'): string {
+  return date ? dayjs(date).format(format) : ''
 }
 
 /**
