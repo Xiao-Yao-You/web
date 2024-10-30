@@ -419,7 +419,7 @@ const openCompleteForm = ({ id, code, status }: RepairOrder) => {
 /** 处理按钮的禁用状态 */
 const handleDisabled = (
   method: OperateMethod,
-  { id, status, submitUserId, dealUserId }: RepairOrder
+  { status, submitUserId, dealUserId }: RepairOrder
 ) => {
   let res = true
   switch (method) {
@@ -432,9 +432,11 @@ const handleDisabled = (
     case OperateMethod.Confirm:
       res = status === OperateStatus.Receive && dealUserId === user.value.id
       break
-    // 转交的前提条件：待处理、进行中
+    // 转交的前提条件：待处理、进行中、不是自己
     case OperateMethod.Transfer:
-      res = [OperateStatus.Receive, OperateStatus.Handling].includes(status)
+      res =
+        [OperateStatus.Receive, OperateStatus.Handling].includes(status) &&
+        dealUserId !== user.value.id
       break
     // 挂起和完成的前提条件：进行中
     case OperateMethod.HangUp:
