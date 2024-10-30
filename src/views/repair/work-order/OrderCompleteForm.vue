@@ -14,8 +14,8 @@
       <el-form-item label="处理人" prop="operateUser">
         <el-input v-model="formData.operateUser.nickname" disabled />
       </el-form-item>
-      <el-form-item label="处理结果" prop="operateType">
-        <el-select v-model="formData.operateType" placeholder="请选择处理结果" class="!w-180px">
+      <el-form-item label="处理结果" prop="completeResult">
+        <el-select v-model="formData.completeResult" placeholder="请选择处理结果" class="!w-180px">
           <el-option
             v-for="dict in resultOptions"
             :key="dict.value"
@@ -74,12 +74,12 @@ const formData = ref({
   id: undefined as unknown as number,
   code: undefined as unknown as string,
   operateUser: userInfo,
-  operateType: defaultType,
+  completeResult: defaultType,
   endTime: formatDate(new Date()),
   remark: ''
 })
 const formRules = reactive({
-  operateType: [{ required: true, message: '处理结果不能为空', trigger: 'blur' }],
+  completeResult: [{ required: true, message: '处理结果不能为空', trigger: 'blur' }],
   remark: [{ required: true, message: '处理说明不能为空', trigger: 'blur' }]
 })
 
@@ -91,6 +91,7 @@ const open = (payload: { id: number; code: string; status: OperateStatus }) => {
   // prettier-ignore
   isCompleted.value = [
     OperateStatus.Finish,
+    OperateStatus.Done,
     OperateStatus.NoHandle,
     OperateStatus.UnableFix,
     OperateStatus.Revoke,
@@ -103,7 +104,7 @@ const resetForm = () => {
     id: undefined as unknown as number,
     code: undefined as unknown as string,
     operateUser: userInfo,
-    operateType: defaultType,
+    completeResult: defaultType,
     endTime: formatDate(new Date()),
     remark: ''
   }
@@ -112,7 +113,7 @@ const resetForm = () => {
 const emit = defineEmits(['success'])
 const onConfirm = async () => {
   await formRef.value.validate()
-  const { operateUser, operateType, ...rest } = formData.value
+  const { operateUser, ...rest } = formData.value
   const data = {
     ...rest,
     operateUserId: operateUser.id,
@@ -122,7 +123,7 @@ const onConfirm = async () => {
   loading.value = true
   try {
     await handleRepairOrder(data)
-    message.success('工单已完成，等待发起人确认')
+    message.success('工单已完成') /* 待报修人确认 */
     emit('success')
   } finally {
     loading.value = false
