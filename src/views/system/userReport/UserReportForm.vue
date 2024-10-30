@@ -1,5 +1,12 @@
 <template>
-  <Dialog :title="dialogTitle" v-model="dialogVisible" width="1200px">
+  <Dialog
+    :title="dialogTitle"
+    v-model="dialogVisible"
+    width="1200px"
+    :close-on-click-modal="false"
+    :close-on-press-escape="false"
+    :before-close="handleClose"
+  >
     <el-form
       ref="formRef"
       :model="formData"
@@ -199,7 +206,7 @@
       >
         确 定
       </el-button>
-      <el-button @click="dialogVisible = false">取 消</el-button>
+      <el-button @click="handleClose">取 消</el-button>
     </template>
     <AddWorkProgressForm
       ref="addProgressFormRef"
@@ -226,6 +233,7 @@ import { useUserStore } from '@/store/modules/user'
 import { useReportStoreWithOut } from '@/store/modules/report'
 import { defaultProps, handleTree } from '@/utils/tree'
 import dayjs from 'dayjs'
+import { isFunction } from '@/utils/is'
 
 /** 用户汇报 表单 */
 defineOptions({ name: 'UserReportForm' })
@@ -461,6 +469,16 @@ const submitForm = async () => {
   } finally {
     formLoading.value = false
   }
+}
+
+const handleClose = async <T extends ((cancel?: boolean) => void) | MouseEvent>(done: T) => {
+  const scheduleLength = formData.value.reportJobScheduleDOList.length
+  const planLength = formData.value.reportJobPlanDOList.length
+  if (scheduleLength || planLength) {
+    await message.confirm('系统可能不会保存您所做的更改，确认关闭？')
+  }
+  if (isFunction(done)) done()
+  dialogVisible.value = false
 }
 
 /** 重置表单 */

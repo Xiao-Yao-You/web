@@ -1,7 +1,16 @@
 <template>
-  <el-drawer v-model="drawer" :direction="direction" :before-close="handleClose" append-to-body>
-    <template #header>
-      <h4>添加工作进度</h4>
+  <el-drawer
+    v-model="drawer"
+    :direction="direction"
+    append-to-body
+    :close-on-click-modal="false"
+    :close-on-press-escape="false"
+    :show-close="false"
+  >
+    <template #header="{ close, titleId, titleClass }">
+      <h4 :id="titleId" :class="titleClass">添加工作进度</h4>
+      <el-button @click="handleClose(close)">取消</el-button>
+      <el-button v-if="controlType != 'view'" type="primary" @click="submit">确认</el-button>
     </template>
     <template #default>
       <el-form
@@ -64,20 +73,15 @@
         </el-form-item>
       </el-form>
     </template>
-    <template #footer>
-      <div style="flex: auto">
-        <el-button @click="cancelClick">取消</el-button>
-        <el-button type="primary" @click="submit" v-if="controlType != 'view'">确认</el-button>
-      </div>
-    </template>
   </el-drawer>
 </template>
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import { cloneDeep } from 'lodash-es'
 import { UserReportApi } from '../../../api/system/userReport/index'
+// import { isFunction } from '@/utils/is'
 import { type workProgress } from '@/api/system/userReport'
-import type { DrawerProps } from 'element-plus'
+import type { DrawerProps, DialogBeforeCloseFn, FormInstance } from 'element-plus'
 
 /** 工作进度 表单 */
 defineOptions({ name: 'AddWorkProgressForm' })
@@ -86,10 +90,11 @@ type FormType = Partial<
   Pick<workProgress, 'content' | 'situation' | 'connectId' | 'connectContent'>
 >
 
+const message = useMessage()
 const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
 const direction = ref<DrawerProps['direction']>('rtl')
 const drawer = ref(false)
-const addProgressFormRef = ref()
+const addProgressFormRef = ref<FormInstance>()
 const emits = defineEmits<{
   addprogress: [addProgress: FormType]
   updateprogress: [updateProgress: FormType]
@@ -125,7 +130,7 @@ const selectConnect = async (value: number | undefined) => {
 /**提交表单 */
 const submit = async () => {
   // 校验表单
-  await addProgressFormRef.value.validate()
+  await addProgressFormRef.value!.validate()
   // 提交请求
   formLoading.value = true
 
@@ -134,7 +139,6 @@ const submit = async () => {
   } else {
     emits('updateprogress', progressData.value)
   }
-  progressData.value = {} as workProgress
   drawer.value = false
 }
 
@@ -156,23 +160,19 @@ const open = async (type: string, process: workProgress) => {
   drawer.value = true
 }
 
-/** 取消按钮 */
-const cancelClick = async () => {
-  drawer.value = false
-}
-
 /** 关闭抽屉 */
-const handleClose = async (done: () => void) => {
-  ElMessageBox.confirm('确定关闭当前页面?')
-    .then(() => {
-      drawer.value = false
-      done()
-    })
-    .catch(() => {
-      // catch error
-    })
+const handleClose: DialogBeforeCloseFn = async (done) => {
+  if (progressData.value.content || progressData.value.situation) {
+    await message.confirm('系统可能不会保存您所做的更改，确认关闭？')
+  }
+  addProgressFormRef.value!.clearValidate()
+  done()
 }
 
+/**
+ * @description 重置表单
+ * 在 open 时，ref 还无法获取 form 实例，不能使用 resetFields()等方法，只能手动重置
+ */
 const resetForm = () => {
   progressData.value = {
     content: '',
