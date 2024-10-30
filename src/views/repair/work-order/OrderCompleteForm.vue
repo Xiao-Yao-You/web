@@ -124,6 +124,7 @@ const onConfirm = async () => {
   try {
     await handleRepairOrder(data)
     message.success('工单已完成') /* 待报修人确认 */
+    dialogVisible.value = false
     emit('success')
   } finally {
     loading.value = false
