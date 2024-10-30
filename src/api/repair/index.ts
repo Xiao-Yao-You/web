@@ -386,6 +386,8 @@ export interface RepairOrder {
   deviceName?: string // 设备名称
   addressId: number // 设备地点
   location: string // 设备位置
+  dealUserId: number
+  dealUserNickName: string
   submitUserId: number // 报修人
   submitUserNickName: string
   submitUserMobile: string // 报修人电话

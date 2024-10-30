@@ -149,13 +149,62 @@
       <el-table-column label="操作" align="center" fixed="right" min-width="400">
         <template #default="{ row }">
           <el-button link type="primary" @click="openForm('detail', row.id)">详情</el-button>
-          <el-button link type="primary" @click="openDispatchForm(row)">派单</el-button>
-          <el-button link type="primary" @click="receiveOrder(row.id)">领单</el-button>
-          <el-button link type="primary" @click="openTransferForm(row)">转交</el-button>
-          <el-button link type="primary" @click="openStartForm(row.id)">确认</el-button>
-          <el-button link type="primary" @click="onHangUp(row)">挂起</el-button>
-          <el-button link type="primary" @click="openCompleteForm(row)">完成</el-button>
-          <el-button link type="danger" @click="handleRevoke(row.id)">撤销</el-button>
+          <el-button
+            link
+            type="primary"
+            :disabled="handleDisabled(OperateMethod.Dispatch, row)"
+            @click="openDispatchForm(row)"
+          >
+            派单
+          </el-button>
+          <el-button
+            link
+            type="primary"
+            :disabled="handleDisabled(OperateMethod.Receive, row)"
+            @click="receiveOrder(row.id)"
+          >
+            领单
+          </el-button>
+          <el-button
+            link
+            type="primary"
+            :disabled="handleDisabled(OperateMethod.Transfer, row)"
+            @click="openTransferForm(row)"
+          >
+            转交
+          </el-button>
+          <el-button
+            link
+            type="primary"
+            :disabled="handleDisabled(OperateMethod.Confirm, row)"
+            @click="openStartForm(row.id)"
+          >
+            确认
+          </el-button>
+          <el-button
+            link
+            type="primary"
+            :disabled="handleDisabled(OperateMethod.HangUp, row)"
+            @click="onHangUp(row)"
+          >
+            挂起
+          </el-button>
+          <el-button
+            link
+            type="primary"
+            :disabled="handleDisabled(OperateMethod.Finish, row)"
+            @click="openCompleteForm(row)"
+          >
+            完成
+          </el-button>
+          <el-button
+            link
+            type="danger"
+            :disabled="handleDisabled(OperateMethod.Revoke, row)"
+            @click="handleRevoke(row.id)"
+          >
+            撤销
+          </el-button>
           <!-- <el-button link type="primary">流转记录</el-button> -->
         </template>
       </el-table-column>
@@ -186,6 +235,7 @@
 </template>
 
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
 import { ElMessageBox } from 'element-plus'
 import OrderForm from './OrderForm.vue'
 import OrderDispatchForm from './OrderDispatchForm.vue'
@@ -197,7 +247,8 @@ import {
   IssueTypeLabel,
   OperateMethod,
   OrderTakeType,
-  RepairSourceType
+  RepairSourceType,
+  OperateStatus
 } from '@/api/repair/constant'
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
@@ -205,6 +256,7 @@ import { defaultProps } from '@/utils/tree'
 import { formatDate, formatPast2 } from '@/utils/formatTime'
 import { useEmployeeStoreWithOut } from '@/store/modules/employee'
 import { useIcon } from '@/hooks/web/useIcon'
+import { useUserStore } from '@/store/modules/user'
 
 defineOptions({
   name: 'RepairWorkOrder'
@@ -214,6 +266,7 @@ const message = useMessage()
 const repairStore = useRepairStoreWithOut()
 const employeeStore = useEmployeeStoreWithOut()
 const InfoIcon = useIcon({ icon: 'ep:info-filled', size: 14 })
+const { user } = storeToRefs(useUserStore())
 
 const loading = ref(true)
 const list = ref<RepairOrder[]>([])
@@ -361,6 +414,41 @@ const onHangUp = ({ title, id }: RepairOrder) => {
 const completeRef = ref()
 const openCompleteForm = ({ id, code, status }: RepairOrder) => {
   completeRef.value.open({ id, code, status })
+}
+
+/** 处理按钮的禁用状态 */
+const handleDisabled = (
+  method: OperateMethod,
+  { id, status, submitUserId, dealUserId }: RepairOrder
+) => {
+  let res = true
+  switch (method) {
+    // 派单和领单的前提条件：待分配
+    case OperateMethod.Dispatch:
+    case OperateMethod.Receive:
+      res = status === OperateStatus.Dispatch
+      break
+    // 现场确认的前提条件：待处理
+    case OperateMethod.Confirm:
+      res = status === OperateStatus.Receive && dealUserId === user.value.id
+      break
+    // 转交的前提条件：待处理、进行中
+    case OperateMethod.Transfer:
+      res = [OperateStatus.Receive, OperateStatus.Handling].includes(status)
+      break
+    // 挂起和完成的前提条件：进行中
+    case OperateMethod.HangUp:
+    case OperateMethod.Finish:
+      res = status === OperateStatus.Handling && dealUserId === user.value.id
+      break
+    // 撤销的前提条件：不是已完成
+    case OperateMethod.Revoke:
+      res = status !== OperateStatus.Finish && submitUserId === user.value.id
+      break
+    default:
+      break
+  }
+  return !res
 }
 
 onMounted(() => {

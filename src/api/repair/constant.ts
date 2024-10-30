@@ -52,24 +52,15 @@ export enum PictureType {
 
 // 工单处理状态
 export enum OperateStatus {
-  Dispatch = '00',
-  Receive = '01',
-  Transfer = '02',
-  Confirm = '03',
-  HangUp = '04',
-  Finish = '05',
-  NoHandle = '0501',
-  UnableFix = '0502',
-  Revoke = '06'
-  // '00' = '派单',
-  // '01' = '领单',
-  // '02' = '转交',
-  // '03' = '现场确认',
-  // '04' = '挂起',
-  // '05' = '已完成',
-  // '0501' = '无需处理',
-  // '0502' = '无法排除故障',
-  // '06' = '撤销'
+  Dispatch = '00', // 待分配（此时无人认领）
+  Receive = '01', // 待处理（此时已派单或主动接单）
+  Handling = '02', // 进行中
+  HangUp = '03', // 挂起
+  Done = '04', // 已处理
+  Finish = '05', // 已完成
+  NoHandle = '0501', // 无需处理
+  UnableFix = '0502', // 无法排除的故障
+  Revoke = '06' // 撤销
 }
 
 // 工单处理方式
