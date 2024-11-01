@@ -8,16 +8,11 @@
           placeholder="请输入标题"
           clearable
           @keyup.enter="handleQuery"
-          class="!w-240px"
+          class="!w-200px"
         />
       </el-form-item>
       <el-form-item label="工单状态" prop="status">
-        <el-select
-          v-model="queryParams.status"
-          placeholder="请选择工单状态"
-          clearable
-          class="!w-150px"
-        >
+        <el-select v-model="queryParams.status" clearable class="!w-110px">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.REPAIR_ORDER_STATUS)"
             :key="dict.value"
@@ -27,12 +22,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="紧急程度" prop="level">
-        <el-select
-          v-model="queryParams.level"
-          placeholder="请选紧急程度"
-          clearable
-          class="!w-140px"
-        >
+        <el-select v-model="queryParams.level" clearable class="!w-90px">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.LEVEL)"
             :key="dict.value"
@@ -40,6 +30,15 @@
             :value="dict.value"
           />
         </el-select>
+      </el-form-item>
+      <el-form-item label="处理人" prop="dealUserNickName">
+        <el-input
+          v-model="queryParams.dealUserNickName"
+          placeholder="请输入处理人"
+          clearable
+          @keyup.enter="handleQuery"
+          class="!w-110px"
+        />
       </el-form-item>
       <el-form-item label="问题类型" prop="questionType">
         <el-tree-select
@@ -277,6 +276,7 @@ const queryParams = reactive({
   pageSize: 10,
   title: undefined as unknown as string,
   status: undefined as unknown as string, // 工单状态
+  dealUserNickName: '',
   questionType: undefined, // 问题类型
   level: undefined // 紧急程度
 })
