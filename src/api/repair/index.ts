@@ -399,10 +399,11 @@ export interface RepairOrder {
 }
 
 // 获取工单分页
-export const getRepairOrderPage = (params: RepairOrderPage) => {
+export const getRepairOrderPage = (params: RepairOrderPage, signal?: AbortSignal) => {
   return request.get<{ list: RepairOrder[]; total: number }>({
     url: '/operation-order/page',
-    params
+    params,
+    signal
   })
 }
 

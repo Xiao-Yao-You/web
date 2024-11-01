@@ -39,17 +39,52 @@
       <!-- 1.1 工单模块 -->
       <el-card class="work-card" shadow="never">
         <el-skeleton :loading="loading" animated>
-          <el-tabs class="h-full" v-model="activeWork" addable @edit="handleWorkTab">
+          <el-tabs
+            class="h-full"
+            v-model="activeWork"
+            addable
+            @tab-change="onWorkTabChange"
+            @edit="router.push({ name: 'RepairWorkOrder' })"
+          >
             <template #add-icon><ArrowRightIcon /></template>
             <el-tab-pane label="待办工单" name="todoWork">
-              <el-scrollbar>
-                <el-empty description="敬请期待" :image-size="100" />
-              </el-scrollbar>
+              <el-table :data="newOrders" stripe show-overflow-tooltip height="100%">
+                <el-table-column type="index" width="40" />
+                <el-table-column label="工单标题" prop="title" />
+                <el-table-column label="紧急程度" prop="level">
+                  <template #default="scope">
+                    <dict-tag :type="DICT_TYPE.LEVEL" :value="scope.row.level" />
+                  </template>
+                </el-table-column>
+                <el-table-column label="请求类型" prop="requestType">
+                  <template #default="scope">
+                    {{ IssueTypeLabel[scope.row.requestType] }}
+                  </template>
+                </el-table-column>
+                <el-table-column label="问题类型" prop="questionTypeStr" />
+              </el-table>
             </el-tab-pane>
             <el-tab-pane label="我的工单" name="myWork">
-              <el-scrollbar>
-                <el-empty description="敬请期待" :image-size="100" />
-              </el-scrollbar>
+              <el-table :data="myOrders" stripe show-overflow-tooltip height="100%">
+                <el-table-column type="index" width="40" />
+                <el-table-column label="工单标题" prop="title" />
+                <el-table-column label="工单状态" prop="status">
+                  <template #default="scope">
+                    <dict-tag :type="DICT_TYPE.REPAIR_ORDER_STATUS" :value="scope.row.status" />
+                  </template>
+                </el-table-column>
+                <el-table-column label="紧急程度" prop="level">
+                  <template #default="scope">
+                    <dict-tag :type="DICT_TYPE.LEVEL" :value="scope.row.level" />
+                  </template>
+                </el-table-column>
+                <el-table-column label="请求类型" prop="requestType">
+                  <template #default="scope">
+                    {{ IssueTypeLabel[scope.row.requestType] }}
+                  </template>
+                </el-table-column>
+                <el-table-column label="问题类型" prop="questionTypeStr" />
+              </el-table>
             </el-tab-pane>
           </el-tabs>
         </el-skeleton>
@@ -144,6 +179,10 @@ import { formatTime } from '@/utils'
 import { formatDate, intervalTransform } from '@/utils/formatTime'
 import MeetingStatusTag from '@/views/system/meeting/subscribe/MeetingStatusTag.vue'
 import avatarImg from '@/assets/imgs/avatar.gif'
+import { useEmitt } from '@/hooks/web/useEmitt'
+import { getRepairOrderPage, type RepairOrder } from '@/api/repair'
+import { IssueTypeLabel, OperateStatus } from '@/api/repair/constant'
+import { DICT_TYPE } from '@/utils/dict'
 
 defineOptions({ name: 'Home' })
 
@@ -154,16 +193,13 @@ const ArrowRightIcon = useIcon({ icon: 'ep:d-arrow-right' })
 
 const loading = ref(true)
 const username = userStore.getUser.nickname
+const userId = userStore.getUser.id
 const activeWork = ref('todoWork') // todoWork、myWork
 const activeTask = ref('todoTask') // todoTask、myWorkflow、copy
 const date = ref(new Date())
 const meetingList = ref<MeetingSubscribeVO[]>([])
 
 const avatar = computed(() => userStore.user.avatar ?? avatarImg)
-
-const handleWorkTab = () => {
-  // todo：去工单页
-}
 
 const handleTaskTab = () => {
   // todo：去工单页
@@ -189,6 +225,45 @@ const getAllApi = async () => {
 }
 
 getAllApi()
+
+// #region 工单tab模块
+const myOrders = ref<RepairOrder[]>([]) // 待办工单
+const newOrders = ref<RepairOrder[]>([]) // 我的工单
+
+// 事件总线
+const { emitter } = useEmitt()
+emitter.on('getNewOrder', async () => {
+  newOrders.value = await getOrders({ status: OperateStatus.Dispatch })
+})
+
+// 请求中断控制器
+const httpController = ref<AbortController | null>(null)
+
+// 工单 tab 切换（查询待分配和我的工单列表）
+const onWorkTabChange = async (tab: string) => {
+  httpController.value?.abort()
+  if (tab === 'todoWork') {
+    newOrders.value = await getOrders({ status: OperateStatus.Dispatch })
+  } else {
+    myOrders.value = await getOrders({ dealUserId: userId })
+  }
+}
+
+// 带有中断功能的工单查询
+const getOrders = async (params: Partial<{ dealUserId: number; status: string }>) => {
+  const controller = markRaw(new AbortController())
+  httpController.value = controller
+  const data = await getRepairOrderPage(
+    {
+      pageNo: 1,
+      pageSize: 50,
+      ...params
+    },
+    controller.signal
+  )
+  return data.list
+}
+// #endregion
 </script>
 
 <style lang="scss" scoped>

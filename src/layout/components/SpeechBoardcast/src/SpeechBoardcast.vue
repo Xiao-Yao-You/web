@@ -2,14 +2,16 @@
 import { useSpeechSynthesis } from '@vueuse/core'
 import { useIcon } from '@/hooks/web/useIcon'
 import { getNewRepairOrder } from '@/api/repair'
+import { useEmitt } from '@/hooks/web/useEmitt'
+import { useCache } from '@/hooks/web/useCache'
 
 defineOptions({
   name: 'SpeechBoardcast'
 })
-
+const { wsCache } = useCache()
 const message = useMessage()
-const MicroPhoneIcon = useIcon({ icon: 'ep:microphone' })
-const MuteIcon = useIcon({ icon: 'ep:mute' })
+const MicroPhoneIcon = useIcon({ icon: 'ep:microphone', size: 18 })
+const MuteIcon = useIcon({ icon: 'ep:mute', size: 18 })
 
 const disabled = ref(true)
 const handleToggle = () => {
@@ -48,13 +50,13 @@ const enableSpeech = () => {
   if (speech.status.value === 'init') {
     if (!speech.error.value) {
       disabled.value = true
-    } else if (speech.error.value.error === 'not-allowed') {
+    } else if (speech.error.value.error === 'not-allowed' && !wsCache.get('noSpeechTip')) {
       message
         .confirm(
-          '<div>当前页面暂未开启语音播报，您可能会错过重要提醒。<br/>您也可以点击右上角语音<img src="src/assets/svgs/microphone.svg">手动开启或关闭。</div>',
+          '<div>当前页面暂未开启语音播报，您可能会错过重要提醒。<br/>您也可以点击右上角语音<img src="../../../../../src/assets/svgs/microphone.svg">手动开启或关闭。</div>',
           {
             confirmButtonText: '开启',
-            cancelButtonText: '知道了',
+            cancelButtonText: '一周内不在提醒',
             dangerouslyUseHTMLString: true,
             showClose: false,
             closeOnClickModal: false,
@@ -65,6 +67,9 @@ const enableSpeech = () => {
           text.value = '语音播报已开启'
           play()
           disabled.value = false
+        })
+        .catch(() => {
+          wsCache.set('noSpeechTip', true, { exp: 60 * 60 * 24 * 7 })
         })
     }
   }
@@ -86,9 +91,11 @@ const stop = () => speech.stop()
 // #endregion
 
 // 轮询工单
+const { emitter } = useEmitt()
 const query = async () => {
   const count = await getNewRepairOrder()
   if (count) {
+    emitter.emit('getNewOrder')
     if (!disabled.value) {
       text.value = `您有${count}份新的运维工单，请及时处理。`
       play()
