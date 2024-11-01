@@ -1,5 +1,6 @@
-import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
+import { ElMessage, ElMessageBox, ElNotification, type ElMessageBoxOptions } from 'element-plus'
 import { useI18n } from './useI18n'
+
 export const useMessage = () => {
   const { t } = useI18n()
   return {
@@ -51,13 +52,19 @@ export const useMessage = () => {
     notifyWarning(content: string) {
       ElNotification.warning(content)
     },
-    // 确认窗体
-    confirm(content: string, tip?: string) {
-      return ElMessageBox.confirm(content, tip ? tip : t('common.confirmTitle'), {
+    confirm(content: string, param1?: string | ElMessageBoxOptions, param2?: ElMessageBoxOptions) {
+      let tip = t('common.confirmTitle')
+      const options: ElMessageBoxOptions = {
         confirmButtonText: t('common.ok'),
         cancelButtonText: t('common.cancel'),
         type: 'warning'
-      })
+      }
+      if (param1) {
+        if (typeof param1 == 'string') tip = param1
+        if (typeof param1 == 'object') Object.assign(options, param1)
+      }
+      if (param2) Object.assign(options, param2)
+      return ElMessageBox.confirm(content, tip, options)
     },
     // 删除窗体
     delConfirm(content?: string, tip?: string) {

@@ -6,7 +6,7 @@ import { UserInfo } from '@/layout/components/UserInfo'
 import { Screenfull } from '@/layout/components/Screenfull'
 import { Breadcrumb } from '@/layout/components/Breadcrumb'
 import { SizeDropdown } from '@/layout/components/SizeDropdown'
-import { LocaleDropdown } from '@/layout/components/LocaleDropdown'
+import { SpeechBoardcast } from '@/layout/components/SpeechBoardcast'
 import { TenantSwitch } from '@/layout/components/TenantSwitch'
 import RouterSearch from '@/components/RouterSearch/index.vue'
 import { useAppStore } from '@/store/modules/app'
@@ -70,12 +70,15 @@ export default defineComponent({
           {size.value ? (
             <SizeDropdown class="custom-hover" color="var(--top-header-text-color)"></SizeDropdown>
           ) : undefined}
-          {locale.value ? (
+          {/* {
+            locale.value ? (
             <LocaleDropdown
               class="custom-hover"
               color="var(--top-header-text-color)"
             ></LocaleDropdown>
-          ) : undefined}
+            ) : undefined
+          } */}
+          <SpeechBoardcast />
           {message.value ? <Message class="custom-hover"></Message> : undefined}
           <TenantSwitch class="custom-hover" color="var(--top-header-text-color)" />
           <UserInfo></UserInfo>

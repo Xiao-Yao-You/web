@@ -465,3 +465,8 @@ export const handleRepairOrder = (data: HandlePayload) => {
 export const getUseableLabelCode = () => {
   return request.get<{ code: string }[]>({ url: '/operation-device/getUseableLabelCode' })
 }
+
+// 查询新运维工单数量
+export const getNewRepairOrder = async () => {
+  return await request.get<number>({ url: '/operation-order/getUnDealOrderCount' })
+}
