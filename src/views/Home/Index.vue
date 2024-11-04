@@ -145,7 +145,7 @@
                   <div>
                     <div>
                       会议时间：
-                      {{ formatDate(item.dateMeeting, 'YYYY-MM-DD') }}
+                      {{ item.dateMeeting.join('-') }}
                       {{
                         `${intervalTransform(item.startTime, 'start')} - ${intervalTransform(item.endTime, 'end')}`
                       }}
@@ -174,9 +174,9 @@
 <script lang="ts" setup>
 import { useIcon } from '@/hooks/web/useIcon'
 import { useUserStore } from '@/store/modules/user'
-import { MeetingSubscribeApi, MeetingSubscribeVO } from '@/api/system/meeting'
+import { MeetingSubscribeApi, MeetingSubscribeInfo } from '@/api/system/meeting'
 import { formatTime } from '@/utils'
-import { formatDate, intervalTransform } from '@/utils/formatTime'
+import { intervalTransform } from '@/utils/formatTime'
 import MeetingStatusTag from '@/views/system/meeting/subscribe/MeetingStatusTag.vue'
 import avatarImg from '@/assets/imgs/avatar.gif'
 import { useEmitt } from '@/hooks/web/useEmitt'
@@ -197,7 +197,7 @@ const userId = userStore.getUser.id
 const activeWork = ref('todoWork') // todoWork、myWork
 const activeTask = ref('todoTask') // todoTask、myWorkflow、copy
 const date = ref(new Date())
-const meetingList = ref<MeetingSubscribeVO[]>([])
+const meetingList = ref<MeetingSubscribeInfo[]>([])
 
 const avatar = computed(() => userStore.user.avatar ?? avatarImg)
 

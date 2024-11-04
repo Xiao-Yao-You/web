@@ -77,38 +77,38 @@ export type JoinUser = {
   userId: number
 }
 
-// 会议预约 VO
+// 会议操作（增、改）
 export interface MeetingSubscribeVO {
-  id: number
+  capacity: number // 与会人数
+  dateMeeting: string | number[] // 会议日期
+  endTime: number // 结束时间（timeKey）
+  equipment: (string | number)[] // 设备
+  hostUserNickName: string // 主持人
+  joinUserList: JoinUser[] // 参与会议的用户 id
+  meetingRoomId: number // 会议室ID
+  meetingRoomName: string // 会议室名
+  otherAttend: string[] // 外部与会人员
+  remark: string // 备注
+  startTime: number // 开始时间（timeKey）
   subject: string // 名称
   userNickName: string
   userPhone: string // 用户联系电话
-  meetingRoomId: number // 会议室ID
-  meetingRoomName: string // 会议室名
-  dateMeeting: string | number[] // 会议日期
-  startTime: number // 开始时间（timeKey）
-  endTime: number // 结束时间（timeKey）
-  capacity: number // 与会人数
-  otherAttend: string[] // 外部与会人员
-  joinUserList: JoinUser[] // 参与会议的用户 id
-  equipment: (string | number)[] // 设备
-  remark: string // 备注
 }
 
+// 会议信息
 export interface MeetingSubscribeInfo extends MeetingSubscribeVO {
   id: number
   userId: number
   status: number // 0 正常 1 撤销
-  dateMeeting: number[]
   createTime: number
+  dateMeeting: number[] // 会议日期
 }
 
 // 会议预约 API
 export const MeetingSubscribeApi = {
   // 查询会议预约分页
-  getMeetingSubscribePage: async (params: any) => {
-    return await request.get({
-      // baseURL: 'http://localhost',
+  getMeetingSubscribePage: (params: any) => {
+    return request.get<{ list: MeetingSubscribeInfo[]; total: number }>({
       url: `/bookMeeting/page`,
       params
     })

@@ -161,7 +161,7 @@ import { isEmpty } from 'lodash-es'
 import MeetingSubscribeForm from './MeetingSubscribeForm.vue'
 import MeetingStatusTag from './MeetingStatusTag.vue'
 import MeetingSubscribeDetail from './MeetingSubscribeDetail.vue'
-import { MeetingSubscribeApi, MeetingSubscribeVO } from '@/api/system/meeting'
+import { MeetingSubscribeApi, MeetingSubscribeInfo } from '@/api/system/meeting'
 import { getDictDataByType } from '@/api/system/dict/dict.data'
 import { handleMeetingStatus, type StatusProps } from './hook/useMeetingStatus'
 import { MeetingStatus } from '@/api/system/meeting/constant'
@@ -178,7 +178,7 @@ const { t } = useI18n() // 国际化
 const { wsCache } = useCache()
 
 const loading = ref(true) // 列表的加载中
-const list = ref<MeetingSubscribeVO[]>([]) // 列表的数据
+const list = ref<MeetingSubscribeInfo[]>([]) // 列表的数据
 const total = ref(0) // 列表的总页数
 const queryParams = reactive({
   pageNo: 1,
