@@ -21,6 +21,8 @@
             v-model="loginData.loginForm.username"
             :placeholder="t('login.usernamePlaceholder')"
             :prefix-icon="iconAvatar"
+            clearable
+            @change="onUserNameChange"
           />
         </el-form-item>
       </el-col>
@@ -214,7 +216,7 @@ const LoginRules = reactive<FormRules<typeof loginData.loginForm>>({
       trigger: 'change'
     }
   ],
-  password: [required],
+  password: [{ ...required, trigger: 'blur' }],
   tenantName: [
     {
       required: true,
@@ -243,6 +245,11 @@ const loginData = reactive({
 //   { icon: 'ant-design:alipay-circle-filled', type: 0 }
 // ]
 // #endregion
+
+// 用户名输入事件
+const onUserNameChange = (value: string) => {
+  if (!value) loginData.loginForm.password = ''
+}
 
 // 获取验证码
 const getCode = async () => {
@@ -312,13 +319,11 @@ const queryTenantList = async (userName: string) => {
 const loading = ref() // ElLoading.service 返回的实例
 // 登录
 const handleLogin = async (params) => {
-  loginLoading.value = true
+  const data = await validForm()
+  if (!data) return
   try {
     await getTenantId()
-    const data = await validForm()
-    if (!data) {
-      return
-    }
+    loginLoading.value = true
     loginData.loginForm.captchaVerification = params.captchaVerification
     const res = await LoginApi.login(loginData.loginForm)
     if (!res) {
@@ -346,7 +351,7 @@ const handleLogin = async (params) => {
     }
   } finally {
     loginLoading.value = false
-    loading.value.close()
+    loading.value?.close()
   }
 }
 
