@@ -4,6 +4,7 @@ import { useIcon } from '@/hooks/web/useIcon'
 import { getNewRepairOrder } from '@/api/repair'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { useCache } from '@/hooks/web/useCache'
+import { checkPermi } from '@/utils/permission'
 
 defineOptions({
   name: 'SpeechBoardcast'
@@ -53,7 +54,11 @@ const enableSpeech = () => {
     } else if (speech.error.value.error === 'not-allowed' && !wsCache.get('noSpeechTip')) {
       message
         .confirm(
-          '<div>当前页面暂未开启语音播报，您可能会错过重要提醒。<br/>您也可以点击右上角语音<img src="../../../../../src/assets/svgs/microphone.svg">手动开启或关闭。</div>',
+          `<div>
+            由于系统限制，语音播报默认关闭，请确认是否开启？<br/>
+            温馨提示：开启前请确保扬声器已打开。<br/>
+            <p style="margin-top: 12px">您也可以点击右上角语音<img src="../../../../../src/assets/svgs/microphone.svg">手动开启或关闭。</p>
+          </div>`,
           {
             confirmButtonText: '开启',
             cancelButtonText: '一周内不在提醒',
@@ -90,7 +95,7 @@ const stop = () => speech.stop()
 // }
 // #endregion
 
-// 轮询工单
+// 新工单数量查询
 const { emitter } = useEmitt()
 const query = async () => {
   const count = await getNewRepairOrder()
@@ -104,7 +109,9 @@ const query = async () => {
 }
 
 onMounted(() => {
-  initSpeech()
+  // 需要播报的，开始语音初始化
+  if (checkPermi(['repair:speech'])) initSpeech()
+  // 轮询工单
   query()
   setInterval(
     () => {
