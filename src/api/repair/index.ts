@@ -253,7 +253,7 @@ export interface RepairArchive {
   deptId: number // 设备部门
   deptName: string // 设备部门名称
   userId: number // 使用人 ID
-  userNickName: number // 使用人
+  userNickName: string // 使用人
   address: string // 使用地点
   addressId: number // 使用地点
   location: string // 设备位置

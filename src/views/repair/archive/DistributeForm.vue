@@ -26,7 +26,7 @@
           value-key="value"
           clearable
           filterable
-          @change="formData.userId = undefined"
+          @change="onDeptChange"
         >
           <el-option
             v-for="item in deptStore.topDeptOptions"
@@ -39,16 +39,18 @@
       <el-form-item label="使用人" prop="userId">
         <el-select
           v-model="formData.userId"
-          placeholder="请选择使用人"
+          placeholder="先选部门，再输入名字搜索"
           filterable
+          remote
           clearable
+          :remote-method="remoteMethod"
           :loading="userLoading"
         >
           <el-option
             v-for="item in userOptions"
-            :key="item.id"
-            :label="item.nickname"
-            :value="item.id"
+            :key="item.value"
+            :value="item.value"
+            :label="item.label"
           />
         </el-select>
       </el-form-item>
@@ -96,7 +98,7 @@ import { useDeptStoreWithOut } from '@/store/modules/department'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
 import { isIPV4 } from '@/utils/is'
 import { getAll } from '@/api/system/user'
-import type { UploadFiles } from 'element-plus'
+import type { UploadFiles, FormInstance } from 'element-plus'
 
 /** 分配表单 */
 defineOptions({ name: 'DistributeForm' })
@@ -106,7 +108,6 @@ const deptStore = useDeptStoreWithOut()
 const repairStore = useRepairStoreWithOut()
 
 const dialogVisible = ref(false)
-const userOptions = ref<OptionItem<number>[]>([]) // 使用人选择列表
 const userLoading = ref(false)
 const formLoading = ref(false)
 const formData = ref({
@@ -122,7 +123,7 @@ const formData = ref({
   pictureList: undefined as unknown as UploadFiles
 })
 const formRules = reactive({
-  dept: [{ required: true, message: '使用部门不能为空', trigger: 'blur' }],
+  dept: [{ message: '使用部门不能为空', trigger: 'blur', required: true }],
   addressId: [{ required: true, message: '所在地点不能为空', trigger: 'blur' }],
   location: [{ required: true, message: '设备位置不能为空', trigger: 'blur' }],
   ip1: [
@@ -132,7 +133,8 @@ const formRules = reactive({
   ip2: [{ pattern: isIPV4, message: 'IP 格式不正确' }],
   pictureList: [{ required: true, message: '现场图片不能为空', trigger: 'blur' }]
 })
-const formRef = ref() // 表单 Ref
+
+const formRef = ref<FormInstance>() // 表单 Ref
 
 /** 打开弹窗 */
 const open = async ({ code, name, id }) => {
@@ -146,7 +148,6 @@ const open = async ({ code, name, id }) => {
       id,
       code,
       name,
-      dept: { value: res.deptId, label: res.deptName },
       userId: res.userId,
       addressId: res.addressId,
       location: res.location,
@@ -154,34 +155,49 @@ const open = async ({ code, name, id }) => {
       ip2: res.ip2,
       pictureList: res.distributePictureList || []
     })
+    if (res.deptId) {
+      formData.value.dept = { value: res.deptId, label: res.deptName }
+      userOptions.value = [{ value: res.userId, label: res.userNickName }]
+    }
   } finally {
     formLoading.value = false
   }
 }
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 
+// 部门切换，重置对应使用人信息
+const onDeptChange = () => {
+  formRef.value?.validateField('dept')
+  formData.value.userId = undefined
+  userOptions.value = []
+}
+
 // 根据使用部门切换使用人列表
-watch(
-  () => formData.value.dept,
-  (newDept) => {
-    if (newDept) {
-      userOptions.value = []
-      userLoading.value = true
-      getAll({ deptId: newDept.value, nickname: '' })
-        .then((res) => {
-          userOptions.value = res
-        })
-        .finally(() => {
-          userLoading.value = false
-        })
-    }
+const userOptions = ref<OptionItem<number>[]>([])
+const remoteMethod = (nickname: string) => {
+  if (!formData.value.dept?.value) return formRef.value?.validateField('dept')
+  if (nickname) {
+    userOptions.value = []
+    userLoading.value = true
+    getAll({ deptId: formData.value.dept.value, nickname })
+      .then((res) => {
+        userOptions.value = res.map(({ username, nickname, id }) => ({
+          label: `${nickname}——${username}`,
+          value: id
+        }))
+      })
+      .finally(() => {
+        userLoading.value = false
+      })
+  } else {
+    userOptions.value = []
   }
-)
+}
 
 /** 提交表单 */
 const emit = defineEmits(['success']) // 定义 success 事件，用于操作成功后的回调
 const submitForm = async () => {
-  await formRef.value.validate()
+  await formRef.value?.validate()
   const { code, name, pictureList, dept, ...rest } = formData.value
   const data = {
     ...rest,
