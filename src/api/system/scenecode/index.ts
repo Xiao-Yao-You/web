@@ -61,3 +61,7 @@ export const SceneCodeApi = {
 export const getSceneCodeAll = async () => {
   return request.get<SceneCodeVO[]>({ url: '/system/scene-code/getAll' })
 }
+
+export const getImportTemplate = async () => {
+  return request.download({ url: '/system/scene-code/get-import-template' })
+}

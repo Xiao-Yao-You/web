@@ -29,6 +29,10 @@
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
+        <el-button type="primary" @click="openImportTable()">
+          <Icon class="mr-5px" icon="ep:zoom-in" />
+          导入
+        </el-button>
         <el-button
           type="primary"
           plain
@@ -121,6 +125,8 @@
 
   <!-- 表单弹窗：添加/修改 -->
   <SceneCodeForm ref="formRef" @success="getList" />
+  <!-- 弹窗：导入表 -->
+  <SceneImportForm ref="importRef" @success="getList" />
 </template>
 
 <script setup lang="ts">
@@ -128,6 +134,7 @@ import { dateFormatter } from '@/utils/formatTime'
 import { SceneCodeApi, SceneCodeVO } from '@/api/system/scenecode'
 import SceneCodeForm from './ScenecodeForm.vue'
 import { SceneTypeEnums } from './constant'
+import SceneImportForm from './SceneImportForm.vue'
 // import download from '@/utils/download'
 
 /** 单据编码类型配置 列表 */
@@ -147,6 +154,11 @@ const queryParams = reactive({
 })
 const queryFormRef = ref() // 搜索的表单
 // const exportLoading = ref(false) // 导出的加载中
+
+const importRef = ref()
+const openImportTable = () => {
+  importRef.value.open()
+}
 
 /** 查询列表 */
 const getList = async () => {
