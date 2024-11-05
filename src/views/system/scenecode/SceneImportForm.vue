@@ -92,17 +92,17 @@ const submitFormSuccess = (response: any) => {
   }
   // 拼接提示语
   const data = response.data
-  let text = '上传成功数量：' + data.createUsernames.length + ';'
-  for (let username of data.createUsernames) {
-    text += '< ' + username + ' >'
+  let text = '上传成功数量：' + data.createList.length + ';'
+  for (let code of data.createList) {
+    text += '< ' + code + ' >'
   }
-  text += '更新成功数量：' + data.updateUsernames.length + ';'
-  for (const username of data.updateUsernames) {
-    text += '< ' + username + ' >'
+  text += '更新成功数量：' + data.updateList.length + ';'
+  for (const code of data.updateList) {
+    text += '< ' + code + ' >'
   }
-  text += '更新失败数量：' + Object.keys(data.failureUsernames).length + ';'
-  for (const username in data.failureUsernames) {
-    text += '< ' + username + ': ' + data.failureUsernames[username] + ' >'
+  text += '更新失败数量：' + Object.keys(data.failureList).length + ';'
+  for (const sceneCode in data.failureUsernames) {
+    text += '< ' + sceneCode + ': ' + data.failureList[sceneCode] + ' >'
   }
   message.alert(text)
   formLoading.value = false
