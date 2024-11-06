@@ -14,6 +14,10 @@
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
+        <el-button type="primary" @click="openImportTable()">
+          <Icon class="mr-5px" icon="ep:zoom-in" />
+          导入
+        </el-button>
         <el-button type="primary" plain @click="openForm('create')">
           <Icon icon="ep:plus" class="mr-5px" /> 新增
         </el-button>
@@ -61,6 +65,9 @@
 
   <!-- 打印弹窗 -->
   <PrintDialog ref="printRef" :labels="batchLabelList" />
+
+  <!-- 弹窗：导入表 -->
+  <DeviceTypeImportForm ref="importRef" @success="getList" />
 </template>
 
 <script setup lang="ts">
@@ -74,6 +81,7 @@ import {
 } from '@/api/repair'
 import DeviceForm from './DeviceForm.vue'
 import PrintDialog from './PrintDialog.vue'
+import DeviceTypeImportForm from './DeviceTypeImportForm.vue'
 
 defineOptions({
   name: 'RepairDevice'
@@ -115,6 +123,11 @@ const handleQuery = () => {
 const resetQuery = () => {
   queryFormRef.value.resetFields()
   handleQuery()
+}
+
+const importRef = ref()
+const openImportTable = () => {
+  importRef.value.open()
 }
 
 const formRef = ref()

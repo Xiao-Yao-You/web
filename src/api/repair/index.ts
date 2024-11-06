@@ -471,3 +471,7 @@ export const getUseableLabelCode = () => {
 export const getNewRepairOrder = async () => {
   return await request.get<number>({ url: '/operation-order/getUnDealOrderCount' })
 }
+
+export const getImportTemplate = async () => {
+  return request.download({ url: '/operation-device-type/get-import-template' })
+}

@@ -41,7 +41,7 @@
   </Dialog>
 </template>
 <script lang="ts" setup>
-import { getImportTemplate } from '@/api/system/scenecode'
+import { getImportTemplate } from '@/api/repair'
 import { getAccessToken, getTenantId } from '@/utils/auth'
 import download from '@/utils/download'
 
@@ -53,7 +53,9 @@ const dialogVisible = ref(false) // 弹窗的是否展示
 const formLoading = ref(false) // 表单的加载中
 const uploadRef = ref()
 const importUrl =
-  import.meta.env.VITE_BASE_URL + import.meta.env.VITE_API_URL + '/system/scene-code/import-excel'
+  import.meta.env.VITE_BASE_URL +
+  import.meta.env.VITE_API_URL +
+  '/operation-device-type/import-excel'
 const uploadHeaders = ref() // 上传 Header 头
 const fileList = ref([]) // 文件列表
 const updateSupport = ref(0) // 是否更新已经存在的用户数据
@@ -93,16 +95,16 @@ const submitFormSuccess = (response: any) => {
   // 拼接提示语
   const data = response.data
   let text = '上传成功数量：' + data.createList.length + ';'
-  for (let code of data.createList) {
-    text += '< ' + code + ' >'
+  for (let typeName of data.createList) {
+    text += '< ' + typeName + ' >'
   }
   text += '更新成功数量：' + data.updateList.length + ';'
-  for (const code of data.updateList) {
-    text += '< ' + code + ' >'
+  for (const typeName of data.updateList) {
+    text += '< ' + typeName + ' >'
   }
   text += '更新失败数量：' + Object.keys(data.failureList).length + ';'
-  for (const sceneCode in data.failureList) {
-    text += '< ' + sceneCode + ': ' + data.failureList[sceneCode] + ' >'
+  for (const typeName in data.failureList) {
+    text += '< ' + typeName + ': ' + data.failureList[typeName] + ' >'
   }
   message.alert(text)
   formLoading.value = false
@@ -133,6 +135,6 @@ const handleExceed = (): void => {
 /** 下载模板操作 */
 const importTemplate = async () => {
   const res = await getImportTemplate()
-  download.excel(res, '单据编码导入模版.xls')
+  download.excel(res, '设备类型导入模版.xls')
 }
 </script>
