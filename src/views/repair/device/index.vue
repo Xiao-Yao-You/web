@@ -32,7 +32,7 @@
       <el-table-column label="类型名称" align="center" prop="name" />
       <el-table-column label="设备编码" align="center" prop="sceneName" />
       <el-table-column label="设备流水号" align="center" prop="currentCode" />
-      <el-table-column label="标签编码" align="center" prop="sceneName" />
+      <el-table-column label="标签编码" align="center" prop="labelSceneName" />
       <el-table-column label="标签流水号" align="center" prop="labelCurrentCode" />
       <el-table-column label="状态" align="center" prop="status">
         <template #default="{ row: { status } }">
