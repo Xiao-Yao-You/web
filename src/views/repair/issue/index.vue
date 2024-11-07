@@ -14,8 +14,6 @@
       <el-form-item>
         <el-button @click="getIssuesMenu"><Icon icon="ep:search" class="mr-5px" />搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" />重置</el-button>
-        <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
-        <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
         <el-button type="primary" @click="openImportTable()">
           <Icon class="mr-5px" icon="ep:zoom-in" />
           导入
@@ -48,12 +46,12 @@
       </el-table-column>
       <el-table-column label="设备类型" align="center" prop="deviceTypeName" />
       <el-table-column label="问题描述" align="center" prop="description" />
-      <el-table-column label="操作" align="center">
+      <el-table-column label="操作" align="center" fixed="right" width="240">
         <template #default="{ row: { id } }">
-          <el-button link type="primary" @click="openForm('detail', id)"> 详情 </el-button>
-          <el-button link type="primary" @click="openForm('child', id)"> 添加子类 </el-button>
-          <el-button link type="primary" @click="openForm('update', id)"> 编辑 </el-button>
-          <el-button link type="danger" @click="handleDelete(id)"> 删除 </el-button>
+          <el-button link type="primary" @click="openForm('detail', id)">详情</el-button>
+          <el-button link type="primary" @click="openForm('child', id)">添加子类</el-button>
+          <el-button link type="primary" @click="openForm('update', id)">编辑</el-button>
+          <el-button link type="danger" @click="handleDelete(id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>

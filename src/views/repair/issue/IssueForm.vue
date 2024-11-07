@@ -128,7 +128,8 @@ const open = async (type: string, id?: number) => {
       case 'update':
         Object.assign(formData.value, {
           ...detail,
-          parentId: detail.parentId || 0
+          parentId: detail.parentId || 0,
+          solution: detail.solution || ''
         })
         break
       case 'child':

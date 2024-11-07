@@ -42,7 +42,7 @@
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="remark" />
-      <el-table-column label="操作" align="center" fixed="right" min-width="200">
+      <el-table-column label="操作" align="center" fixed="right" width="200">
         <template #default="{ row: { id, name } }">
           <el-button link type="primary" @click="openForm('detail', id)">详情</el-button>
           <el-button link type="primary" @click="openForm('update', id)">编辑</el-button>

@@ -1,76 +1,3 @@
-<script setup lang="ts">
-import { storeToRefs } from 'pinia'
-import { deleteLocation, type LocationAllParams } from '@/api/repair'
-import { useRepairStoreWithOut } from '@/store/modules/repair'
-import LocationForm from './LocationForm.vue'
-import AddressImportForm from './AddressImportForm.vue'
-
-defineOptions({
-  name: 'RepairLocation'
-})
-
-const repairStore = useRepairStoreWithOut()
-const { locationsTree: tree } = storeToRefs(repairStore)
-const message = useMessage()
-
-const loading = ref(true)
-const isExpandAll = ref(false) // 是否展开，默认全部折叠
-const refreshTable = ref(true) // 重新渲染表格状态
-const queryFormRef = ref()
-const queryParams = reactive<LocationAllParams>({
-  addressName: ''
-})
-
-// 查询列表
-const getLocationsMenu = () => {
-  loading.value = true
-  repairStore.fetchLocationsAll(queryParams).finally(() => {
-    loading.value = false
-  })
-}
-
-// 搜索按钮操作
-const handleQuery = () => {
-  queryParams.addressName = ''
-  getLocationsMenu()
-}
-
-// 重置按钮操作
-const resetQuery = () => {
-  queryFormRef.value.resetFields()
-  handleQuery()
-}
-
-const importRef = ref()
-const openImportTable = () => {
-  importRef.value.open()
-}
-/** 展开/折叠操作 */
-const toggleExpandAll = () => {
-  refreshTable.value = false
-  isExpandAll.value = !isExpandAll.value
-  nextTick(() => {
-    refreshTable.value = true
-  })
-}
-
-const formRef = ref()
-const openForm = (type: string, id?: number) => {
-  formRef.value.open(type, id)
-}
-
-const handleDelete = async (id: number) => {
-  await message.delConfirm()
-  await deleteLocation(id)
-  message.success('删除成功')
-  getLocationsMenu()
-}
-
-onMounted(() => {
-  getLocationsMenu()
-})
-</script>
-
 <template>
   <ContentWrap>
     <!-- 搜索工作栏 -->
@@ -89,8 +16,6 @@ onMounted(() => {
           ><Icon icon="ep:search" class="mr-5px" />搜索</el-button
         >
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" />重置</el-button>
-        <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
-        <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
         <el-button type="primary" @click="openImportTable()">
           <Icon class="mr-5px" icon="ep:zoom-in" />
           导入
@@ -126,7 +51,7 @@ onMounted(() => {
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="remark" />
-      <el-table-column label="操作" align="center">
+      <el-table-column label="操作" align="center" fixed="right" width="240">
         <template #default="{ row: { id, status } }">
           <el-button link type="primary" @click="openForm('detail', id)"> 详情 </el-button>
           <el-button link type="primary" @click="openForm('child', id)"> 添加子类 </el-button>
@@ -149,6 +74,7 @@ onMounted(() => {
 import { deleteLocation, getRepairLocationAll, type LocationAllParams } from '@/api/repair'
 import LocationForm from './LocationForm.vue'
 import { handleTree } from '@/utils/tree'
+import AddressImportForm from './AddressImportForm.vue'
 
 defineOptions({
   name: 'RepairLocation'
@@ -180,6 +106,12 @@ const getLocationsMenu = async () => {
 const resetQuery = () => {
   queryFormRef.value.resetFields()
   getLocationsMenu()
+}
+
+// 导入
+const importRef = ref()
+const openImportTable = () => {
+  importRef.value.open()
 }
 
 /** 展开/折叠操作 */
