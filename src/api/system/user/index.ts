@@ -98,5 +98,5 @@ export const getAll = <T extends string | UserParams>(query: T) => {
   } else {
     Object.assign(params, query)
   }
-  return request.get({ url: '/system/user/getAllUser', params })
+  return request.get<UserVO[]>({ url: '/system/user/getAllUser', params })
 }

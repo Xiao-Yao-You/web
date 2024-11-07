@@ -7,11 +7,13 @@
           v-model="queryParams.name"
           placeholder="请输入问题名称"
           clearable
-          @keyup.enter="handleQuery"
+          @keyup.enter="getIssuesMenu"
           class="!w-180px"
         />
       </el-form-item>
       <el-form-item>
+        <el-button @click="getIssuesMenu"><Icon icon="ep:search" class="mr-5px" />搜索</el-button>
+        <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" />重置</el-button>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
         <el-button type="primary" @click="openImportTable()">
@@ -64,9 +66,8 @@
 </template>
 
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
-import { deleteIssue, type IssuesAllParams } from '@/api/repair'
-import { useRepairStoreWithOut } from '@/store/modules/repair'
+import { deleteIssue, getRepairIssuesAll, type IssuesAllParams } from '@/api/repair'
+import { handleTree } from '@/utils/tree'
 import { IssueTypeOptions } from '@/api/repair/constant'
 import IssueForm from './IssueForm.vue'
 import QuestionTypeImportForm from './QuestionTypeImportForm.vue'
@@ -75,8 +76,6 @@ defineOptions({
   name: 'RepairIssue'
 })
 
-const repairStore = useRepairStoreWithOut()
-const { issuesTree: tree } = storeToRefs(repairStore)
 const message = useMessage()
 
 const loading = ref(true)
@@ -86,6 +85,7 @@ const queryFormRef = ref()
 const queryParams = reactive<IssuesAllParams>({
   name: ''
 })
+const tree = ref<any[]>([])
 
 const importRef = ref()
 const openImportTable = () => {
@@ -93,23 +93,20 @@ const openImportTable = () => {
 }
 
 // 查询列表
-const getIssuesMenu = () => {
+const getIssuesMenu = async () => {
   loading.value = true
-  repairStore.fetchIssuesAll(queryParams).finally(() => {
+  try {
+    const data = await getRepairIssuesAll(queryParams)
+    tree.value = handleTree(data)
+  } finally {
     loading.value = false
-  })
-}
-
-// 搜索按钮操作
-const handleQuery = () => {
-  queryParams.name = ''
-  getIssuesMenu()
+  }
 }
 
 // 重置按钮操作
 const resetQuery = () => {
   queryFormRef.value.resetFields()
-  handleQuery()
+  getIssuesMenu()
 }
 
 /** 展开/折叠操作 */

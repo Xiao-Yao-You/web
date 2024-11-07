@@ -58,6 +58,9 @@
         <el-button type="primary" plain @click="openForm('create')">
           <Icon icon="ep:plus" class="mr-5px" /> 新增
         </el-button>
+        <el-button class="ml-12px" type="warning" plain @click="openSubscriber">
+          <Icon icon="ep:setting" class="mr-5px" />推送对象
+        </el-button>
         <!-- <el-button
           type="success"
           plain
@@ -144,67 +147,70 @@
           {{ formatDate(completeTime) || '/' }}
         </template>
       </el-table-column>
-      <!-- <el-table-column label="服务评分" align="center" prop="" /> -->
-      <el-table-column label="操作" align="center" fixed="right" min-width="400">
+      <el-table-column
+        label="操作"
+        align="center"
+        fixed="right"
+        width="120"
+        :show-overflow-tooltip="false"
+      >
         <template #default="{ row }">
           <el-button link type="primary" @click="openForm('detail', row.id)">详情</el-button>
-          <el-button
-            link
-            type="primary"
-            :disabled="handleDisabled(OperateMethod.Dispatch, row)"
-            @click="openDispatchForm(row)"
-          >
-            派单
-          </el-button>
-          <el-button
-            link
-            type="primary"
-            :disabled="handleDisabled(OperateMethod.Receive, row)"
-            @click="receiveOrder(row.id)"
-          >
-            领单
-          </el-button>
-          <el-button
-            link
-            type="primary"
-            :disabled="handleDisabled(OperateMethod.Transfer, row)"
-            @click="openTransferForm(row)"
-          >
-            转交
-          </el-button>
-          <el-button
-            link
-            type="primary"
-            :disabled="handleDisabled(OperateMethod.Confirm, row)"
-            @click="openStartForm(row.id)"
-          >
-            确认
-          </el-button>
-          <el-button
-            link
-            type="primary"
-            :disabled="handleDisabled(OperateMethod.HangUp, row)"
-            @click="onHangUp(row)"
-          >
-            挂起
-          </el-button>
-          <el-button
-            link
-            type="primary"
-            :disabled="handleDisabled(OperateMethod.Finish, row)"
-            @click="openCompleteForm(row)"
-          >
-            完成
-          </el-button>
-          <el-button
-            link
-            type="danger"
-            :disabled="handleDisabled(OperateMethod.Revoke, row)"
-            @click="handleRevoke(row.id)"
-          >
-            撤销
-          </el-button>
-          <!-- <el-button link type="primary">流转记录</el-button> -->
+          <el-dropdown class="align-baseline!" @command="(command) => handleCommand(command, row)">
+            <el-button type="primary" link><Icon icon="ep:d-arrow-right" />更多</el-button>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item
+                  :command="OperateMethod.Dispatch"
+                  :disabled="handleDisabled(OperateMethod.Dispatch, row)"
+                >
+                  派单
+                </el-dropdown-item>
+                <el-dropdown-item
+                  :command="OperateMethod.Receive"
+                  :disabled="handleDisabled(OperateMethod.Receive, row)"
+                >
+                  领单
+                </el-dropdown-item>
+                <el-dropdown-item
+                  :command="OperateMethod.Transfer"
+                  :disabled="handleDisabled(OperateMethod.Transfer, row)"
+                >
+                  转交
+                </el-dropdown-item>
+                <el-dropdown-item
+                  :command="OperateMethod.Restart"
+                  :disabled="handleDisabled(OperateMethod.Restart, row)"
+                >
+                  重启
+                </el-dropdown-item>
+                <el-dropdown-item
+                  :command="OperateMethod.Confirm"
+                  :disabled="handleDisabled(OperateMethod.Confirm, row)"
+                >
+                  确认
+                </el-dropdown-item>
+                <el-dropdown-item
+                  :command="OperateMethod.HangUp"
+                  :disabled="handleDisabled(OperateMethod.HangUp, row)"
+                >
+                  挂起
+                </el-dropdown-item>
+                <el-dropdown-item
+                  :command="OperateMethod.Finish"
+                  :disabled="handleDisabled(OperateMethod.Finish, row)"
+                >
+                  完成
+                </el-dropdown-item>
+                <el-dropdown-item
+                  :command="OperateMethod.Revoke"
+                  :disabled="handleDisabled(OperateMethod.Revoke, row)"
+                >
+                  撤销
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </template>
       </el-table-column>
     </el-table>
@@ -231,6 +237,9 @@
 
   <!-- 结束 -->
   <OrderCompleteForm ref="completeRef" @success="getList" />
+
+  <!-- 推送对象 -->
+  <OrderSubscriber ref="subscribeRef" />
 </template>
 
 <script setup lang="ts">
@@ -241,6 +250,7 @@ import OrderDispatchForm from './OrderDispatchForm.vue'
 import OrderTransferForm from './OrderTransferForm.vue'
 import OrderCompleteForm from './OrderCompleteForm.vue'
 import OrderStartForm from './OrderStartForm.vue'
+import OrderSubscriber from './OrderSubscriber.vue'
 import { getRepairOrderPage, handleRepairOrder, type RepairOrder } from '@/api/repair'
 import {
   IssueTypeLabel,
@@ -265,8 +275,8 @@ const message = useMessage()
 const repairStore = useRepairStoreWithOut()
 const employeeStore = useEmployeeStoreWithOut()
 const InfoIcon = useIcon({ icon: 'ep:info-filled', size: 14 })
-const { user } = storeToRefs(useUserStore())
 
+// #region 一、表单查询
 const loading = ref(true)
 const list = ref<RepairOrder[]>([])
 const total = ref(0)
@@ -280,8 +290,7 @@ const queryParams = reactive({
   questionType: undefined, // 问题类型
   level: undefined // 紧急程度
 })
-
-/** 查询列表 */
+// 查询
 const getList = async () => {
   await queryFormRef.value.validate()
   loading.value = true
@@ -297,26 +306,56 @@ const getList = async () => {
     loading.value = false
   }
 }
-
-/** 搜索按钮操作 */
+// 搜索按钮操作
 const handleQuery = () => {
   queryParams.pageNo = 1
   getList()
 }
-
-/** 重置按钮操作 */
+// 重置
 const resetQuery = () => {
   queryFormRef.value.resetFields()
   handleQuery()
 }
-
-/** 添加/修改操作 */
+// 添加/修改
 const formRef = ref()
 const openForm = (type: string, id?: number) => {
   formRef.value.open(type, id)
 }
+// #endregion
 
-/** 撤销 */
+// #region 二、工单处理
+const handleCommand = (command: string, row: RepairOrder) => {
+  switch (command) {
+    case OperateMethod.Dispatch:
+      openDispatchForm(row)
+      break
+    case OperateMethod.Receive:
+      receiveOrder(row.id)
+      break
+    case OperateMethod.Transfer:
+      openTransferForm(row)
+      break
+    case OperateMethod.Restart:
+      restart(row)
+      break
+    case OperateMethod.Confirm:
+      openStartForm(row.id)
+      break
+    case OperateMethod.HangUp:
+      onHangUp(row)
+      break
+    case OperateMethod.Finish:
+      openCompleteForm(row)
+      break
+    case OperateMethod.Revoke:
+      handleRevoke(row.id)
+      break
+    default:
+      break
+  }
+}
+
+// 撤销
 const handleRevoke = async (id: number) => {
   ElMessageBox.prompt('请输入撤销原因', '系统提示', {
     confirmButtonText: '撤销',
@@ -340,13 +379,13 @@ const handleRevoke = async (id: number) => {
   })
 }
 
-/** 派单 */
-const dispatchRef = ref()
+// 派单
+const dispatchRef = ref<InstanceType<typeof OrderDispatchForm>>()
 const openDispatchForm = (row: RepairOrder) => {
-  dispatchRef.value.open({ id: row.id, code: row.code })
+  dispatchRef.value?.open({ id: row.id, code: row.code })
 }
 
-/** 领单 */
+// 领单
 const receiveOrder = (id: number) => {
   ElMessageBox.confirm('领单后将开始记录工单处置时长，是否确定领单并开始执行工单？', '系统提示', {
     confirmButtonText: '确定',
@@ -370,25 +409,25 @@ const receiveOrder = (id: number) => {
   })
 }
 
-/** 工单转交 */
-const transferRef = ref()
+// 转交
+const transferRef = ref<InstanceType<typeof OrderTransferForm>>()
 const openTransferForm = (row: RepairOrder) => {
-  transferRef.value.open({
+  transferRef.value?.open({
     id: row.id,
     code: row.code,
     questionType: row.questionType
   })
 }
 
-/** 开始接单 */
-const startRef = ref()
+// 现场确认
+const startRef = ref<InstanceType<typeof OrderStartForm>>()
 const openStartForm = (id: number) => {
-  startRef.value.open(id)
+  startRef.value?.open(id)
 }
 
-/** 挂起 */
+// 挂起
 const onHangUp = ({ title, id }: RepairOrder) => {
-  ElMessageBox.confirm(`确定挂起 “${title}” 的工单`, '系统提示', {
+  ElMessageBox.confirm(`确定挂起 “${title}” 的工单吗？`, '系统提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     beforeClose(action, instance, done) {
@@ -410,13 +449,38 @@ const onHangUp = ({ title, id }: RepairOrder) => {
   })
 }
 
-/** 完成 */
-const completeRef = ref()
-const openCompleteForm = ({ id, code, status }: RepairOrder) => {
-  completeRef.value.open({ id, code, status })
+// 重启
+const restart = ({ id }: RepairOrder) => {
+  ElMessageBox.confirm('重启后继续计算处置时长，是否确定重启？', '系统提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    beforeClose(action, instance, done) {
+      if (action === 'confirm') {
+        instance.confirmButtonLoading = true
+        handleRepairOrder({ id, operateMethod: OperateMethod.Restart })
+          .then(() => {
+            message.success('重启成功')
+            handleQuery()
+            done()
+          })
+          .finally(() => {
+            instance.confirmButtonLoading = false
+          })
+      } else {
+        done()
+      }
+    }
+  })
 }
 
-/** 处理按钮的禁用状态 */
+// 完成
+const completeRef = ref<InstanceType<typeof OrderCompleteForm>>()
+const openCompleteForm = ({ id, code, status }: RepairOrder) => {
+  completeRef.value?.open({ id, code, status })
+}
+
+// 处理按钮的禁用状态
+const { user } = storeToRefs(useUserStore())
 const handleDisabled = (
   method: OperateMethod,
   { status, submitUserId, dealUserId }: RepairOrder
@@ -443,6 +507,10 @@ const handleDisabled = (
     case OperateMethod.Finish:
       res = status === OperateStatus.Handling && dealUserId === user.value.id
       break
+    // 重启的前提条件：挂起
+    case OperateMethod.Restart:
+      res = status === OperateStatus.HangUp && dealUserId === user.value.id
+      break
     // 撤销的前提条件：不是已完成
     case OperateMethod.Revoke:
       res = status !== OperateStatus.Finish && submitUserId === user.value.id
@@ -452,6 +520,14 @@ const handleDisabled = (
   }
   return !res
 }
+// #endregion
+
+// #region 三、设置推送对象
+const subscribeRef = ref<InstanceType<typeof OrderSubscriber>>()
+const openSubscriber = () => {
+  subscribeRef.value?.open()
+}
+// #endregion
 
 onMounted(() => {
   repairStore.fetchIssuesAll()
@@ -460,3 +536,9 @@ onMounted(() => {
   getList()
 })
 </script>
+
+<style lang="scss" scoped>
+.el-form--inline .el-form-item {
+  margin-right: 15px;
+}
+</style>

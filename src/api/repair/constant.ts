@@ -72,7 +72,8 @@ export enum OperateMethod {
   Confirm = 'XIANCHNAGQUEREN',
   HangUp = 'GUAQI',
   Finish = 'WANCHENG',
-  Revoke = 'CHEXIAO'
+  Revoke = 'CHEXIAO',
+  Restart = 'KAISHI'
   // 'CHUANGJIAN' = '创建',
   // 'PAIDAN' = '派单',
   // 'LINGDAN' = '领单',

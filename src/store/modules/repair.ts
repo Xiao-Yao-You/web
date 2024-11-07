@@ -5,11 +5,13 @@ import {
   getRepairIssuesAll,
   getRepairDeviceAll,
   getRepairLocationAll,
+  getUseableLabelCode,
   type RepairIssue,
   type RepairDevice,
   type RepairLocation,
   type LocationAllParams,
-  type IssuesAllParams
+  type IssuesAllParams,
+  type LabelCode
 } from '@/api/repair'
 
 interface RepairState {
@@ -17,6 +19,7 @@ interface RepairState {
   issuesAll: RepairIssue[]
   devicesAll: RepairDevice[]
   locationsAll: RepairLocation[]
+  labelCodeAll: LabelCode[]
 }
 
 export const useRepairStore = defineStore('repair', {
@@ -24,7 +27,8 @@ export const useRepairStore = defineStore('repair', {
     return {
       issuesAll: [],
       devicesAll: [],
-      locationsAll: []
+      locationsAll: [],
+      labelCodeAll: []
     }
   },
   getters: {
@@ -63,6 +67,9 @@ export const useRepairStore = defineStore('repair', {
         label: item.name,
         value: item.id
       }))
+    },
+    labelCodeOptions(state) {
+      return state.labelCodeAll.map(({ code }) => ({ label: code, value: code }))
     }
   },
   actions: {
@@ -91,6 +98,12 @@ export const useRepairStore = defineStore('repair', {
     async fetchLocationsAll(params: LocationAllParams = {}) {
       const list = await getRepairLocationAll(params)
       this.setLocationsAll(list)
+    },
+
+    // 获取全量可用二维码
+    async fetchLabelCodeAll() {
+      const list = await getUseableLabelCode()
+      this.labelCodeAll = list || []
     }
   },
   persist: false

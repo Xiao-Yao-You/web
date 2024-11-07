@@ -105,8 +105,4 @@ const onConfirm = async () => {
     loading.value = false
   }
 }
-
-onMounted(() => {
-  employeeStore.fetchInfoEmployees()
-})
 </script>

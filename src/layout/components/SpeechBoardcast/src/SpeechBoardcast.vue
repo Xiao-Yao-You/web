@@ -57,7 +57,7 @@ const enableSpeech = () => {
           `<div>
             由于系统限制，语音播报默认关闭，请确认是否开启？<br/>
             温馨提示：开启前请确保扬声器已打开。<br/>
-            <p style="margin-top: 12px">您也可以点击右上角语音<img src="../../../../../src/assets/svgs/microphone.svg">手动开启或关闭。</p>
+            <p style="margin-top: 12px">您也可以点击右上角语音手动开启或关闭。</p>
           </div>`,
           {
             confirmButtonText: '开启',

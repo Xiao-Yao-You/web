@@ -253,7 +253,7 @@ export interface RepairArchive {
   deptId: number // 设备部门
   deptName: string // 设备部门名称
   userId: number // 使用人 ID
-  userNickName: number // 使用人
+  userNickName: string // 使用人
   address: string // 使用地点
   addressId: number // 使用地点
   location: string // 设备位置
@@ -392,7 +392,7 @@ export interface RepairOrder {
   submitUserNickName: string
   submitUserMobile: string // 报修人电话
   requestType: string // 请求（问题）类型
-  questionType: string // 问题管理中的某个具体问题的 id
+  questionType: number // 问题管理中的某个具体问题的 id
   level: CommonLevelEnum // 紧急程度
   desc: string
   [key: string]: any
@@ -463,8 +463,15 @@ export const handleRepairOrder = (data: HandlePayload) => {
 }
 
 // 获取可用二维码列表
+export interface LabelCode {
+  code: string
+  createTime: number
+  id: number
+  labelId: number
+  status: number
+}
 export const getUseableLabelCode = () => {
-  return request.get<{ code: string }[]>({ url: '/operation-device/getUseableLabelCode' })
+  return request.get<LabelCode[]>({ url: '/operation-device/getUseableLabelCode' })
 }
 
 // 查询新运维工单数量
@@ -474,6 +481,16 @@ export const getNewRepairOrder = async () => {
 
 export const getImportTemplate = async () => {
   return request.download({ url: '/operation-device-type/get-import-template' })
+}
+
+// 配置运维工单消息推送对象
+export const setOrderSubscriber = async (data: { userId: number[] }) => {
+  return request.post({ url: '/operation-notice-object/create', data })
+}
+
+// 查询运维工单消息推送对象
+export const getOrderSubscriber = async () => {
+  return request.get({ url: '/operation-notice-object/getAllUser' })
 }
 
 export const getQuestionImportTemplate = async () => {
