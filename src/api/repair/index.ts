@@ -392,7 +392,7 @@ export interface RepairOrder {
   submitUserNickName: string
   submitUserMobile: string // 报修人电话
   requestType: string // 请求（问题）类型
-  questionType: string // 问题管理中的某个具体问题的 id
+  questionType: number // 问题管理中的某个具体问题的 id
   level: CommonLevelEnum // 紧急程度
   desc: string
   [key: string]: any
