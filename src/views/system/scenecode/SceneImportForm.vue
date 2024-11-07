@@ -45,7 +45,7 @@ import { getImportTemplate } from '@/api/system/scenecode'
 import { getAccessToken, getTenantId } from '@/utils/auth'
 import download from '@/utils/download'
 
-defineOptions({ name: 'SystemUserImportForm' })
+defineOptions({ name: 'SceneImportForm' })
 
 const message = useMessage() // 消息弹窗
 

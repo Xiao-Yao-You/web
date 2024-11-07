@@ -3,6 +3,7 @@ import { storeToRefs } from 'pinia'
 import { deleteLocation, type LocationAllParams } from '@/api/repair'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
 import LocationForm from './LocationForm.vue'
+import AddressImportForm from './AddressImportForm.vue'
 
 defineOptions({
   name: 'RepairLocation'
@@ -40,6 +41,10 @@ const resetQuery = () => {
   handleQuery()
 }
 
+const importRef = ref()
+const openImportTable = () => {
+  importRef.value.open()
+}
 /** 展开/折叠操作 */
 const toggleExpandAll = () => {
   refreshTable.value = false
@@ -82,6 +87,10 @@ onMounted(() => {
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
+        <el-button type="primary" @click="openImportTable()">
+          <Icon class="mr-5px" icon="ep:zoom-in" />
+          导入
+        </el-button>
         <el-button type="primary" plain @click="openForm('create')">
           <Icon icon="ep:plus" class="mr-5px" /> 新增主地点
         </el-button>
@@ -128,4 +137,6 @@ onMounted(() => {
 
   <!-- 表单弹窗：添加/修改 -->
   <LocationForm ref="formRef" @success="getLocationsMenu" />
+
+  <AddressImportForm ref="importRef" @success="getLocationsMenu" />
 </template>

@@ -475,3 +475,11 @@ export const getNewRepairOrder = async () => {
 export const getImportTemplate = async () => {
   return request.download({ url: '/operation-device-type/get-import-template' })
 }
+
+export const getQuestionImportTemplate = async () => {
+  return request.download({ url: '/operation-question-type/get-import-template' })
+}
+
+export const getAddressImportTemplate = async () => {
+  return request.download({ url: '/operation-address/get-import-template' })
+}

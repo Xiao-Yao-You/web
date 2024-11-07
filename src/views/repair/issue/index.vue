@@ -14,6 +14,10 @@
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
+        <el-button type="primary" @click="openImportTable()">
+          <Icon class="mr-5px" icon="ep:zoom-in" />
+          导入
+        </el-button>
         <el-button type="primary" plain @click="openForm('create')">
           <Icon icon="ep:plus" class="mr-5px" /> 新增主问题
         </el-button>
@@ -55,6 +59,8 @@
 
   <!-- 表单弹窗：添加/修改 -->
   <IssueForm ref="formRef" @success="getIssuesMenu" />
+  <!-- 弹窗：导入表 -->
+  <QuestionTypeImportForm ref="importRef" @success="getIssuesMenu" />
 </template>
 
 <script setup lang="ts">
@@ -63,6 +69,7 @@ import { deleteIssue, type IssuesAllParams } from '@/api/repair'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
 import { IssueTypeOptions } from '@/api/repair/constant'
 import IssueForm from './IssueForm.vue'
+import QuestionTypeImportForm from './QuestionTypeImportForm.vue'
 
 defineOptions({
   name: 'RepairIssue'
@@ -79,6 +86,11 @@ const queryFormRef = ref()
 const queryParams = reactive<IssuesAllParams>({
   name: ''
 })
+
+const importRef = ref()
+const openImportTable = () => {
+  importRef.value.open()
+}
 
 // 查询列表
 const getIssuesMenu = () => {

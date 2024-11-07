@@ -41,11 +41,11 @@
   </Dialog>
 </template>
 <script lang="ts" setup>
-import { getImportTemplate } from '@/api/repair'
+import { getAddressImportTemplate } from '@/api/repair'
 import { getAccessToken, getTenantId } from '@/utils/auth'
 import download from '@/utils/download'
 
-defineOptions({ name: 'DeviceTypeImportForm' })
+defineOptions({ name: 'AddressImportForm' })
 
 const message = useMessage() // 消息弹窗
 
@@ -53,9 +53,7 @@ const dialogVisible = ref(false) // 弹窗的是否展示
 const formLoading = ref(false) // 表单的加载中
 const uploadRef = ref()
 const importUrl =
-  import.meta.env.VITE_BASE_URL +
-  import.meta.env.VITE_API_URL +
-  '/operation-device-type/import-excel'
+  import.meta.env.VITE_BASE_URL + import.meta.env.VITE_API_URL + '/operation-address/import-excel'
 const uploadHeaders = ref() // 上传 Header 头
 const fileList = ref([]) // 文件列表
 const updateSupport = ref(0) // 是否更新已经存在的用户数据
@@ -95,16 +93,16 @@ const submitFormSuccess = (response: any) => {
   // 拼接提示语
   const data = response.data
   let text = '上传成功数量：' + data.createList.length + ';'
-  for (let typeName of data.createList) {
-    text += '< ' + typeName + ' >'
+  for (let addressName of data.createList) {
+    text += '< ' + addressName + ' >'
   }
   text += '更新成功数量：' + data.updateList.length + ';'
-  for (const typeName of data.updateList) {
-    text += '< ' + typeName + ' >'
+  for (const addressName of data.updateList) {
+    text += '< ' + addressName + ' >'
   }
   text += '更新失败数量：' + Object.keys(data.failureList).length + ';'
-  for (const typeName in data.failureList) {
-    text += '< ' + typeName + ': ' + data.failureList[typeName] + ' >'
+  for (const addressName in data.failureList) {
+    text += '< ' + addressName + ': ' + data.failureList[addressName] + ' >'
   }
   message.alert(text)
   formLoading.value = false
@@ -134,7 +132,7 @@ const handleExceed = (): void => {
 
 /** 下载模板操作 */
 const importTemplate = async () => {
-  const res = await getImportTemplate()
-  download.excel(res, '设备类型导入模版.xls')
+  const res = await getAddressImportTemplate()
+  download.excel(res, '厂区地点导入模版.xls')
 }
 </script>
