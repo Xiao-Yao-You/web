@@ -463,8 +463,15 @@ export const handleRepairOrder = (data: HandlePayload) => {
 }
 
 // 获取可用二维码列表
+export interface LabelCode {
+  code: string
+  createTime: number
+  id: number
+  labelId: number
+  status: number
+}
 export const getUseableLabelCode = () => {
-  return request.get<{ code: string }[]>({ url: '/operation-device/getUseableLabelCode' })
+  return request.get<LabelCode[]>({ url: '/operation-device/getUseableLabelCode' })
 }
 
 // 查询新运维工单数量

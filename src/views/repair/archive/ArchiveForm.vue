@@ -59,7 +59,7 @@
       <el-form-item label="二维码编号" prop="labelCode">
         <el-select v-model="formData.labelCode" placeholder="请选择可用的二维码" clearable>
           <el-option
-            v-for="item in labelCodeOptions"
+            v-for="item in repairStore.labelCodeOptions"
             :key="item.value"
             :label="item.label"
             :value="item.value"
@@ -193,7 +193,6 @@ import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
 import { CommonStatusEnum, CommonLevelEnum } from '@/utils/constants'
 import { CompanyOptions, PictureType, CompanyEnum, UsingStatus } from '@/api/repair/constant'
-import { getUseableLabelCode } from '@/api/repair'
 import { dateTransfer } from '@/views/system/meeting/subscribe/hook/useMeetingStatus'
 import { getSceneCodeAll } from '@/api/system/scenecode'
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
@@ -212,7 +211,6 @@ const repairStore = useRepairStoreWithOut()
 const dialogVisible = ref(false) // 弹窗的是否展示
 const dialogTitle = ref('') // 弹窗的标题
 const numberNameOptions = ref<OptionItem[]>([]) // 编码规则选择项
-const labelCodeOptions = ref<OptionItem[]>([]) // 二维码选择项
 const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
 const formType = ref('') // 表单的类型：create - 新增；update - 修改
 const formData = ref({
@@ -373,11 +371,6 @@ onMounted(() => {
       value: item.id
     }))
   })
-  getUseableLabelCode().then((list) => {
-    labelCodeOptions.value = (list || []).map((item) => ({
-      label: item.code,
-      value: item.code
-    }))
-  })
+  repairStore.fetchLabelCodeAll()
 })
 </script>

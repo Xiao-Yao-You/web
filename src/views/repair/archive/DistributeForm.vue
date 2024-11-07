@@ -24,7 +24,6 @@
           v-model="formData.dept"
           placeholder="请选择使用部门"
           value-key="value"
-          clearable
           filterable
           @change="onDeptChange"
         >
@@ -176,8 +175,8 @@ const onDeptChange = () => {
 const userOptions = ref<OptionItem<number>[]>([])
 const remoteMethod = (nickname: string) => {
   if (!formData.value.dept?.value) return formRef.value?.validateField('dept')
+  userOptions.value = []
   if (nickname) {
-    userOptions.value = []
     userLoading.value = true
     getAll({ deptId: formData.value.dept.value, nickname })
       .then((res) => {
@@ -189,8 +188,6 @@ const remoteMethod = (nickname: string) => {
       .finally(() => {
         userLoading.value = false
       })
-  } else {
-    userOptions.value = []
   }
 }
 

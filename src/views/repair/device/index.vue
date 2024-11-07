@@ -43,10 +43,10 @@
       </el-table-column>
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="操作" align="center" fixed="right" min-width="200">
-        <template #default="{ row: { id } }">
+        <template #default="{ row: { id, name } }">
           <el-button link type="primary" @click="openForm('detail', id)">详情</el-button>
           <el-button link type="primary" @click="openForm('update', id)">编辑</el-button>
-          <el-button link type="primary" @click="print(id)">打印</el-button>
+          <el-button link type="primary" @click="print(id, name)">打印</el-button>
           <el-button link type="danger" @click="handleDelete(id)">删除</el-button>
         </template>
       </el-table-column>
@@ -68,20 +68,22 @@
 
   <!-- 弹窗：导入表 -->
   <DeviceTypeImportForm ref="importRef" @success="getList" />
+
+  <!-- 二维码打印 -->
+  <LabelCodeDialog ref="labelCodeRef" @confirm="handleLabelConfirm" />
 </template>
 
 <script setup lang="ts">
-import { ElMessageBox } from 'element-plus'
 import {
   getRepairDevicePage,
   deleteDeviceType,
-  printBatchLabels,
   type RepairDevice,
   type LabelItem
 } from '@/api/repair'
 import DeviceForm from './DeviceForm.vue'
 import PrintDialog from './PrintDialog.vue'
 import DeviceTypeImportForm from './DeviceTypeImportForm.vue'
+import LabelCodeDialog from './LabelCodeDialog.vue'
 
 defineOptions({
   name: 'RepairDevice'
@@ -142,33 +144,13 @@ const handleDelete = async (id: number) => {
   getList()
 }
 
-const print = (id: number) => {
-  ElMessageBox.prompt('请输入打印数量', '系统提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    inputPattern: /^([1-9]|[1-9][0-9])$/,
-    inputErrorMessage: '1-99内的数字',
-    beforeClose(action, instance, done) {
-      if (action === 'confirm') {
-        instance.confirmButtonLoading = true
-        printBatchLabels({ id, num: instance.inputValue })
-          .then((res) => {
-            if (Array.isArray(res) && res.length) {
-              batchLabelList.value = res
-              printRef.value.open()
-            } else {
-              message.warning('没有可打印的标签')
-            }
-            done()
-          })
-          .finally(() => {
-            instance.confirmButtonLoading = false
-          })
-      } else {
-        done()
-      }
-    }
-  })
+const labelCodeRef = ref<InstanceType<typeof LabelCodeDialog>>()
+const print = (id: number, name: string) => {
+  labelCodeRef.value?.open(id, name)
+}
+const handleLabelConfirm = (labels: LabelItem[]) => {
+  batchLabelList.value = labels
+  printRef.value.open()
 }
 
 onMounted(() => {
