@@ -482,3 +482,13 @@ export const getNewRepairOrder = async () => {
 export const getImportTemplate = async () => {
   return request.download({ url: '/operation-device-type/get-import-template' })
 }
+
+// 配置运维工单消息推送对象
+export const setOrderSubscriber = async (data: { userId: number[] }) => {
+  return request.post({ url: '/operation-notice-object/create', data })
+}
+
+// 查询运维工单消息推送对象
+export const getOrderSubscriber = async () => {
+  return request.get({ url: '/operation-notice-object/getAllUser' })
+}

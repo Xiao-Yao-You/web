@@ -58,6 +58,9 @@
         <el-button type="primary" plain @click="openForm('create')">
           <Icon icon="ep:plus" class="mr-5px" /> 新增
         </el-button>
+        <el-button class="ml-12px" type="warning" plain @click="openSubscriber">
+          <Icon icon="ep:setting" class="mr-5px" />推送对象
+        </el-button>
         <!-- <el-button
           type="success"
           plain
@@ -231,6 +234,9 @@
 
   <!-- 结束 -->
   <OrderCompleteForm ref="completeRef" @success="getList" />
+
+  <!-- 推送对象 -->
+  <OrderSubscriber ref="subscribeRef" />
 </template>
 
 <script setup lang="ts">
@@ -241,6 +247,7 @@ import OrderDispatchForm from './OrderDispatchForm.vue'
 import OrderTransferForm from './OrderTransferForm.vue'
 import OrderCompleteForm from './OrderCompleteForm.vue'
 import OrderStartForm from './OrderStartForm.vue'
+import OrderSubscriber from './OrderSubscriber.vue'
 import { getRepairOrderPage, handleRepairOrder, type RepairOrder } from '@/api/repair'
 import {
   IssueTypeLabel,
@@ -453,6 +460,12 @@ const handleDisabled = (
   return !res
 }
 
+/** 推送对象 */
+const subscribeRef = ref<InstanceType<typeof OrderSubscriber>>()
+const openSubscriber = () => {
+  subscribeRef.value?.open()
+}
+
 onMounted(() => {
   repairStore.fetchIssuesAll()
   repairStore.fetchLocationsAll()
@@ -460,3 +473,9 @@ onMounted(() => {
   getList()
 })
 </script>
+
+<style lang="scss" scoped>
+.el-form--inline .el-form-item {
+  margin-right: 15px;
+}
+</style>
