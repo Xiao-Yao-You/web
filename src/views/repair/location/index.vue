@@ -1,87 +1,21 @@
-<script setup lang="ts">
-import { storeToRefs } from 'pinia'
-import { deleteLocation, type LocationAllParams } from '@/api/repair'
-import { useRepairStoreWithOut } from '@/store/modules/repair'
-import LocationForm from './LocationForm.vue'
-
-defineOptions({
-  name: 'RepairLocation'
-})
-
-const repairStore = useRepairStoreWithOut()
-const { locationsTree: tree } = storeToRefs(repairStore)
-const message = useMessage()
-
-const loading = ref(true)
-const isExpandAll = ref(false) // 是否展开，默认全部折叠
-const refreshTable = ref(true) // 重新渲染表格状态
-const queryFormRef = ref()
-const queryParams = reactive<LocationAllParams>({
-  addressName: ''
-})
-
-// 查询列表
-const getLocationsMenu = () => {
-  loading.value = true
-  repairStore.fetchLocationsAll(queryParams).finally(() => {
-    loading.value = false
-  })
-}
-
-// 搜索按钮操作
-const handleQuery = () => {
-  queryParams.addressName = ''
-  getLocationsMenu()
-}
-
-// 重置按钮操作
-const resetQuery = () => {
-  queryFormRef.value.resetFields()
-  handleQuery()
-}
-
-/** 展开/折叠操作 */
-const toggleExpandAll = () => {
-  refreshTable.value = false
-  isExpandAll.value = !isExpandAll.value
-  nextTick(() => {
-    refreshTable.value = true
-  })
-}
-
-const formRef = ref()
-const openForm = (type: string, id?: number) => {
-  formRef.value.open(type, id)
-}
-
-const handleDelete = async (id: number) => {
-  await message.delConfirm()
-  await deleteLocation(id)
-  message.success('删除成功')
-  getLocationsMenu()
-}
-
-onMounted(() => {
-  getLocationsMenu()
-})
-</script>
-
 <template>
   <ContentWrap>
     <!-- 搜索工作栏 -->
-    <el-form class="-mb-15px" :model="queryParams" ref="queryFormRef" :inline="true">
+    <el-form class="-mb-15px" :model="queryParams" ref="queryFormRef" inline>
       <el-form-item label="地点名称" prop="addressName">
         <el-input
           v-model="queryParams.addressName"
           placeholder="请输入地点名称"
           clearable
-          @keyup.enter="handleQuery"
+          @keyup.enter="getLocationsMenu"
           class="!w-180px"
         />
       </el-form-item>
       <el-form-item>
-        <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
-        <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
+        <el-button @click="getLocationsMenu"
+          ><Icon icon="ep:search" class="mr-5px" />搜索</el-button
+        >
+        <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" />重置</el-button>
         <el-button type="primary" plain @click="openForm('create')">
           <Icon icon="ep:plus" class="mr-5px" /> 新增主地点
         </el-button>
@@ -129,3 +63,66 @@ onMounted(() => {
   <!-- 表单弹窗：添加/修改 -->
   <LocationForm ref="formRef" @success="getLocationsMenu" />
 </template>
+
+<script setup lang="ts">
+import { deleteLocation, getRepairLocationAll, type LocationAllParams } from '@/api/repair'
+import LocationForm from './LocationForm.vue'
+import { handleTree } from '@/utils/tree'
+
+defineOptions({
+  name: 'RepairLocation'
+})
+
+const message = useMessage()
+
+const loading = ref(true)
+const isExpandAll = ref(false) // 是否展开，默认全部折叠
+const refreshTable = ref(true) // 重新渲染表格状态
+const queryFormRef = ref()
+const queryParams = reactive<LocationAllParams>({
+  addressName: ''
+})
+const tree = ref<any[]>([])
+
+// 查询列表
+const getLocationsMenu = async () => {
+  loading.value = true
+  try {
+    const data = await getRepairLocationAll(queryParams)
+    tree.value = handleTree(data, 'id', 'parentAddressId')
+  } finally {
+    loading.value = false
+  }
+}
+
+// 重置按钮操作
+const resetQuery = () => {
+  queryFormRef.value.resetFields()
+  getLocationsMenu()
+}
+
+/** 展开/折叠操作 */
+const toggleExpandAll = () => {
+  refreshTable.value = false
+  isExpandAll.value = !isExpandAll.value
+  nextTick(() => {
+    refreshTable.value = true
+  })
+}
+
+const formRef = ref()
+const openForm = (type: string, id?: number) => {
+  formRef.value.open(type, id)
+}
+
+const handleDelete = async (id: number) => {
+  await message.delConfirm()
+  await deleteLocation(id)
+  message.success('删除成功')
+  getLocationsMenu()
+}
+
+onMounted(() => {
+  getLocationsMenu()
+})
+</script>
