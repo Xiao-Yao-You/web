@@ -61,7 +61,7 @@ const enableSpeech = () => {
           </div>`,
           {
             confirmButtonText: '开启',
-            cancelButtonText: '一周内不在提醒',
+            cancelButtonText: '一周内不再提醒',
             dangerouslyUseHTMLString: true,
             showClose: false,
             closeOnClickModal: false,

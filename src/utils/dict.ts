@@ -107,6 +107,7 @@ export enum DICT_TYPE {
   DATE_INTERVAL = 'date_interval', // 数据间隔
   LEVEL = 'hk_level', // 通用等级程度（高中低）
   COMPANY = 'hk_company', // 通用等级程度（高中低）
+  ASSETS_COMPANY = 'assets_company', // 资产所属公司
 
   // ========== SYSTEM 模块 ==========
   SYSTEM_USER_SEX = 'system_user_sex',
@@ -219,6 +220,5 @@ export enum DICT_TYPE {
   REPAIR_DEVICE_SCRAP_TYPE = 'repair_device_scrap_type', // 设备报废类型
   REPAIR_ORDER_HANDLE_TYPE = 'repair_order_handle_type', // 工单处理方式
   REPAIR_ORDER_COMPLETE_TYPE = 'repair_order_complete_type', // 工单处理结果类型
-  REPAIR_ORDER_STATUS = 'repair_order_status', // 工单处理状态
-  SOURCE_TYPE = 'sourceType' // 工单来源
+  REPAIR_ORDER_STATUS = 'repair_order_status' // 工单处理状态
 }

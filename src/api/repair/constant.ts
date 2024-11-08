@@ -17,17 +17,16 @@ export const IssueTypeOptions = [
   { label: '其他', value: IssueTypeEnum.Other }
 ]
 
-// 所属厂区
+// 所属公司
 export enum CompanyEnum {
-  HengKe,
-  XuanDa,
-  Other
+  HengKe, // 恒科
+  XuanDa // 轩达
 }
 
+// 所属公司选择项
 export const CompanyOptions = [
-  { label: '恒科', value: CompanyEnum.HengKe },
-  { label: '轩达', value: CompanyEnum.XuanDa },
-  { label: '其他', value: CompanyEnum.Other }
+  { label: '江苏恒科新材料', value: CompanyEnum.HengKe },
+  { label: '江苏轩达高分子材料', value: CompanyEnum.XuanDa }
 ]
 
 // 使用状态

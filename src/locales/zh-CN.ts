@@ -472,5 +472,9 @@ export default {
     Headquarter: '指挥部',
     Factory: '厂区',
     Dormitory: '生活区'
+  },
+  company: {
+    HengKe: '江苏恒科新材料',
+    XuanDa: '江苏轩达高分子材料'
   }
 }

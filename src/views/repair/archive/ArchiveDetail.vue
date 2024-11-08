@@ -33,8 +33,8 @@
           <el-descriptions-item label="MAC 地址2" min-width="110">
             {{ info.macAddress2 }}
           </el-descriptions-item>
-          <el-descriptions-item label="所在厂区">
-            {{ getDictLabel(DICT_TYPE.COMPANY, info.company) }}
+          <el-descriptions-item label="所属公司">
+            {{ getDictLabel(DICT_TYPE.ASSETS_COMPANY, info.company) }}
           </el-descriptions-item>
           <el-descriptions-item label="影响程度">
             {{ getDictLabel(DICT_TYPE.LEVEL, info.effectLevel) }}

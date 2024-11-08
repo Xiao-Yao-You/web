@@ -479,5 +479,9 @@ export default {
     Headquarter: '指挥部',
     Factory: '厂区',
     Dormitory: '生活区'
+  },
+  company: {
+    HengKe: 'Jiangsu Hengke Advanced Materials Co.Ltd',
+    XuanDa: 'JIANGSU XUANDA POLYMER MATERIALS CO.,LTD'
   }
 }

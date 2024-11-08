@@ -92,8 +92,8 @@
           show-word-limit
         />
       </el-form-item>
-      <el-form-item label="所在厂区" prop="company">
-        <el-select v-model="formData.company" placeholder="请选择所在厂区" clearable>
+      <el-form-item label="所属公司" prop="company">
+        <el-select v-model="formData.company" placeholder="请选择所属公司" clearable>
           <el-option
             v-for="opt in CompanyOptions"
             :key="opt.value"
@@ -241,7 +241,7 @@ const formRules = reactive({
   numberName: [{ required: true, message: '编码规则不能为空', trigger: 'blur' }],
   macAddress1: [{ required: true, message: 'mac地址1不能为空', trigger: 'blur' }],
   manufactureDate: [{ required: true, message: '生产日期不能为空', trigger: 'blur' }],
-  company: [{ required: true, message: '所在厂区不能为空', trigger: 'change' }],
+  company: [{ required: true, message: '所属公司不能为空', trigger: 'change' }],
   effectLevel: [{ required: true, message: '影响程度不能为空', trigger: 'change' }],
   warrantyDate: [{ required: true, message: '质保日期不能为空', trigger: 'blur' }],
   assetNumber: [{ required: true, message: '资产编号不能为空', trigger: 'blur' }],

@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model="dialogVisible" :title="dialogTitle">
+  <Dialog v-model="dialogVisible" :title="dialogTitle" :close-on-click-modal="false">
     <el-form
       ref="formRef"
       v-loading="formLoading"

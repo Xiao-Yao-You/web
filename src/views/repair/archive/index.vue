@@ -43,10 +43,10 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="所在厂区" prop="company">
+      <el-form-item label="所属公司" prop="company">
         <el-select
           v-model="queryParams.company"
-          placeholder="请选择所在厂区"
+          placeholder="请选择所属公司"
           clearable
           class="!w-240px"
         >
@@ -151,9 +151,9 @@
       <el-table-column label="设备编码" align="center" prop="code" />
       <el-table-column label="设备类型" align="center" prop="deviceTypeName" />
       <el-table-column label="设备型号" align="center" prop="model" />
-      <el-table-column label="所在厂区" align="center" prop="company">
+      <el-table-column label="所属公司" align="center" prop="company" width="150">
         <template #default="{ row: { company } }">
-          {{ t(`map.${CompanyEnum[company]}`) }}
+          {{ t(`company.${CompanyEnum[company]}`) }}
         </template>
       </el-table-column>
       <el-table-column label="所在地点" align="center" prop="address" width="100">
