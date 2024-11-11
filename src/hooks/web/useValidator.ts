@@ -51,10 +51,13 @@ export const useValidator = () => {
     }
   }
 
+  const trim = { pattern: /^\S(?:.*\S)?$/, message: '首尾不能出现空格' }
+
   return {
     required,
     lengthRange,
     notSpace,
-    notSpecialCharacters
+    notSpecialCharacters,
+    trim
   }
 }

@@ -10,7 +10,7 @@ const emit = defineEmits<{
   confirm: [form: AccessoryItem]
 }>()
 
-const { notSpace } = useValidator()
+const { trim } = useValidator()
 
 const dialogVisible = ref(false)
 const formRef = ref()
@@ -21,8 +21,8 @@ const formData = ref({
   remark: '' // 备注
 })
 const formRules = reactive({
-  accessoryDesc: [{ required: true, message: '配件不能为空', trigger: 'blur' }, notSpace()],
-  model: [{ required: true, message: '型号不能为空', trigger: 'blur' }, notSpace()]
+  accessoryDesc: [{ required: true, message: '配件不能为空', trigger: 'blur' }, trim],
+  model: [{ required: true, message: '型号不能为空', trigger: 'blur' }, trim]
 })
 
 const open = () => {

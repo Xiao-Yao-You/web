@@ -496,10 +496,10 @@ const handleDisabled = (
     case OperateMethod.Confirm:
       res = status === OperateStatus.Receive && dealUserId === user.value.id
       break
-    // 转交的前提条件：待处理、进行中、不是自己
+    // 转交的前提条件：全程可以转交（除非工单已完成或被撤销）
     case OperateMethod.Transfer:
       res =
-        [OperateStatus.Receive, OperateStatus.Handling].includes(status) &&
+        ![OperateStatus.Revoke, OperateStatus.Done, OperateStatus.Finish].includes(status) &&
         dealUserId !== user.value.id
       break
     // 挂起和完成的前提条件：进行中

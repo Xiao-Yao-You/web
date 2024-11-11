@@ -68,7 +68,7 @@
           disabled
         />
       </el-form-item>
-      <el-form-item label="报修人" prop="submitUserId">
+      <el-form-item v-if="formType === 'create'" label="报修人" prop="submitUserId">
         <el-select
           v-model="formData.submitUserId"
           filterable
@@ -84,6 +84,9 @@
             :value="item.value"
           />
         </el-select>
+      </el-form-item>
+      <el-form-item v-else label="报修人" prop="submitUserNickName">
+        <el-input v-model="formData.submitUserNickName" />
       </el-form-item>
       <el-form-item label="报修人电话" prop="submitUserMobile">
         <el-input
@@ -189,6 +192,7 @@ const formData = ref({
   location: undefined as unknown as string,
   submitUserId: undefined as unknown as number,
   submitUserMobile: undefined as unknown as string,
+  submitUserNickName: '',
   requestType: undefined as unknown as IssueTypeEnum,
   questionType: undefined as unknown as number,
   level: undefined as unknown as CommonLevelEnum,
@@ -319,6 +323,7 @@ const resetForm = () => {
     addressId: undefined as unknown as number,
     location: undefined as unknown as string,
     submitUserId: undefined as unknown as number,
+    submitUserNickName: '',
     submitUserMobile: undefined as unknown as string,
     requestType: undefined as unknown as IssueTypeEnum,
     questionType: undefined as unknown as number,

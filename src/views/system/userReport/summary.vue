@@ -70,7 +70,7 @@
     <HandleFollow ref="handleFollowRef" @success="handleFollowSuccess" />
     <SummaryDetail ref="summaryDetailRef" />
     以下人员暂未提交当日工作汇报： <br />
-    <span v-if="notSubmitUserList.length != 0"> {{ notSubmitUserList.join(',') }} </span>
+    <span v-if="notSubmitUserList.length != 0"> {{ notSubmitUserList.join('、') }} </span>
     <span v-if="notSubmitUserList.length == 0"> 暂无统计数据 </span>
   </Dialog>
 </template>

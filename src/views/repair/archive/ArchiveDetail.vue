@@ -20,7 +20,6 @@
             {{ info.labelCode }}
             <el-button
               size="small"
-              link
               type="primary"
               style="vertical-align: text-bottom"
               @click="printRef?.open([{ name: info.deviceTypeName, labelCode: info.labelCode }])"
