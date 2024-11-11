@@ -106,7 +106,12 @@
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
-        <el-button type="primary" plain @click="openForm('create')">
+        <el-button
+          v-hasPermi="['hk:operation-device:create']"
+          type="primary"
+          plain
+          @click="openForm('create')"
+        >
           <Icon icon="ep:plus" class="mr-5px" /> 新增
         </el-button>
         <!-- <el-button
@@ -194,7 +199,14 @@
       <el-table-column label="操作" align="center" fixed="right" min-width="250">
         <template #default="{ row }">
           <el-button link type="primary" @click="openDetail(row.id)"> 详情 </el-button>
-          <el-button link type="primary" @click="openForm('update', row.id)"> 编辑 </el-button>
+          <el-button
+            v-hasPermi="['hk:operation-device:update']"
+            link
+            type="primary"
+            @click="openForm('update', row.id)"
+          >
+            编辑
+          </el-button>
           <el-button
             link
             type="primary"
