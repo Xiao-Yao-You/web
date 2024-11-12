@@ -156,6 +156,7 @@
       <el-table-column label="设备编码" align="center" prop="code" />
       <el-table-column label="设备类型" align="center" prop="deviceTypeName" />
       <el-table-column label="设备型号" align="center" prop="model" />
+      <el-table-column label="二维码标签号" align="center" prop="labelCode" width="120" />
       <el-table-column label="所属公司" align="center" prop="company" width="150">
         <template #default="{ row: { company } }">
           {{ t(`company.${CompanyEnum[company]}`) }}
@@ -182,7 +183,6 @@
         </template>
       </el-table-column>
       <el-table-column label="MAC 地址1" align="center" prop="macAddress1" width="160" />
-      <el-table-column label="二维码标签号" align="center" prop="labelCode" width="120" />
       <el-table-column label="影响程度" align="center" prop="effectLevel">
         <template #default="{ row: { effectLevel } }">
           <dict-tag :type="DICT_TYPE.LEVEL" :value="effectLevel" />

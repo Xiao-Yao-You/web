@@ -13,7 +13,6 @@
       :rules="formRules"
       label-width="120px"
       v-loading="formLoading"
-      :disabled="formType === 'detail'"
     >
       <el-form-item label="工单编号" prop="code">
         <el-input v-model="formData.code" placeholder="自动生成" disabled />
@@ -39,10 +38,10 @@
       <el-form-item label="设备名称" prop="deviceName">
         <el-input
           v-model="formData.deviceName"
-          :placeholder="disabled ? '正在查询二维码信息' : '请输入设备名'"
+          placeholder="输入二维码标签号自动查询"
           maxlength="20"
           show-word-limit
-          :disabled="disabled"
+          disabled
         />
       </el-form-item>
       <el-form-item label="设备所在地点" prop="addressId">
@@ -55,20 +54,20 @@
           }"
           check-strictly
           node-key="id"
-          placeholder="请选择设备所在地点"
+          placeholder="输入二维码标签号自动查询"
           disabled
         />
       </el-form-item>
       <el-form-item label="设备具体位置" prop="location">
         <el-input
           v-model="formData.location"
-          placeholder="请输入设备具体位置"
+          placeholder="输入二维码标签号自动查询"
           maxlength="20"
           show-word-limit
           disabled
         />
       </el-form-item>
-      <el-form-item v-if="formType === 'create'" label="报修人" prop="submitUserId">
+      <el-form-item label="报修人" prop="submitUserId">
         <el-select
           v-model="formData.submitUserId"
           filterable
@@ -85,9 +84,6 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item v-else label="报修人" prop="submitUserNickName">
-        <el-input v-model="formData.submitUserNickName" />
-      </el-form-item>
       <el-form-item label="报修人电话" prop="submitUserMobile">
         <el-input
           v-model="formData.submitUserMobile"
@@ -95,36 +91,6 @@
           maxlength="11"
           show-word-limit
         />
-      </el-form-item>
-      <el-form-item label="请求类型" prop="requestType">
-        <el-select v-model="formData.requestType" placeholder="请求类型">
-          <el-option
-            v-for="item in IssueTypeOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="问题类型" prop="questionType">
-        <el-tree-select
-          v-model="formData.questionType"
-          :data="repairStore.issuesTree"
-          :props="defaultProps"
-          check-strictly
-          node-key="id"
-          placeholder="请选择问题类型"
-        />
-      </el-form-item>
-      <el-form-item label="紧急程度" prop="level">
-        <el-select v-model="formData.level" placeholder="请选紧急程度" clearable class="!w-140px">
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.LEVEL)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
       </el-form-item>
       <el-form-item label="问题描述" prop="description">
         <el-input
@@ -139,14 +105,7 @@
     </el-form>
 
     <template #footer>
-      <el-button
-        v-if="formType === 'create'"
-        @click="submitForm"
-        type="primary"
-        :disabled="formLoading"
-      >
-        确 定
-      </el-button>
+      <el-button @click="submitForm" type="primary" :disabled="formLoading"> 确 定 </el-button>
       <el-button @click="closeDialog">取 消</el-button>
     </template>
   </Dialog>
@@ -154,22 +113,15 @@
 
 <script setup lang="ts">
 import { useRepairStoreWithOut } from '@/store/modules/repair'
-import { defaultProps } from '@/utils/tree'
-import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import { getAll } from '@/api/system/user'
-import { createRepairOrder, getRepairOrder, getArchiveByLabelCode } from '@/api/repair'
-import {
-  IssueTypeOptions,
-  IssueTypeEnum,
-  OperateMethod,
-  RepairSourceType
-} from '@/api/repair/constant'
+import { createRepairOrder, getArchiveByLabelCode } from '@/api/repair'
+import { IssueTypeEnum, OperateMethod, RepairSourceType } from '@/api/repair/constant'
 import { isMobilePhone } from '@/utils/is'
 import { CommonLevelEnum } from '@/utils/constants'
 import type { ElFormItem, FormInstance } from 'element-plus'
 
 defineOptions({
-  name: 'OrderForm'
+  name: 'OrderCreate'
 })
 
 const { t } = useI18n()
@@ -180,7 +132,6 @@ const dialogVisible = ref(false)
 const dialogTitle = ref('')
 const formRef = ref<FormInstance>()
 const formLoading = ref(false)
-const formType = ref('') // create、detail
 const formData = ref({
   id: undefined,
   code: '',
@@ -192,7 +143,6 @@ const formData = ref({
   location: undefined as unknown as string,
   submitUserId: undefined as unknown as number,
   submitUserMobile: undefined as unknown as string,
-  submitUserNickName: '',
   requestType: undefined as unknown as IssueTypeEnum,
   questionType: undefined as unknown as number,
   level: undefined as unknown as CommonLevelEnum,
@@ -207,7 +157,7 @@ const formRules = reactive({
   submitUserId: [{ required: true, message: '报修人不能为空', trigger: 'blur' }],
   submitUserMobile: [
     { required: true, message: '报修人电话不能为空', trigger: 'blur' },
-    { pattern: isMobilePhone, message: '电话格式不正确', trigger: 'blur' }
+    { pattern: isMobilePhone, message: '电话格式不正确', trigger: ['blur', 'change'] }
   ],
   requestType: [{ required: true, message: '请求类型不能为空', trigger: 'blur' }],
   questionType: [{ required: true, message: '问题类型不能为空', trigger: 'blur' }],
@@ -216,24 +166,10 @@ const formRules = reactive({
 })
 
 /** 打开弹窗 */
-const open = async (type: string, id?: number) => {
+const open = async () => {
   dialogVisible.value = true
-  dialogTitle.value = t('action.' + type) + '运维工单'
-  formType.value = type
+  dialogTitle.value = '新增运维工单'
   resetForm()
-  if (id) {
-    formLoading.value = true
-    try {
-      const { level, questionType, ...rest } = await getRepairOrder(id)
-      Object.assign(formData.value, {
-        ...rest,
-        level: Number(level),
-        questionType: Number(questionType)
-      })
-    } finally {
-      formLoading.value = false
-    }
-  }
 }
 defineExpose({ open })
 
@@ -292,22 +228,20 @@ const closeDialog = () => {
 /** 提交表单 */
 const emit = defineEmits(['success'])
 const submitForm = async () => {
-  if (formType.value === 'create') {
-    await formRef.value?.validate()
-    const { code, ...data } = formData.value
-    formLoading.value = true
-    try {
-      await createRepairOrder({
-        ...data,
-        operateMethod: OperateMethod.Create,
-        sourceType: RepairSourceType.Offline
-      })
-      message.success(t('common.createSuccess'))
-      closeDialog()
-      emit('success')
-    } finally {
-      formLoading.value = false
-    }
+  await formRef.value?.validate()
+  const { code, ...data } = formData.value
+  formLoading.value = true
+  try {
+    await createRepairOrder({
+      ...data,
+      operateMethod: OperateMethod.Create,
+      sourceType: RepairSourceType.Offline
+    })
+    message.success(t('common.createSuccess'))
+    closeDialog()
+    emit('success')
+  } finally {
+    formLoading.value = false
   }
 }
 
@@ -323,7 +257,6 @@ const resetForm = () => {
     addressId: undefined as unknown as number,
     location: undefined as unknown as string,
     submitUserId: undefined as unknown as number,
-    submitUserNickName: '',
     submitUserMobile: undefined as unknown as string,
     requestType: undefined as unknown as IssueTypeEnum,
     questionType: undefined as unknown as number,

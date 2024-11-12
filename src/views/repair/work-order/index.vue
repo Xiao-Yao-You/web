@@ -55,7 +55,7 @@
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
-        <el-button type="primary" plain @click="openForm('create')">
+        <el-button type="primary" plain @click="openForm()">
           <Icon icon="ep:plus" class="mr-5px" /> 新增
         </el-button>
         <el-button class="ml-12px" type="warning" plain @click="openSubscriber">
@@ -155,7 +155,7 @@
         :show-overflow-tooltip="false"
       >
         <template #default="{ row }">
-          <el-button link type="primary" @click="openForm('detail', row.id)">详情</el-button>
+          <el-button link type="primary" @click="openDetail(row.id)">详情</el-button>
           <el-dropdown class="align-baseline!" @command="(command) => handleCommand(command, row)">
             <el-button type="primary" link><Icon icon="ep:d-arrow-right" />更多</el-button>
             <template #dropdown>
@@ -223,8 +223,8 @@
     />
   </ContentWrap>
 
-  <!-- 新增、编辑表单 -->
-  <OrderForm ref="formRef" @success="getList" />
+  <!-- 新增表单 -->
+  <OrderCreate ref="formRef" @success="getList" />
 
   <!-- 派单 -->
   <OrderDispatchForm ref="dispatchRef" @success="getList" />
@@ -240,17 +240,21 @@
 
   <!-- 推送对象 -->
   <OrderSubscriber ref="subscribeRef" />
+
+  <!-- 工单详情 -->
+  <OrderDetail ref="detialRef" />
 </template>
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { ElMessageBox } from 'element-plus'
-import OrderForm from './OrderForm.vue'
+import OrderCreate from './OrderCreate.vue'
 import OrderDispatchForm from './OrderDispatchForm.vue'
 import OrderTransferForm from './OrderTransferForm.vue'
 import OrderCompleteForm from './OrderCompleteForm.vue'
 import OrderStartForm from './OrderStartForm.vue'
 import OrderSubscriber from './OrderSubscriber.vue'
+import OrderDetail from './OrderDetail.vue'
 import { getRepairOrderPage, handleRepairOrder, type RepairOrder } from '@/api/repair'
 import {
   IssueTypeLabel,
@@ -318,8 +322,8 @@ const resetQuery = () => {
 }
 // 添加/修改
 const formRef = ref()
-const openForm = (type: string, id?: number) => {
-  formRef.value.open(type, id)
+const openForm = () => {
+  formRef.value.open()
 }
 // #endregion
 
@@ -524,6 +528,13 @@ const handleDisabled = (
 const subscribeRef = ref<InstanceType<typeof OrderSubscriber>>()
 const openSubscriber = () => {
   subscribeRef.value?.open()
+}
+// #endregion
+
+// #region 四、工单详情
+const detialRef = ref<InstanceType<typeof OrderDetail>>()
+const openDetail = (id: number) => {
+  detialRef.value?.open(id)
 }
 // #endregion
 

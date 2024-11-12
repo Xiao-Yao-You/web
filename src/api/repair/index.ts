@@ -417,9 +417,6 @@ export interface OrderPayload {
   location: string
   submitUserId: number
   submitUserMobile: string
-  requestType: string
-  questionType: number
-  level: CommonLevelEnum
   description: string
   operateMethod: OperateMethod
   sourceType: number
@@ -457,6 +454,9 @@ export interface HandlePayload {
   url?: PictureItem[]
   remark?: string
   operateMethod: OperateMethod
+  requestType?: string // 现场确认时必填
+  questionType?: number // 现场确认时必填
+  level?: CommonLevelEnum // 现场确认时必填
 }
 export const handleRepairOrder = (data: HandlePayload) => {
   return request.put({ url: '/operation-order/workOrderCirculation', data })
