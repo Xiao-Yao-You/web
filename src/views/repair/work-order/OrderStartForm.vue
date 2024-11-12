@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { handleRepairOrder, type AccessoryItem } from '@/api/repair'
+import { handleRepairOrder } from '@/api/repair'
 import { OperateMethod } from '@/api/repair/constant'
 import { PictureType } from '@/api/repair/constant'
 import type { UploadFiles } from 'element-plus'
@@ -42,8 +42,8 @@ const formData = ref({
   remark: ''
 })
 const formRules = reactive({
-  pictureList: [{ required: true, message: '问题类型不能为空', trigger: 'blur' }],
-  remark: [{ required: true, message: '转交说明不能为空', trigger: 'blur' }]
+  pictureList: [{ required: true, message: '现场图片不能为空', trigger: ['blur', 'change'] }],
+  remark: [{ required: true, message: '确认说明不能为空', trigger: 'blur' }]
 })
 
 const open = (id: number) => {
