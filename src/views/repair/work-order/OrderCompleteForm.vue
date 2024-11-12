@@ -47,8 +47,7 @@
 
 <script setup lang="ts">
 import { Calendar } from '@element-plus/icons-vue'
-import { useEmployeeStoreWithOut } from '@/store/modules/employee'
-import { handleRepairOrder, type AccessoryItem } from '@/api/repair'
+import { handleRepairOrder } from '@/api/repair'
 import { OperateMethod, OperateStatus } from '@/api/repair/constant'
 import { useUserStore } from '@/store/modules/user'
 import { formatDate } from '@/utils/formatTime'
@@ -59,7 +58,6 @@ defineOptions({
 })
 
 const userInfo = useUserStore().getUser
-const employeeStore = useEmployeeStoreWithOut()
 const message = useMessage()
 
 // 处理结果
