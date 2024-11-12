@@ -41,12 +41,14 @@
         </el-select>
       </el-form-item>
       <el-form-item label="设备型号" prop="model">
-        <el-input
-          v-model="formData.model"
-          placeholder="请输入型号"
-          maxlength="20"
-          show-word-limit
-        />
+        <el-select v-model="formData.model" placeholder="请选择设备型号" clearable>
+          <el-option
+            v-for="dict in getIntDictOptions(DICT_TYPE.REPAIR_ORDER_MODEL)"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="序列号" prop="serialNumber">
         <el-input
@@ -218,7 +220,7 @@ const formData = ref({
   code: undefined as unknown as string,
   name: '',
   deviceType: undefined as unknown as OptionItem<number>,
-  model: '',
+  model: undefined as unknown as string,
   serialNumber: '',
   labelCode: undefined as string | undefined,
   numberName: '',
@@ -346,7 +348,7 @@ const resetForm = () => {
     code: undefined as unknown as string,
     name: '',
     deviceType: undefined as unknown as OptionItem<number>,
-    model: '',
+    model: undefined as unknown as string,
     serialNumber: '',
     labelCode: undefined,
     numberName: '',

@@ -92,7 +92,16 @@ const formData = ref({
 })
 const formRules = reactive({
   label: [{ required: true, message: '数据标签不能为空', trigger: 'blur' }],
-  value: [{ required: true, message: '数据键值不能为空', trigger: 'blur' }],
+  value: [
+    { required: true, message: '数据键值不能为空', trigger: 'blur' },
+    {
+      type: 'string',
+      message: '请输入数字',
+      transform: (value: string) => value.trim(),
+      pattern: /^\d+$/,
+      trigger: ['blur', 'change']
+    }
+  ],
   sort: [{ required: true, message: '数据顺序不能为空', trigger: 'blur' }],
   status: [{ required: true, message: '状态不能为空', trigger: 'change' }]
 })
