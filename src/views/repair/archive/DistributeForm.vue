@@ -54,15 +54,11 @@
         </el-select>
       </el-form-item>
       <el-form-item label="所在地点" prop="addressId">
-        <el-tree-select
+        <el-cascader
           v-model="formData.addressId"
-          :data="repairStore.locationsTree"
-          :props="{
-            label: 'addressName',
-            value: 'id'
-          }"
-          check-strictly
-          node-key="id"
+          :props="{ label: 'addressName', value: 'id' }"
+          :options="repairStore.locationsTree"
+          placeholder="请选择所在地点"
         />
       </el-form-item>
       <el-form-item label="设备位置" prop="location">
@@ -115,7 +111,7 @@ const formData = ref({
   name: '',
   dept: undefined as unknown as OptionItem<number>,
   userId: undefined as number | undefined,
-  addressId: undefined as unknown as number,
+  addressId: [] as number[],
   location: undefined as unknown as string,
   ip1: '',
   ip2: '',
@@ -123,7 +119,7 @@ const formData = ref({
 })
 const formRules = reactive({
   dept: [{ message: '使用部门不能为空', trigger: 'blur', required: true }],
-  addressId: [{ required: true, message: '所在地点不能为空', trigger: 'blur' }],
+  addressId: [{ type: 'array', required: true, message: '所在地点不能为空', trigger: 'blur' }],
   location: [{ required: true, message: '设备位置不能为空', trigger: 'blur' }],
   ip1: [
     { required: true, message: 'IP 地址1不能为空', trigger: 'blur' },
@@ -148,7 +144,7 @@ const open = async ({ code, name, id }) => {
       code,
       name,
       userId: res.userId,
-      addressId: res.addressId,
+      addressId: [res.addressId],
       location: res.location,
       ip1: res.ip1,
       ip2: res.ip2,
@@ -195,9 +191,10 @@ const remoteMethod = (nickname: string) => {
 const emit = defineEmits(['success']) // 定义 success 事件，用于操作成功后的回调
 const submitForm = async () => {
   await formRef.value?.validate()
-  const { code, name, pictureList, dept, ...rest } = formData.value
+  const { code, name, pictureList, dept, addressId, ...rest } = formData.value
   const data = {
     ...rest,
+    addressId: addressId[addressId.length - 1],
     deptId: dept.value,
     deptName: dept.label,
     pictureList: pictureList.map((p) => ({
@@ -225,7 +222,7 @@ const resetForm = () => {
     name: '',
     dept: undefined as unknown as OptionItem<number>,
     userId: undefined as number | undefined,
-    addressId: undefined as unknown as number,
+    addressId: [] as number[],
     location: undefined as unknown as string,
     ip1: '',
     ip2: '',
