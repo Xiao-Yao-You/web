@@ -15,9 +15,10 @@ export const infixOptions = [
 
 // 单据编码-后缀（位数）
 export const suffixOptions = [
-  { label: '000', value: '000' },
-  { label: '0000', value: '0000' },
-  { label: '00000', value: '00000' }
+  { label: '000（三位）', value: '000' },
+  { label: '0000（四位）', value: '0000' },
+  { label: '00000（五位）', value: '00000' },
+  { label: '000000（六位）', value: '000000' }
 ]
 
 // 单据编码-规则枚举
