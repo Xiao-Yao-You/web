@@ -47,11 +47,13 @@
       <el-table-column label="设备类型" align="center" prop="deviceTypeName" />
       <el-table-column label="问题描述" align="center" prop="description" />
       <el-table-column label="操作" align="center" fixed="right" width="240">
-        <template #default="{ row: { id } }">
-          <el-button link type="primary" @click="openForm('detail', id)">详情</el-button>
-          <el-button link type="primary" @click="openForm('child', id)">添加子类</el-button>
-          <el-button link type="primary" @click="openForm('update', id)">编辑</el-button>
-          <el-button link type="danger" @click="handleDelete(id)">删除</el-button>
+        <template #default="{ row }">
+          <el-button link type="primary" @click="openForm('detail', row.id)">详情</el-button>
+          <el-button v-if="!row.parentId" link type="primary" @click="openForm('child', row.id)">
+            添加子类
+          </el-button>
+          <el-button link type="primary" @click="openForm('update', row.id)">编辑</el-button>
+          <el-button link type="danger" @click="handleDelete(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -64,7 +66,13 @@
 </template>
 
 <script setup lang="ts">
-import { deleteIssue, getRepairIssuesAll, type IssuesAllParams } from '@/api/repair'
+import { ElMessageBox } from 'element-plus'
+import {
+  deleteIssue,
+  getRepairIssuesAll,
+  type IssuesAllParams,
+  type RepairIssue
+} from '@/api/repair'
 import { handleTree } from '@/utils/tree'
 import { IssueTypeOptions } from '@/api/repair/constant'
 import IssueForm from './IssueForm.vue'
@@ -121,11 +129,44 @@ const openForm = (type: string, id?: number) => {
   formRef.value.open(type, id)
 }
 
-const handleDelete = async (id: number) => {
-  await message.delConfirm()
-  await deleteIssue(id)
-  message.success('删除成功')
-  getIssuesMenu()
+const handleDelete = (row: RepairIssue) => {
+  ElMessageBox({
+    title: '系统提示',
+    showCancelButton: true,
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    message: h(
+      'div',
+      null,
+      row.parentId
+        ? [h('span', '确定删除该条问题吗？')]
+        : [
+            h('span', '确定删除该类问题吗？'),
+            h(
+              'p',
+              { style: { marginTop: '16px', fontWeight: 600 } },
+              '请注意：该类型下所有子类问题都将被删除！'
+            )
+          ]
+    ),
+    beforeClose(action, instance, done) {
+      if (action === 'confirm') {
+        instance.confirmButtonLoading = true
+        instance.confirmButtonText = '删除中...'
+        deleteIssue(row.id)
+          .then(() => {
+            message.success('删除成功')
+            getIssuesMenu()
+            done()
+          })
+          .finally(() => {
+            instance.confirmButtonLoading = false
+          })
+      } else {
+        done()
+      }
+    }
+  })
 }
 
 onMounted(() => {
