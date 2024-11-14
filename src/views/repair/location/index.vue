@@ -52,11 +52,18 @@
       </el-table-column>
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="操作" align="center" fixed="right" width="240">
-        <template #default="{ row: { id, status } }">
-          <el-button link type="primary" @click="openForm('detail', id)"> 详情 </el-button>
-          <el-button link type="primary" @click="openForm('child', id)"> 添加子类 </el-button>
-          <el-button link type="primary" @click="openForm('update', id)"> 编辑 </el-button>
-          <el-button link type="danger" @click="handleDelete(id)" :disabled="!status">
+        <template #default="{ row }">
+          <el-button link type="primary" @click="openForm('detail', row.id)"> 详情 </el-button>
+          <el-button
+            v-if="!row.parentAddressId"
+            link
+            type="primary"
+            @click="openForm('child', row.id)"
+          >
+            添加子类
+          </el-button>
+          <el-button link type="primary" @click="openForm('update', row.id)"> 编辑 </el-button>
+          <el-button link type="danger" @click="handleDelete(row)" :disabled="!row.status">
             删除
           </el-button>
         </template>
@@ -71,10 +78,17 @@
 </template>
 
 <script setup lang="ts">
-import { deleteLocation, getRepairLocationAll, type LocationAllParams } from '@/api/repair'
+import { ElMessageBox } from 'element-plus'
+import {
+  deleteLocation,
+  getRepairLocationAll,
+  type LocationAllParams,
+  type RepairLocation
+} from '@/api/repair'
 import LocationForm from './LocationForm.vue'
 import { handleTree } from '@/utils/tree'
 import AddressImportForm from './AddressImportForm.vue'
+import { CommonStatusEnum } from '@/utils/constants'
 
 defineOptions({
   name: 'RepairLocation'
@@ -128,12 +142,68 @@ const openForm = (type: string, id?: number) => {
   formRef.value.open(type, id)
 }
 
-const handleDelete = async (id: number) => {
-  await message.delConfirm()
-  await deleteLocation(id)
-  message.success('删除成功')
-  getLocationsMenu()
+// #region 地点删除
+const handleDelete = async (row) => {
+  const enableExistd = getChildEnabledStatus(row.children)
+  if (enableExistd) {
+    return ElMessageBox.alert(
+      '<div>该类地点下有正在启用的子类地点。<p style="margin-top: 15px">如需删除，请先手动禁用它们。</p></div>',
+      '系统提示',
+      { dangerouslyUseHTMLString: true }
+    )
+  }
+  ElMessageBox({
+    title: '系统提示',
+    showCancelButton: true,
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    message: h(
+      'div',
+      null,
+      row.parentAddressId
+        ? [h('span', '确定删除该地点吗？')]
+        : [
+            h('span', '确定删除该类地点吗？'),
+            h(
+              'p',
+              { style: { marginTop: '16px', fontWeight: 600 } },
+              '请注意：该类型下所有子类地点都将被删除！'
+            )
+          ]
+    ),
+    beforeClose(action, instance, done) {
+      if (action === 'confirm') {
+        instance.confirmButtonLoading = true
+        instance.confirmButtonText = '删除中...'
+        deleteLocation(row.id)
+          .then(() => {
+            message.success('删除成功')
+            getLocationsMenu()
+            done()
+          })
+          .finally(() => {
+            instance.confirmButtonLoading = false
+          })
+      } else {
+        done()
+      }
+    }
+  })
 }
+
+// 查找父类下有没有正在启用的子类（如果有，在删除父类时，需要提示）
+const getChildEnabledStatus = (children: RepairLocation[]) => {
+  if (!Array.isArray(children)) return false
+
+  let enabled = false
+  for (const child of children) {
+    enabled = child?.status === CommonStatusEnum.ENABLE
+    if (enabled) break
+  }
+  return enabled
+}
+
+// #endregion
 
 onMounted(() => {
   getLocationsMenu()
