@@ -86,10 +86,14 @@
       <el-table-column label="工单编号" align="center" prop="code" />
       <el-table-column label="请求类型" align="center" prop="requestType" width="80">
         <template #default="scope">
-          {{ IssueTypeLabel[scope.row.requestType] }}
+          {{ IssueTypeLabel[scope.row.requestType] || '/' }}
         </template>
       </el-table-column>
-      <el-table-column label="问题类型" align="center" prop="questionTypeStr" width="140" />
+      <el-table-column label="问题类型" align="center" prop="questionTypeStr" width="140">
+        <template #default="scope">
+          {{ scope.row.questionTypeStr || '/' }}
+        </template>
+      </el-table-column>
       <el-table-column label="紧急程度" align="center" prop="level">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.LEVEL" :value="scope.row.level" />
