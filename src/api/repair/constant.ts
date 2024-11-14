@@ -23,12 +23,6 @@ export enum CompanyEnum {
   XuanDa // 轩达
 }
 
-// 所属公司选择项
-export const CompanyOptions = [
-  { label: '江苏恒科新材料', value: CompanyEnum.HengKe },
-  { label: '江苏轩达高分子材料', value: CompanyEnum.XuanDa }
-]
-
 // 使用状态
 export enum UsingStatus {
   InUse, // 使用中

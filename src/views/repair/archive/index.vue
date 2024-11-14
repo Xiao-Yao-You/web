@@ -51,10 +51,10 @@
           class="!w-240px"
         >
           <el-option
-            v-for="opt in CompanyOptions"
-            :key="opt.value"
-            :label="opt.label"
-            :value="opt.value"
+            v-for="dict in getIntDictOptions(DICT_TYPE.ASSETS_COMPANY)"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
           />
         </el-select>
       </el-form-item>
@@ -254,13 +254,13 @@ import {
   // exportRepairArchive,
   type RepairArchive
 } from '@/api/repair'
-import { UsingStatus, CompanyOptions, CompanyEnum, UsingStatusOptions } from '@/api/repair/constant'
+import { UsingStatus, CompanyEnum, UsingStatusOptions } from '@/api/repair/constant'
 import ArchiveForm from './ArchiveForm.vue'
 import ScrapForm from './ScrapForm.vue'
 import DistributeForm from './DistributeForm.vue'
 import ArchiveDetail from './ArchiveDetail.vue'
 import { isIPV4 } from '@/utils/is'
-import { DICT_TYPE } from '@/utils/dict'
+import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 // import download from '@/utils/download'
 
 /** 运维设备档案 列表 */

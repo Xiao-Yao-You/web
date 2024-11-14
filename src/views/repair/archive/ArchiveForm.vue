@@ -43,7 +43,7 @@
       <el-form-item label="设备型号" prop="model">
         <el-select v-model="formData.model" placeholder="请选择设备型号" clearable>
           <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.REPAIR_ORDER_MODEL)"
+            v-for="dict in getStrDictOptions(DICT_TYPE.REPAIR_ORDER_MODEL)"
             :key="dict.value"
             :label="dict.label"
             :value="dict.value"
@@ -97,10 +97,10 @@
       <el-form-item label="所属公司" prop="company">
         <el-select v-model="formData.company" placeholder="请选择所属公司" clearable>
           <el-option
-            v-for="opt in CompanyOptions"
-            :key="opt.value"
-            :label="opt.label"
-            :value="opt.value"
+            v-for="dict in getIntDictOptions(DICT_TYPE.ASSETS_COMPANY)"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
           />
         </el-select>
       </el-form-item>
@@ -194,10 +194,10 @@ import {
 import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
 import { CommonStatusEnum, CommonLevelEnum } from '@/utils/constants'
-import { CompanyOptions, PictureType, CompanyEnum, UsingStatus } from '@/api/repair/constant'
+import { PictureType, CompanyEnum, UsingStatus } from '@/api/repair/constant'
 import { dateTransfer } from '@/views/system/meeting/subscribe/hook/useMeetingStatus'
 import { getSceneCodeAll } from '@/api/system/scenecode'
-import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
+import { DICT_TYPE, getIntDictOptions, getStrDictOptions } from '@/utils/dict'
 
 import type { AccessoryItem } from '@/api/repair'
 import type { UploadFile, UploadFiles } from 'element-plus'
