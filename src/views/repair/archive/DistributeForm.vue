@@ -55,10 +55,12 @@
       </el-form-item>
       <el-form-item label="所在地点" prop="addressId">
         <el-cascader
+          ref="cascaderRef"
           v-model="formData.addressId"
           :props="{ label: 'addressName', value: 'id' }"
           :options="repairStore.locationsTree"
           placeholder="请选择所在地点"
+          @change="onAddressChange"
         />
       </el-form-item>
       <el-form-item label="设备位置" prop="location">
@@ -93,7 +95,7 @@ import { useDeptStoreWithOut } from '@/store/modules/department'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
 import { isIPV4 } from '@/utils/is'
 import { getAll } from '@/api/system/user'
-import type { UploadFiles, FormInstance } from 'element-plus'
+import type { UploadFiles, FormInstance, ElCascader } from 'element-plus'
 
 /** 分配表单 */
 defineOptions({ name: 'DistributeForm' })
@@ -111,6 +113,7 @@ const formData = ref({
   name: '',
   dept: undefined as unknown as OptionItem<number>,
   userId: undefined as number | undefined,
+  address: '',
   addressId: [] as number[],
   location: undefined as unknown as string,
   ip1: '',
@@ -131,7 +134,7 @@ const formRules = reactive({
 
 const formRef = ref<FormInstance>() // 表单 Ref
 
-/** 打开弹窗 */
+// 打开弹窗
 const open = async ({ code, name, id }) => {
   resetForm()
   dialogVisible.value = true
@@ -144,7 +147,8 @@ const open = async ({ code, name, id }) => {
       code,
       name,
       userId: res.userId,
-      addressId: [res.addressId],
+      address: res.address,
+      addressId: res.addressId || [],
       location: res.location,
       ip1: res.ip1,
       ip2: res.ip2,
@@ -159,6 +163,13 @@ const open = async ({ code, name, id }) => {
   }
 }
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
+
+// 地点切换，重置对应地点名信息
+const cascaderRef = ref<InstanceType<typeof ElCascader>>()
+const onAddressChange = () => {
+  const nodes = cascaderRef.value?.getCheckedNodes(false)
+  if (nodes) formData.value.address = nodes[0]?.text
+}
 
 // 部门切换，重置对应使用人信息
 const onDeptChange = () => {
@@ -187,14 +198,14 @@ const remoteMethod = (nickname: string) => {
   }
 }
 
-/** 提交表单 */
+// 提交表单
 const emit = defineEmits(['success']) // 定义 success 事件，用于操作成功后的回调
 const submitForm = async () => {
   await formRef.value?.validate()
   const { code, name, pictureList, dept, addressId, ...rest } = formData.value
   const data = {
     ...rest,
-    addressId: addressId[addressId.length - 1],
+    addressIdList: addressId,
     deptId: dept.value,
     deptName: dept.label,
     pictureList: pictureList.map((p) => ({
@@ -214,7 +225,7 @@ const submitForm = async () => {
   }
 }
 
-/** 重置表单 */
+// 重置表单
 const resetForm = () => {
   formData.value = {
     id: undefined as unknown as number,
@@ -222,6 +233,7 @@ const resetForm = () => {
     name: '',
     dept: undefined as unknown as OptionItem<number>,
     userId: undefined as number | undefined,
+    address: '',
     addressId: [] as number[],
     location: undefined as unknown as string,
     ip1: '',

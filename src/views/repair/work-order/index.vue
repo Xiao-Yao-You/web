@@ -95,11 +95,17 @@
         </template>
       </el-table-column>
       <el-table-column label="紧急程度" align="center" prop="level">
-        <template #default="scope">
-          <dict-tag :type="DICT_TYPE.LEVEL" :value="scope.row.level" />
+        <template #default="{ row: { level } }">
+          <span v-if="isEmptyVal(level)">/</span>
+          <dict-tag v-else :type="DICT_TYPE.LEVEL" :value="level" />
         </template>
       </el-table-column>
       <el-table-column label="报修人" align="center" prop="submitUserNickName" />
+      <el-table-column label="处理人" align="center" prop="dealUserNickName">
+        <template #default="{ row: { dealUserNickName } }">
+          {{ dealUserNickName || '/' }}
+        </template>
+      </el-table-column>
       <el-table-column label="响应时长" align="center" prop="allocationConsume" width="120">
         <template #default="{ row: { allocationConsume } }">
           {{ allocationConsume ? formatPast2(allocationConsume) : '/' }}
@@ -118,11 +124,6 @@
       <el-table-column label="处置总时长" align="center" prop="completeConsume" width="120">
         <template #default="{ row: { completeConsume } }">
           {{ completeConsume ? formatPast2(completeConsume) : '/' }}
-        </template>
-      </el-table-column>
-      <el-table-column label="处理人" align="center" prop="dealUserNickName">
-        <template #default="{ row: { dealUserNickName } }">
-          {{ dealUserNickName || '/' }}
         </template>
       </el-table-column>
       <el-table-column label="任务类型" align="center" prop="type" width="100">
@@ -270,6 +271,7 @@ import {
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
 import { defaultProps } from '@/utils/tree'
+import { isEmptyVal } from '@/utils/is'
 import { formatDate, formatPast2 } from '@/utils/formatTime'
 import { useEmployeeStoreWithOut } from '@/store/modules/employee'
 import { useIcon } from '@/hooks/web/useIcon'

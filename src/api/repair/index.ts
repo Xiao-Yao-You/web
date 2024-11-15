@@ -357,7 +357,8 @@ export interface DistributePayload {
   deptId: number
   deptName: string
   userId: number | undefined
-  addressId: number
+  address: string
+  addressIdList: number[]
   location: string
   ip1: string
   ip2: string
@@ -413,7 +414,7 @@ export interface OrderPayload {
   labelCode?: string
   deviceName: string
   deviceId?: number
-  addressId: number
+  addressIdList: number[]
   location: string
   submitUserId: number
   submitUserMobile: string

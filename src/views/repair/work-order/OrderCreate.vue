@@ -36,36 +36,13 @@
         />
       </el-form-item>
       <el-form-item label="设备名称" prop="deviceName">
-        <el-input
-          v-model="formData.deviceName"
-          placeholder="输入二维码标签号自动查询"
-          maxlength="20"
-          show-word-limit
-          disabled
-        />
+        <el-input v-model="formData.deviceName" placeholder="输入二维码标签号自动查询" disabled />
       </el-form-item>
-      <el-form-item label="设备所在地点" prop="addressId">
-        <el-tree-select
-          v-model="formData.addressId"
-          :data="repairStore.locationsTree"
-          :props="{
-            label: 'addressName',
-            value: 'id'
-          }"
-          check-strictly
-          node-key="id"
-          placeholder="输入二维码标签号自动查询"
-          disabled
-        />
+      <el-form-item label="设备所在地点" prop="address">
+        <el-input v-model="formData.address" placeholder="输入二维码标签号自动查询" disabled />
       </el-form-item>
       <el-form-item label="设备具体位置" prop="location">
-        <el-input
-          v-model="formData.location"
-          placeholder="输入二维码标签号自动查询"
-          maxlength="20"
-          show-word-limit
-          disabled
-        />
+        <el-input v-model="formData.location" placeholder="输入二维码标签号自动查询" disabled />
       </el-form-item>
       <el-form-item label="报修人" prop="submitUserId">
         <el-select
@@ -112,7 +89,6 @@
 </template>
 
 <script setup lang="ts">
-import { useRepairStoreWithOut } from '@/store/modules/repair'
 import { getAll } from '@/api/system/user'
 import { createRepairOrder, getArchiveByLabelCode } from '@/api/repair'
 import { IssueTypeEnum, OperateMethod, RepairSourceType } from '@/api/repair/constant'
@@ -126,7 +102,6 @@ defineOptions({
 
 const { t } = useI18n()
 const message = useMessage()
-const repairStore = useRepairStoreWithOut()
 
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
@@ -139,7 +114,8 @@ const formData = ref({
   labelCode: '',
   deviceName: '',
   deviceId: undefined as unknown as number,
-  addressId: undefined as unknown as number,
+  address: '',
+  addressId: [] as number[],
   location: undefined as unknown as string,
   submitUserId: undefined as unknown as number,
   submitUserMobile: undefined as unknown as string,
@@ -152,7 +128,7 @@ const formRules = reactive({
   title: [{ required: true, message: '工单标题不能为空', trigger: 'blur' }],
   labelCode: [{ required: true, message: '二维码标签不能为空', trigger: 'blur' }],
   deviceName: [{ required: true, message: '设备名称不能为空', trigger: 'blur' }],
-  addressId: [{ required: true, message: '设备地点不能为空', trigger: 'blur' }],
+  address: [{ required: true, message: '设备地点不能为空', trigger: 'blur' }],
   location: [{ required: true, message: '设备位置不能为空', trigger: 'blur' }],
   submitUserId: [{ required: true, message: '报修人不能为空', trigger: 'blur' }],
   submitUserMobile: [
@@ -189,7 +165,8 @@ const onLabelChange = async (value: string) => {
       Object.assign(formData.value, {
         deviceName: info.name,
         deviceId: info.id,
-        addressId: info.addressId,
+        address: info.address,
+        addressId: info.addressId || [],
         location: info.location
       })
       formRef.value?.validateField('deviceName')
@@ -229,11 +206,12 @@ const closeDialog = () => {
 const emit = defineEmits(['success'])
 const submitForm = async () => {
   await formRef.value?.validate()
-  const { code, ...data } = formData.value
+  const { code, addressId, ...data } = formData.value
   formLoading.value = true
   try {
     await createRepairOrder({
       ...data,
+      addressIdList: addressId,
       operateMethod: OperateMethod.Create,
       sourceType: RepairSourceType.Offline
     })
@@ -254,7 +232,8 @@ const resetForm = () => {
     labelCode: '',
     deviceName: '',
     deviceId: undefined as unknown as number,
-    addressId: undefined as unknown as number,
+    address: '',
+    addressId: [] as number[],
     location: undefined as unknown as string,
     submitUserId: undefined as unknown as number,
     submitUserMobile: undefined as unknown as string,
