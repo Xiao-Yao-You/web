@@ -61,17 +61,39 @@
         <el-button class="ml-12px" type="warning" plain @click="openSubscriber">
           <Icon icon="ep:setting" class="mr-5px" />推送对象
         </el-button>
-        <!-- <el-button
-          type="success"
-          plain
-          @click="handleExport"
-          :loading="exportLoading"
-        >
-          <Icon icon="ep:download" class="mr-5px" /> 导出
-        </el-button> -->
       </el-form-item>
+      <!-- <el-button
+        type="success"
+        plain
+        @click="handleExport"
+        :loading="exportLoading"
+      >
+        <Icon icon="ep:download" class="mr-5px" /> 导出
+      </el-button> -->
     </el-form>
   </ContentWrap>
+
+  <!-- 自动刷新 -->
+  <div class="auto-refresh my-3 text-right">
+    <span>{{ timer }} 后刷新</span>
+    <el-button
+      class="ml-12px"
+      type="info"
+      size="small"
+      round
+      :icon="PauseIcon"
+      plain
+      @click="countDown.pause"
+    >
+      暂停刷新
+    </el-button>
+    <el-button type="success" size="small" round :icon="ResumeIcon" plain @click="countDown.start">
+      继续刷新
+    </el-button>
+    <el-button type="primary" size="small" round :icon="TimerIcon" plain @click="onRefresh">
+      立即刷新
+    </el-button>
+  </div>
 
   <!-- 列表 -->
   <ContentWrap>
@@ -276,6 +298,7 @@ import { formatDate, formatPast2 } from '@/utils/formatTime'
 import { useEmployeeStoreWithOut } from '@/store/modules/employee'
 import { useIcon } from '@/hooks/web/useIcon'
 import { useUserStore } from '@/store/modules/user'
+import { useCountDown } from '@/hooks/web/useCountDown'
 
 defineOptions({
   name: 'RepairWorkOrder'
@@ -284,7 +307,10 @@ defineOptions({
 const message = useMessage()
 const repairStore = useRepairStoreWithOut()
 const employeeStore = useEmployeeStoreWithOut()
-const InfoIcon = useIcon({ icon: 'ep:info-filled', size: 14 })
+const InfoIcon = useIcon({ icon: 'ep:info-filled' })
+const PauseIcon = useIcon({ icon: 'ep:video-pause' })
+const ResumeIcon = useIcon({ icon: 'ep:video-play' })
+const TimerIcon = useIcon({ icon: 'ep:timer' })
 
 // #region 一、表单查询
 const loading = ref(true)
@@ -544,6 +570,22 @@ const openDetail = (id: number) => {
 }
 // #endregion
 
+// #region 五、倒计时刷新
+const countDown = useCountDown({
+  time: 5 * 60 * 1000,
+  onFinish: () => onRefresh()
+})
+const timer = computed(
+  () => `${countDown.current.value.minutes}:${countDown.current.value.seconds}`
+)
+const onRefresh = () => {
+  getList()
+  countDown.reset()
+  countDown.start()
+}
+countDown.start()
+// #endregion
+
 onMounted(() => {
   repairStore.fetchIssuesAll()
   repairStore.fetchLocationsAll()
@@ -555,5 +597,9 @@ onMounted(() => {
 <style lang="scss" scoped>
 .el-form--inline .el-form-item {
   margin-right: 15px;
+}
+
+.auto-refresh {
+  color: var(--el-color-info);
 }
 </style>
