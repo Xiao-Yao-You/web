@@ -149,12 +149,6 @@
         </template>
       </el-table-column>
       <el-table-column label="任务类型" align="center" prop="type" width="100">
-        <template #header>
-          任务类型
-          <el-tooltip effect="dark" content="领单方式" placement="top-start">
-            <InfoIcon />
-          </el-tooltip>
-        </template>
         <template #default="{ row: { type } }">
           {{ OrderTakeType[type] || '/' }}
         </template>
