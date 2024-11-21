@@ -241,13 +241,6 @@ const queryParams = reactive({
 })
 const queryFormRef = ref() // 搜索的表单
 const formRules = reactive({
-  username: [
-    {
-      pattern: /^\d{8}$/,
-      message: '工号格式不正确',
-      trigger: 'change'
-    }
-  ],
   mobile: [
     {
       pattern:
