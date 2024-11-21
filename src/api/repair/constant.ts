@@ -87,10 +87,10 @@ export const RepairSourceType = {
 
 // 领单方式
 export const OrderTakeType = {
-  Active: 0,
-  Assign: 1,
+  Assign: 0,
+  Active: 1,
   Transfer: 2,
-  0: '主动领单',
-  1: '指派工单',
+  0: '指派工单',
+  1: '主动领单',
   2: '转交工单'
 }
