@@ -34,6 +34,10 @@
         <el-button type="primary" plain @click="openForm('create')">
           <Icon icon="ep:plus" class="mr-5px" /> 新增
         </el-button>
+        <el-button type="primary" @click="openImportDialog()">
+          <Icon class="mr-5px" icon="ep:zoom-in" />
+          导入
+        </el-button>
       </el-form-item>
     </el-form>
   </ContentWrap>
@@ -78,6 +82,9 @@
 
   <!-- 表单弹窗：添加/修改 -->
   <ModelForm ref="formRef" @success="getList" />
+
+  <!-- excel 导入 -->
+  <ImportDialog ref="importRef" @success="getList" />
 </template>
 
 <script setup lang="ts">
@@ -85,6 +92,7 @@ import { dateFormatter } from '@/utils/formatTime'
 import { getModelPage, deleteModel, RepairModel } from '@/api/repair'
 import { CommonStatusEnum } from '@/utils/constants'
 import ModelForm from './ModelForm.vue'
+import ImportDialog from './ImportDialog.vue'
 
 /** 设备型号 列表 */
 defineOptions({ name: 'RepairModel' })
@@ -146,6 +154,12 @@ const handleDelete = async (id: number) => {
     // 刷新列表
     await getList()
   } catch {}
+}
+
+/** 导入设备型号 excel */
+const importRef = ref()
+const openImportDialog = () => {
+  importRef.value.open()
 }
 
 /** 初始化 **/

@@ -539,6 +539,16 @@ export const deleteModel = (id: number) => {
   return request.delete({ url: `/operation-device-model/delete?id=${id}` })
 }
 
+// 根据设备类型 id 获取设备型号
+export const getModelById = (id: number) => {
+  return request.get({ url: `/operation-device-model/getByDeviceTypeId?deviceTypeId=${id}` })
+}
+
+// 下载设备型号 Excel 模板
+export const getModelExcelTemp = () => {
+  return request.download<Blob>({ url: '/operation-device-model/get-import-template' })
+}
+
 // 导出设备型号 Excel
 // export const exportModel = (params) => {
 //   return request.download({ url: `/repair/model/export-excel`, params })

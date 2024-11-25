@@ -8,7 +8,12 @@
       v-loading="formLoading"
     >
       <el-form-item label="设备型号" prop="model">
-        <el-input v-model="formData.model" placeholder="请输入设备型号" />
+        <el-input
+          v-model="formData.model"
+          placeholder="请输入设备型号"
+          show-word-limit
+          maxlength="50"
+        />
       </el-form-item>
       <el-form-item label="设备类型" prop="deviceTypeId">
         <el-select v-model="formData.deviceTypeId" placeholder="请选择设备类型" clearable>
@@ -61,10 +66,7 @@ const formData = ref({
   deviceTypeId: undefined
 })
 const formRules = reactive({
-  model: [
-    { required: true, message: '设备型号不能为空', trigger: 'blur' },
-    { pattern: /^[a-zA-Z0-9_-]+$/, message: '支持英文、数字、下划线、中划线', trigger: 'change' }
-  ],
+  model: [{ required: true, message: '设备型号不能为空', trigger: 'blur' }],
   deviceTypeId: [{ required: true, message: '设备类型不能为空', trigger: 'blur' }]
 })
 const formRef = ref()
