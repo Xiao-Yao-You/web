@@ -2,7 +2,7 @@ import request from '@/config/axios'
 import { IssueTypeEnum, CompanyEnum, PictureType, OperateMethod, OperateStatus } from './constant'
 import { CommonLevelEnum } from '@/utils/constants'
 
-/** =========== 问题 ============== */
+// #region 问题
 export interface IssuesAllParams {
   name?: string // 问题类型
 }
@@ -64,9 +64,9 @@ export const getIssueDetail = (id: number) => {
 export const updateIssue = (data: RepairIssue) => {
   return request.put({ url: '/operation-question-type/update', data })
 }
+// #endregion
 
-/** =========== 设备类型 ============== */
-
+// #region 设备类型
 export type RepairDevicePage = RepairIssuesPage
 
 export type RepairDevice = {
@@ -139,9 +139,9 @@ export const printBatchLabels = (params: Record<'id' | 'num', Numeric>): Promise
     params
   })
 }
+// #endregion
 
-/** =========== 地点 ============== */
-
+// #region 地点
 export interface LocationAllParams extends PageParam {
   addressName?: string
 }
@@ -197,9 +197,9 @@ export const updateLocation = (data: RepairLocation) => {
 export const getLocationDetail = (id: number) => {
   return request.get<RepairLocation>({ url: `/operation-address/get?id=${id}` })
 }
+// #endregion
 
-/** =========== 设备档案 ============== */
-
+// #region 设备档案
 export type RepairArchivePage = PageParam &
   Partial<{
     name: string
@@ -368,8 +368,9 @@ export interface DistributePayload {
 export const distributeDevice = (data: DistributePayload) => {
   return request.put({ url: '/operation-device/register', data })
 }
+// #endregion
 
-/** =========== 工单 ============== */
+// #region 工单
 export type RepairOrderPage = PageParam &
   Partial<{
     title: string
@@ -501,3 +502,45 @@ export const getQuestionImportTemplate = async () => {
 export const getAddressImportTemplate = async () => {
   return request.download({ url: '/operation-address/get-import-template' })
 }
+// #endregion
+
+// #region 设备型号管理
+export interface RepairModel {
+  id: number // 主键
+  model: string // 型号
+  status: number // 启用状态（0正常 1停用）
+  remark: string // 备注
+  deviceTypeId: number // 设备类型id
+}
+
+export type RepairModelPayload = Omit<RepairModel, 'id'>
+
+export const getModelPage = (params: any) => {
+  return request.get({ url: '/operation-device-model/page', params })
+}
+
+// 查询设备型号详情
+export const getModel = (id: number) => {
+  return request.get({ url: `/operation-device-model/get?id=${id}` })
+}
+
+// 新增设备型号
+export const createModel = (data: RepairModelPayload) => {
+  return request.post({ url: '/operation-device-model/create', data })
+}
+
+// 修改设备型号
+export const updateModel = (data: RepairModelPayload) => {
+  return request.put({ url: '/operation-device-model/update', data })
+}
+
+// 删除设备型号
+export const deleteModel = (id: number) => {
+  return request.delete({ url: `/operation-device-model/delete?id=${id}` })
+}
+
+// 导出设备型号 Excel
+// export const exportModel = (params) => {
+//   return request.download({ url: `/repair/model/export-excel`, params })
+// }
+// #endregion
