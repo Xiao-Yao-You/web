@@ -31,6 +31,7 @@
           placeholder="请选择设备类型"
           clearable
           value-key="value"
+          @change="onDeviceTypeChange"
         >
           <el-option
             v-for="item in repairStore.deviceOptions"
@@ -41,13 +42,15 @@
         </el-select>
       </el-form-item>
       <el-form-item label="设备型号" prop="model">
-        <el-select v-model="formData.model" placeholder="请选择设备型号" clearable>
-          <el-option
-            v-for="dict in getStrDictOptions(DICT_TYPE.REPAIR_ORDER_MODEL)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
+        <el-select
+          v-model="formData.model"
+          clearable
+          filterable
+          placeholder="先选设备类型，再选设备型号"
+          :loading="modelLoading"
+          :disabled="!formData.deviceType?.value"
+        >
+          <el-option v-for="m in modelOptions" :key="m.id" :label="m.label" :value="m.value" />
         </el-select>
       </el-form-item>
       <el-form-item label="序列号" prop="serialNumber">
@@ -69,7 +72,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="编码规则" prop="numberName">
-        <el-select v-model="formData.numberName" placeholder="请选择编码规则" clearable>
+        <el-select v-model="formData.numberName" placeholder="请选择编码规则" clearable filterable>
           <el-option
             v-for="item in numberNameOptions"
             :key="item.value"
@@ -162,17 +165,6 @@
           </el-table-column>
         </el-table>
       </el-form-item>
-      <!-- <el-form-item label="设备类型描述" prop="deviceTypeName">
-        <el-input v-model="formData.deviceTypeName" placeholder="请输入设备类型描述" />
-      </el-form-item> -->
-      <!-- <el-form-item label="标签code" prop="labelCode">
-        <el-input v-model="formData.labelCode" placeholder="请输入标签code" />
-      </el-form-item> -->
-      <!-- <el-form-item label="状态 0:在用,1:闲置,2:报废" prop="status">
-        <el-radio-group v-model="formData.status">
-          <el-radio label="1">请选择字典生成</el-radio>
-        </el-radio-group>
-      </el-form-item> -->
     </el-form>
     <template #footer>
       <el-button @click="submitForm" type="primary" :disabled="formLoading">确 定</el-button>
@@ -188,7 +180,8 @@ import DeviceConfigForm from './DeviceConfigForm.vue'
 import {
   getRepairArchive,
   createRepairArchive,
-  updateRepairArchive
+  updateRepairArchive,
+  getModelById
   // ArchivePayload
 } from '@/api/repair'
 import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
@@ -197,8 +190,7 @@ import { CommonStatusEnum, CommonLevelEnum } from '@/utils/constants'
 import { PictureType, CompanyEnum, UsingStatus } from '@/api/repair/constant'
 import { dateTransfer } from '@/views/system/meeting/subscribe/hook/useMeetingStatus'
 import { getSceneCodeAll } from '@/api/system/scenecode'
-import { DICT_TYPE, getIntDictOptions, getStrDictOptions } from '@/utils/dict'
-
+import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import type { AccessoryItem } from '@/api/repair'
 import type { UploadFile, UploadFiles } from 'element-plus'
 
@@ -252,7 +244,25 @@ const formRules = reactive({
 const formRef = ref() // 表单 Ref
 const configRef = ref()
 
-// 删除设备配置项
+/** 切换设备类型，跟换对应设备型号 */
+const modelLoading = ref(false)
+const modelOptions = ref<OptionItem<string>[]>([])
+const getModelOptions = async (deviceTypeId: number) => {
+  if (!deviceTypeId) return
+  try {
+    modelLoading.value = true
+    const models = await getModelById(deviceTypeId)
+    modelOptions.value = models.map((m) => ({ value: m.model, label: m.model, id: m.id }))
+  } finally {
+    modelLoading.value = false
+  }
+}
+const onDeviceTypeChange = (e: OptionItem<number>) => {
+  formData.value.model = undefined as unknown as string
+  getModelOptions(e.value)
+}
+
+/** 删除设备配置项 */
 const deleteDeviceConfig = async (index: number) => {
   await message.confirm('确定要删除该项设备配置吗?')
   formData.value.accessoryList.splice(index, 1)
@@ -277,7 +287,8 @@ const open = async (type: string, id?: number) => {
         devicePictureList,
         ...rest
       } = await getRepairArchive(id)
-
+      // 整理表单初始值
+      getModelOptions(deviceType)
       formData.value = {
         ...rest,
         manufactureDate: dateTransfer(manufactureDate).format('YYYY-MM-DD'),
@@ -311,7 +322,6 @@ const submitForm = async () => {
         type: 'warning'
       })
     }
-
     // 处理 formData 数据
     const data = {
       status: UsingStatus.Idle, // 新增时为闲置，其他情况直接 rest 覆盖
@@ -324,7 +334,6 @@ const submitForm = async () => {
       })),
       ...rest
     }
-
     // 发送请求
     formLoading.value = true
     if (formType.value === 'create') {

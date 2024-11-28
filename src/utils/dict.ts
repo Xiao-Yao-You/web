@@ -221,6 +221,5 @@ export enum DICT_TYPE {
   REPAIR_ORDER_HANDLE_TYPE = 'repair_order_handle_type', // 工单处理方式
   REPAIR_ORDER_COMPLETE_TYPE = 'repair_order_complete_type', // 工单处理结果类型
   REPAIR_ORDER_STATUS = 'repair_order_status', // 工单处理状态
-  REPAIR_ORDER_MODEL = 'repair_order_model', // 设备档案——设备型号
   REPAIR_REQUEST_TYPE = 'repair_request_type' // 工单请求类型
 }

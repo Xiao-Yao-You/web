@@ -540,8 +540,22 @@ export const deleteModel = (id: number) => {
 }
 
 // 根据设备类型 id 获取设备型号
+export interface ModelInfo {
+  id: number
+  model: string
+  deviceTypeId: number
+  createTime: 1732756415000
+  updateTime: 1732756415000
+  creator: Numeric
+  updater: Numeric
+  remark: null | string
+  status: number
+  deleted: boolean
+}
 export const getModelById = (id: number) => {
-  return request.get({ url: `/operation-device-model/getByDeviceTypeId?deviceTypeId=${id}` })
+  return request.get<ModelInfo[]>({
+    url: `/operation-device-model/getByDeviceTypeId?deviceTypeId=${id}`
+  })
 }
 
 // 下载设备型号 Excel 模板

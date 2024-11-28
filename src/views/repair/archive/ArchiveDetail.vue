@@ -14,9 +14,7 @@
           <el-descriptions-item label="设备编码"> {{ info.code }} </el-descriptions-item>
           <el-descriptions-item label="设备名称"> {{ info.name }} </el-descriptions-item>
           <el-descriptions-item label="设备类型"> {{ info.deviceTypeName }} </el-descriptions-item>
-          <el-descriptions-item label="设备型号">
-            {{ getDictLabel(DICT_TYPE.REPAIR_ORDER_MODEL, info.model) }}
-          </el-descriptions-item>
+          <el-descriptions-item label="设备型号"> {{ info.model }}</el-descriptions-item>
           <el-descriptions-item label="序列号"> {{ info.serialNumber }} </el-descriptions-item>
           <el-descriptions-item label="二维码编号">
             {{ info.labelCode }}
