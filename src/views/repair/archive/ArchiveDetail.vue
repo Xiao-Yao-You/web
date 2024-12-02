@@ -13,24 +13,31 @@
         <el-descriptions :column="2" border>
           <el-descriptions-item label="设备编码"> {{ info.code }} </el-descriptions-item>
           <el-descriptions-item label="设备名称"> {{ info.name }} </el-descriptions-item>
-          <el-descriptions-item label="设备类型"> {{ info.deviceTypeName }} </el-descriptions-item>
+          <el-descriptions-item label="设备类型">
+            {{ info.deviceTypeName || '/' }}
+          </el-descriptions-item>
           <el-descriptions-item label="设备型号"> {{ info.model }}</el-descriptions-item>
-          <el-descriptions-item label="序列号"> {{ info.serialNumber }} </el-descriptions-item>
+          <el-descriptions-item label="序列号">
+            {{ info.serialNumber || '/' }}
+          </el-descriptions-item>
           <el-descriptions-item label="二维码编号">
             {{ info.labelCode }}
             <el-button
               size="small"
               type="primary"
               style="vertical-align: text-bottom"
+              :disabled="!info.labelCode"
               @click="printRef?.open([{ name: info.deviceTypeName, labelCode: info.labelCode }])"
             >
               打印
             </el-button>
           </el-descriptions-item>
-          <el-descriptions-item label="编码规则"> {{ info.numberNameStr }} </el-descriptions-item>
+          <el-descriptions-item label="编码规则">
+            {{ info.numberNameStr || '/' }}
+          </el-descriptions-item>
           <el-descriptions-item label="MAC 地址1"> {{ info.macAddress1 }} </el-descriptions-item>
           <el-descriptions-item label="MAC 地址2" min-width="110">
-            {{ info.macAddress2 }}
+            {{ info.macAddress2 || '/' }}
           </el-descriptions-item>
           <el-descriptions-item label="所属公司">
             {{ getDictLabel(DICT_TYPE.ASSETS_COMPANY, info.company) }}
@@ -39,15 +46,10 @@
             {{ getDictLabel(DICT_TYPE.LEVEL, info.effectLevel) }}
           </el-descriptions-item>
           <el-descriptions-item label="资产编号"> {{ info.assetNumber }} </el-descriptions-item>
-          <el-descriptions-item label="生产日期">
-            {{ info.manufactureDate?.join('.') }}
-          </el-descriptions-item>
+          <el-descriptions-item label="生产日期"> {{ info.manufactureDate }} </el-descriptions-item>
           <el-descriptions-item label="质保日期">
-            {{ info.warrantyDate?.join('.') }}
+            {{ info.warrantyDate || '/' }}
           </el-descriptions-item>
-          <!-- <el-descriptions-item label="是否巡检">
-            {{ info.needCheckFlag ? '否' : '是' }}
-          </el-descriptions-item> -->
           <el-descriptions-item label="设备配置" :span="2">
             <el-table :data="info.accessoryList">
               <el-table-column prop="accessoryDesc" label="配件" />
@@ -82,7 +84,7 @@
           <el-descriptions-item label="所在地点"> {{ info.address }} </el-descriptions-item>
           <el-descriptions-item label="设备位置"> {{ info.location }} </el-descriptions-item>
           <el-descriptions-item label="IP 地址1"> {{ info.ip1 }} </el-descriptions-item>
-          <el-descriptions-item label="IP 地址2"> {{ info.ip2 }} </el-descriptions-item>
+          <el-descriptions-item label="IP 地址2"> {{ info.ip2 || '/' }} </el-descriptions-item>
           <el-descriptions-item label="登记人"> {{ info.registerUserName }} </el-descriptions-item>
           <el-descriptions-item label="登记时间">
             {{ formatDate(info.registerDate) }}
@@ -110,10 +112,12 @@
 
 <script setup lang="ts">
 import { ElLoading } from 'element-plus'
-import { getRepairArchive, type RepairArchive } from '@/api/repair'
+import { getRepairArchive, getOldArchiveDetail, type RepairArchive } from '@/api/repair'
 import { DICT_TYPE, getDictLabel } from '@/utils/dict'
 import { formatDate } from '@/utils/formatTime'
 import PrintDialog from '../device/PrintDialog.vue'
+import { SysTab } from './index.vue'
+import { OldLevelTransfer, OldCompanyTransfer } from '@/api/repair/constant'
 
 defineOptions({
   name: 'ArchiveDetail'
@@ -124,7 +128,7 @@ const info = ref({
   devicePictureList: [],
   distributePictureList: []
 } as unknown as RepairArchive)
-const open = async (id: number) => {
+const open = async (id: number, sysType: SysTab) => {
   resetInfo()
   visible.value = true
   await nextTick()
@@ -132,12 +136,48 @@ const open = async (id: number) => {
     target: document.querySelector('.el-dialog__body') as HTMLElement
   })
   try {
-    const { devicePictureList, distributePictureList, ...rest } = await getRepairArchive(id)
-    Object.assign(info.value, {
-      ...rest,
-      devicePictureList: devicePictureList || [],
-      distributePictureList: distributePictureList || []
-    })
+    if (sysType === SysTab.NewSys) {
+      const { devicePictureList, distributePictureList, manufactureDate, warrantyDate, ...rest } =
+        await getRepairArchive(id)
+      Object.assign(info.value, {
+        ...rest,
+        manufactureDate: manufactureDate?.join('.') ?? '/',
+        warrantyDate: warrantyDate?.join('.') ?? '/',
+        devicePictureList: devicePictureList || [],
+        distributePictureList: distributePictureList || []
+      })
+    } else {
+      const detail = await getOldArchiveDetail(id)
+      // // 新老系统字段映射
+      Object.assign(info.value, {
+        // 基础信息
+        code: detail.ciid,
+        name: detail.resourcename,
+        deviceTypeName: detail.typeName,
+        model: detail.productname,
+        serialNumber: detail.serialno,
+        labelCode: detail.barcode,
+        numberNameStr: '',
+        macAddress1: detail.macaddress1,
+        macAddress2: detail.macaddress2,
+        company: OldCompanyTransfer[detail.corporationid],
+        effectLevel: OldLevelTransfer[detail.impactid],
+        assetNumber: detail.assettag,
+        manufactureDate: formatDate(detail.productdate),
+        warrantyDate: '',
+        devicePictureList: detail.productPhotoList.map((url) => ({ url })),
+        distributePictureList: detail.globalPhotoList.map((url) => ({ url })),
+        // 分配信息
+        deptName: detail.departmentname,
+        userNickName: detail.personname,
+        address: detail.locationex,
+        location: detail.location,
+        ip1: detail.ipaddresses1,
+        ip2: detail.ipaddresses2,
+        registerUserName: detail.regisetperson,
+        registerDate: detail.registerdate
+      })
+    }
   } finally {
     loadingInstance.close()
   }

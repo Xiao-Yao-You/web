@@ -30,6 +30,7 @@
           v-model="formData.deviceType"
           placeholder="请选择设备类型"
           clearable
+          filterable
           value-key="value"
           @change="onDeviceTypeChange"
         >

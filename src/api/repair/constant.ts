@@ -1,3 +1,5 @@
+import { CommonLevelEnum } from '@/utils/constants'
+
 // 问题类型
 export enum IssueTypeEnum {
   Software = '0',
@@ -93,4 +95,19 @@ export const OrderTakeType = {
   0: '指派工单',
   1: '主动领单',
   2: '转交工单'
+}
+
+// 新老系统的等级程度换算
+export const OldLevelTransfer = {
+  '1': CommonLevelEnum.Low,
+  '2': CommonLevelEnum.Middle,
+  '3': CommonLevelEnum.Height
+}
+
+// 新老系统的公司id换算
+export const OldCompanyTransfer = {
+  '24': CompanyEnum.HengKe,
+  '25': CompanyEnum.XuanDa,
+  [CompanyEnum.HengKe]: 24,
+  [CompanyEnum.XuanDa]: 25
 }

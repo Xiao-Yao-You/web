@@ -32,11 +32,12 @@
           v-model="queryParams.deviceType"
           placeholder="请选择设备类型"
           clearable
+          filterable
           value-key="value"
           class="!w-240px"
         >
           <el-option
-            v-for="item in repairStore.deviceOptions"
+            v-for="item in deviceTypeOptions"
             :key="item.value"
             :label="item.label"
             :value="item"
@@ -76,7 +77,7 @@
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="资产编码" prop="assetNumber">
+      <el-form-item label="资产编号" prop="assetNumber">
         <el-input
           v-model="queryParams.assetNumber"
           placeholder="请输入资产编码"
@@ -128,108 +129,117 @@
 
   <!-- 列表 -->
   <ContentWrap>
-    <el-table
-      v-loading="loading"
-      :data="list"
-      stripe
-      show-overflow-tooltip
-      @filter-change="onFilterChange"
-    >
-      <el-table-column type="index" align="center" width="40" fixed="left" />
-      <el-table-column label="设备名称" align="center" prop="name" width="100" fixed="left" />
-      <el-table-column
-        label="设备状态"
-        align="center"
-        prop="status"
-        column-key="status"
-        width="100"
-        fixed="left"
-        :filter-multiple="false"
-        :filters="filterOptions"
-      >
-        <template #default="{ row: { status } }">
-          <el-text :type="status ? (status == 1 ? 'success' : 'danger') : 'warning'">
-            {{ t(`usingStatus.${UsingStatus[status]}`) }}
-          </el-text>
-        </template>
-      </el-table-column>
-      <el-table-column label="设备编码" align="center" prop="code" />
-      <el-table-column label="设备类型" align="center" prop="deviceTypeName" />
-      <el-table-column label="设备型号" align="center" prop="model" />
-      <el-table-column label="二维码标签号" align="center" prop="labelCode" width="120" />
-      <el-table-column label="所属公司" align="center" prop="company" width="150">
-        <template #default="{ row: { company } }">
-          {{ t(`company.${CompanyEnum[company]}`) }}
-        </template>
-      </el-table-column>
-      <el-table-column label="所在地点" align="center" prop="address" width="100">
-        <template #default="{ row: { address } }">
-          {{ address || '暂未分配' }}
-        </template>
-      </el-table-column>
-      <el-table-column label="设备位置" align="center" prop="location" width="100">
-        <template #default="{ row: { location } }">
-          {{ location || '暂未分配' }}
-        </template>
-      </el-table-column>
-      <el-table-column label="使用部门" align="center" prop="deptName" width="100">
-        <template #default="{ row: { deptName } }">
-          {{ deptName || '暂未分配' }}
-        </template>
-      </el-table-column>
-      <el-table-column label="IP 1" align="center" prop="ip1" width="130">
-        <template #default="{ row: { ip1 } }">
-          {{ ip1 || '暂未分配' }}
-        </template>
-      </el-table-column>
-      <el-table-column label="MAC 地址1" align="center" prop="macAddress1" width="160" />
-      <el-table-column label="影响程度" align="center" prop="effectLevel">
-        <template #default="{ row: { effectLevel } }">
-          <dict-tag :type="DICT_TYPE.LEVEL" :value="effectLevel" />
-        </template>
-      </el-table-column>
-      <el-table-column label="资产编号" align="center" prop="assetNumber" />
-      <el-table-column
-        label="创建时间"
-        align="center"
-        prop="createTime"
-        :formatter="dateFormatter"
-        width="180px"
-      />
-      <el-table-column label="操作" align="center" fixed="right" min-width="250">
-        <template #default="{ row }">
-          <el-button link type="primary" @click="openDetail(row.id)"> 详情 </el-button>
-          <el-button
-            v-hasPermi="['hk:operation-device:update']"
-            link
-            type="primary"
-            @click="openForm('update', row.id)"
+    <el-tabs v-model="activeTab" @tab-change="onTabChange">
+      <el-tab-pane label="新系统" :name="SysTab.NewSys">
+        <el-table
+          v-loading="loading"
+          :data="list"
+          stripe
+          show-overflow-tooltip
+          @filter-change="onFilterChange"
+        >
+          <el-table-column label="序号" type="index" align="center" width="60" fixed="left" />
+          <el-table-column label="设备名称" align="center" prop="name" width="100" fixed="left" />
+          <el-table-column
+            label="设备状态"
+            align="center"
+            prop="status"
+            column-key="status"
+            width="100"
+            fixed="left"
+            :filter-multiple="false"
+            :filters="filterOptions"
           >
-            编辑
-          </el-button>
-          <el-button
-            link
-            type="primary"
-            @click="openDistributeForm(row)"
-            :disabled="row.status === UsingStatus.Scrap"
-          >
-            分配
-          </el-button>
-          <el-button link type="primary" @click="openScrapForm(row)">
-            <!-- :disabled="row.status === UsingStatus.Scrap" -->
-            报废
-          </el-button>
-          <el-button link type="danger" @click="handleDelete(row.id)"> 删除 </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <!-- 分页 -->
-    <Pagination
-      :total="total"
-      v-model:page="queryParams.pageNo"
-      v-model:limit="queryParams.pageSize"
-      @pagination="getList"
-    />
+            <template #default="{ row: { status } }">
+              <el-text :type="status ? (status == 1 ? 'success' : 'danger') : 'warning'">
+                {{ t(`usingStatus.${UsingStatus[status]}`) }}
+              </el-text>
+            </template>
+          </el-table-column>
+          <el-table-column label="设备编码" align="center" prop="code" />
+          <el-table-column label="设备类型" align="center" prop="deviceTypeName" />
+          <el-table-column label="设备型号" align="center" prop="model" width="120" />
+          <el-table-column label="二维码标签号" align="center" prop="labelCode" width="120" />
+          <el-table-column label="所属公司" align="center" prop="company" width="150">
+            <template #default="{ row: { company } }">
+              {{ t(`company.${CompanyEnum[company]}`) }}
+            </template>
+          </el-table-column>
+          <el-table-column label="所在地点" align="center" prop="address" width="100">
+            <template #default="{ row: { address } }">
+              {{ address || '暂未分配' }}
+            </template>
+          </el-table-column>
+          <el-table-column label="设备位置" align="center" prop="location" width="100">
+            <template #default="{ row: { location } }">
+              {{ location || '暂未分配' }}
+            </template>
+          </el-table-column>
+          <el-table-column label="使用部门" align="center" prop="deptName" width="100">
+            <template #default="{ row: { deptName } }">
+              {{ deptName || '暂未分配' }}
+            </template>
+          </el-table-column>
+          <el-table-column label="IP 1" align="center" prop="ip1" width="130">
+            <template #default="{ row: { ip1 } }">
+              {{ ip1 || '暂未分配' }}
+            </template>
+          </el-table-column>
+          <el-table-column label="MAC 地址1" align="center" prop="macAddress1" width="160" />
+          <el-table-column label="影响程度" align="center" prop="effectLevel">
+            <template #default="{ row: { effectLevel } }">
+              <dict-tag :type="DICT_TYPE.LEVEL" :value="effectLevel" />
+            </template>
+          </el-table-column>
+          <el-table-column label="资产编号" align="center" prop="assetNumber" />
+          <el-table-column
+            label="创建时间"
+            align="center"
+            prop="createTime"
+            :formatter="dateFormatter"
+            width="180px"
+          />
+          <el-table-column label="操作" align="center" fixed="right" min-width="250">
+            <template #default="{ row }">
+              <el-button link type="primary" @click="openDetail(row.id, SysTab.NewSys)">
+                详情
+              </el-button>
+              <el-button
+                v-hasPermi="['hk:operation-device:update']"
+                link
+                type="primary"
+                @click="openForm('update', row.id)"
+              >
+                编辑
+              </el-button>
+              <el-button
+                link
+                type="primary"
+                @click="openDistributeForm(row)"
+                :disabled="row.status === UsingStatus.Scrap"
+              >
+                分配
+              </el-button>
+              <el-button link type="primary" @click="openScrapForm(row)">
+                <!-- :disabled="row.status === UsingStatus.Scrap" -->
+                报废
+              </el-button>
+              <el-button link type="danger" @click="handleDelete(row.id)"> 删除 </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <!-- 分页 -->
+        <Pagination
+          :total="total"
+          v-model:page="queryParams.pageNo"
+          v-model:limit="queryParams.pageSize"
+          @pagination="getList"
+        />
+      </el-tab-pane>
+      <el-tab-pane label="老系统" :name="SysTab.OldSys">
+        <OldArchiveTable @open-detail="(ciid) => openDetail(ciid, SysTab.OldSys)" />
+      </el-tab-pane>
+    </el-tabs>
   </ContentWrap>
 
   <!-- 详情表单 -->
@@ -245,23 +255,40 @@
   <DistributeForm ref="distributeRef" @success="getList" />
 </template>
 
+<script lang="ts">
+export enum SysTab {
+  NewSys = 'newSys',
+  OldSys = 'oldSys'
+}
+export type QueryParams = {
+  pageNo: number
+  pageSize: number
+  name: undefined
+  code: undefined
+  model: undefined
+  labelCode: undefined
+  assetNumber: undefined
+  ip1: undefined
+  macAddress1: undefined
+  company: undefined
+  deviceType: OptionItem<number> | undefined
+  status: undefined | string
+}
+</script>
+
 <script setup lang="ts">
 import { dateFormatter } from '@/utils/formatTime'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
-import {
-  getRepairArchivePage,
-  deleteRepairArchive,
-  // exportRepairArchive,
-  type RepairArchive
-} from '@/api/repair'
+import { getRepairArchivePage, deleteRepairArchive, type RepairArchive } from '@/api/repair'
 import { UsingStatus, CompanyEnum, UsingStatusOptions } from '@/api/repair/constant'
 import ArchiveForm from './ArchiveForm.vue'
 import ScrapForm from './ScrapForm.vue'
 import DistributeForm from './DistributeForm.vue'
 import ArchiveDetail from './ArchiveDetail.vue'
+import OldArchiveTable from './OldArchiveTable.vue'
 import { isIPV4 } from '@/utils/is'
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
-// import download from '@/utils/download'
+import { useEmitt } from '@/hooks/web/useEmitt'
 
 /** 运维设备档案 列表 */
 defineOptions({ name: 'RepairArchive' })
@@ -275,7 +302,7 @@ const loading = ref(true) // 列表的加载中
 const list = ref<RepairArchive[]>([]) // 列表的数据
 const total = ref(0) // 列表的总页数
 const queryFormRef = ref() // 搜索的表单
-const queryParams = reactive({
+const queryParams = reactive<QueryParams>({
   pageNo: 1,
   pageSize: 10,
   name: undefined,
@@ -286,10 +313,14 @@ const queryParams = reactive({
   ip1: undefined,
   macAddress1: undefined,
   company: undefined,
-  deviceType: undefined as undefined | OptionItem<number>,
-  status: undefined as undefined | string
+  deviceType: undefined,
+  status: undefined
 })
-// const exportLoading = ref(false) // 导出的加载中
+
+/** 设备类型筛选项（移除“软件系统”选项，该项只在报修时才有） */
+const deviceTypeOptions = computed(() => {
+  return repairStore.deviceOptions.filter((item) => item.label !== '软件系统')
+})
 
 /** 表格过滤 */
 const filterOptions = UsingStatusOptions.map((item) => ({
@@ -299,6 +330,20 @@ const filterOptions = UsingStatusOptions.map((item) => ({
 const onFilterChange = ({ status }: any) => {
   queryParams.status = status[0]
   handleQuery()
+}
+
+/** Tab 切换查询 */
+const activeTab = ref(SysTab.NewSys)
+const { emitter } = useEmitt()
+const onTabChange = (tab: SysTab) => {
+  queryFormRef.value.resetFields()
+  if (tab === SysTab.NewSys) {
+    queryParams.status = undefined
+    getList()
+  } else {
+    // 触发老系统查询
+    emitter.emit('queryOldPage')
+  }
 }
 
 /** 查询列表 */
@@ -321,8 +366,13 @@ const getList = async () => {
 
 /** 搜索按钮操作 */
 const handleQuery = () => {
-  queryParams.pageNo = 1
-  getList()
+  if (activeTab.value === SysTab.NewSys) {
+    queryParams.pageNo = 1
+    getList()
+  } else {
+    // 触发老系统查询
+    emitter.emit('queryOldPage', queryParams)
+  }
 }
 
 /** 重置按钮操作 */
@@ -345,25 +395,10 @@ const handleDelete = async (id: number) => {
   await getList()
 }
 
-/** 导出按钮操作 */
-// const handleExport = async () => {
-//   try {
-//     // 导出的二次确认
-//     await message.exportConfirm()
-//     // 发起导出
-//     exportLoading.value = true
-//     const data = await exportRepairArchive(queryParams)
-//     download.excel(data, '运维设备档案.xls')
-//   } catch {
-//   } finally {
-//     exportLoading.value = false
-//   }
-// }
-
 /** 详情 */
 const detailRef = ref()
-const openDetail = (id: number) => {
-  detailRef.value.open(id)
+const openDetail = (id: number, sysType: SysTab) => {
+  detailRef.value.open(id, sysType)
 }
 
 /** 报废 */

@@ -304,9 +304,69 @@ export const getRepairArchivePage = (params: RepairArchivePage) => {
   })
 }
 
+// 老系统设备档案分页
+export interface OldRepairArchive {
+  resourcename: string // 设备名称
+  enable: number // 可用状态
+  stateid: number // 状态id，1-库存、2-运行、3-维修、4-报废、5-借用、6-作废
+  ciid: number // 设备编码
+  productid: number // 设备型号 id
+  productname: number // 设备型号 name
+  barcode: string // 标签码
+  assettag: string // 资产编码
+  corporationid: number // 公司id，24-恒科、25-轩达
+  corporationname: number // 公司name
+  deptid: number // 部门id
+  departmentname: number // 部门name
+  description: string // 描述
+  displayassettag1: string // 显示器资源标签1
+  displayassettag2: string // 显示器资源标签2
+  displayphoto: string // 显示照片
+  displayserilno1: string // 显示器编号1
+  displayserilno2: string // 显示器编号2
+  gobalphoto: string // 全局照片
+  impactid: number // 影响度，1-低、2-中、3-高
+  ipaddresses1: string // ip1
+  ipaddresses2: string // ip2
+  location: string // 具体位置
+  locationex: string // 所在地点
+  macaddress1: string // mac1
+  macaddress2: string // mac2
+  productdate: number // 生产日期
+  productphoto: string // 产品照片
+  regisetperson: string // 登记人
+  registerdate: number // 登记日期
+  serialno: string // 序列号
+  siteid: number // 地点id
+  userno: string // 使用人账号
+  personname: string // 使用人账号
+}
+export type OldArchiveParams = PageParam &
+  Partial<OldRepairArchive> & {
+    citype?: string // 设备类型名称
+  }
+export const getOldDevicePage = (params: OldArchiveParams) => {
+  return request.get<{ list: OldRepairArchive[]; total: number }>({
+    url: '/operation-device/oldPage',
+    params
+  })
+}
+
 // 查询运维设备档案详情
 export const getRepairArchive = (id: number) => {
   return request.get<RepairArchive>({ url: '/operation-device/get?id=' + id })
+}
+
+// 查询老系统运维设备档案详情
+export interface OldArchiveDetail extends OldRepairArchive {
+  registerperson: string // 登记人
+  registerdate: number // 登记时间
+  productPhotoList: string[] // 设备照片
+  globalPhotoList: string[] // 现场照片
+  typeName: string // 设备类型名称
+}
+export const getOldArchiveDetail = (ciid: number) => {
+  return request.get<OldArchiveDetail>({ url: '/operation-device/getOldDevice?ciid=' + ciid })
 }
 
 // 根据二维码标签号查询设备详情
