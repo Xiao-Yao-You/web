@@ -390,10 +390,16 @@ const handleRevoke = async (id: number) => {
   ElMessageBox.prompt('请输入撤销原因', '系统提示', {
     confirmButtonText: '撤销',
     cancelButtonText: '取消',
+    inputPattern: /^(?=.*\S).+$/,
+    inputErrorMessage: '原因不能为空',
     beforeClose(action, instance, done) {
       if (action === 'confirm') {
         instance.confirmButtonLoading = true
-        handleRepairOrder({ id, operateMethod: OperateMethod.Revoke })
+        handleRepairOrder({
+          id,
+          operateMethod: OperateMethod.Revoke,
+          remark: instance.inputValue
+        })
           .then(() => {
             message.success('撤销成功')
             handleQuery()
@@ -456,14 +462,20 @@ const openStartForm = (id: number) => {
 }
 
 // 挂起
-const onHangUp = ({ title, id }: RepairOrder) => {
-  ElMessageBox.confirm(`确定挂起 “${title}” 的工单吗？`, '系统提示', {
+const onHangUp = ({ id }: RepairOrder) => {
+  ElMessageBox.prompt('请输入挂起原因', '系统提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
+    inputPattern: /^(?=.*\S).+$/,
+    inputErrorMessage: '原因不能为空',
     beforeClose(action, instance, done) {
       if (action === 'confirm') {
         instance.confirmButtonLoading = true
-        handleRepairOrder({ id, operateMethod: OperateMethod.HangUp })
+        handleRepairOrder({
+          id,
+          operateMethod: OperateMethod.HangUp,
+          remark: instance.inputValue
+        })
           .then(() => {
             message.success('挂起成功')
             handleQuery()
