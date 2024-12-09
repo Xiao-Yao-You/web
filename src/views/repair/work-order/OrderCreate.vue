@@ -79,6 +79,9 @@
           maxlength="500"
         />
       </el-form-item>
+      <el-form-item label="问题照片" prop="picture">
+        <BatchPicturesUploader v-model:fileList="formData.picture" />
+      </el-form-item>
     </el-form>
 
     <template #footer>
@@ -94,7 +97,8 @@ import { createRepairOrder, getArchiveByLabelCode } from '@/api/repair'
 import { IssueTypeEnum, OperateMethod, RepairSourceType } from '@/api/repair/constant'
 import { isMobilePhone } from '@/utils/is'
 import { CommonLevelEnum } from '@/utils/constants'
-import type { ElFormItem, FormInstance } from 'element-plus'
+import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
+import type { ElFormItem, FormInstance, UploadUserFile } from 'element-plus'
 
 defineOptions({
   name: 'OrderCreate'
@@ -122,7 +126,8 @@ const formData = ref({
   requestType: undefined as unknown as IssueTypeEnum,
   questionType: undefined as unknown as number,
   level: undefined as unknown as CommonLevelEnum,
-  description: ''
+  description: '',
+  picture: [] as UploadUserFile[]
 })
 const formRules = reactive({
   title: [{ required: true, message: '工单标题不能为空', trigger: 'blur' }],
@@ -138,7 +143,8 @@ const formRules = reactive({
   requestType: [{ required: true, message: '请求类型不能为空', trigger: 'blur' }],
   questionType: [{ required: true, message: '问题类型不能为空', trigger: 'blur' }],
   level: [{ required: true, message: '紧急程度不能为空', trigger: 'blur' }],
-  description: [{ required: true, message: '问题描述不能为空', trigger: 'blur' }]
+  description: [{ required: true, message: '问题描述不能为空', trigger: 'blur' }],
+  picture: [{ type: 'array', required: true, message: '请上传问题照片', trigger: 'blur' }]
 })
 
 /** 打开弹窗 */
@@ -204,16 +210,29 @@ const closeDialog = () => {
 
 /** 提交表单 */
 const emit = defineEmits(['success'])
+const getPictureName = (url?: string) => {
+  if (!url) return
+  const match = url.match(/\w+\.(jpg|png|jpeg)$/)
+  if (match) {
+    return match[0]
+  } else {
+    console.error('未找到图片名')
+  }
+}
 const submitForm = async () => {
   await formRef.value?.validate()
-  const { code, addressId, ...data } = formData.value
+  const { code, addressId, picture, ...data } = formData.value
   formLoading.value = true
   try {
     await createRepairOrder({
       ...data,
       addressIdList: addressId,
       operateMethod: OperateMethod.Create,
-      sourceType: RepairSourceType.Offline
+      sourceType: RepairSourceType.Offline,
+      picture: picture
+        .map((p) => getPictureName(p.url))
+        .filter((p) => p)
+        .join(';')
     })
     message.success(t('common.createSuccess'))
     closeDialog()
@@ -240,7 +259,8 @@ const resetForm = () => {
     requestType: undefined as unknown as IssueTypeEnum,
     questionType: undefined as unknown as number,
     level: undefined as unknown as CommonLevelEnum,
-    description: ''
+    description: '',
+    picture: [] as UploadUserFile[]
   }
   formRef.value?.resetFields()
 }

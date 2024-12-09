@@ -55,6 +55,7 @@ import { PictureType, IssueTypeOptions, IssueTypeEnum, OperateMethod } from '@/a
 import { CommonLevelEnum } from '@/utils/constants'
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
+import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
 import type { UploadFiles } from 'element-plus'
 
 defineOptions({

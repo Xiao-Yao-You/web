@@ -191,7 +191,7 @@
                   :command="OperateMethod.Receive"
                   :disabled="handleDisabled(OperateMethod.Receive, row)"
                 >
-                  领单
+                  抢单
                 </el-dropdown-item>
                 <el-dropdown-item
                   :command="OperateMethod.Transfer"
@@ -423,7 +423,7 @@ const openDispatchForm = (row: RepairOrder) => {
 
 // 领单
 const receiveOrder = (id: number) => {
-  ElMessageBox.confirm('领单后将开始记录工单处置时长，是否确定领单并开始执行工单？', '系统提示', {
+  ElMessageBox.confirm('抢单后将开始记录工单处置时长，是否确定抢单并开始执行工单？', '系统提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     beforeClose(action, instance, done) {
@@ -431,7 +431,7 @@ const receiveOrder = (id: number) => {
         instance.confirmButtonLoading = true
         handleRepairOrder({ id, operateMethod: OperateMethod.Receive })
           .then(() => {
-            message.success('领单成功')
+            message.success('抢单成功')
             handleQuery()
             done()
           })

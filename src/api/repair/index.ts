@@ -482,11 +482,7 @@ export interface OrderPayload {
   description: string
   operateMethod: OperateMethod
   sourceType: number
-  // submitUserNickName: string
-  // type: string
-  // sourceType: string
-  // dealUserId: number
-  // dealUserNickName: string
+  picture: string // 问题照片
 }
 
 // 创建工单
