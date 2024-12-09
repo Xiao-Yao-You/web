@@ -80,7 +80,10 @@
         />
       </el-form-item>
       <el-form-item label="问题照片" prop="picture">
-        <BatchPicturesUploader v-model:fileList="formData.picture" />
+        <BatchPicturesUploader
+          v-model:fileList="formData.picture"
+          :limit-size="{ size: 5, unit: 'MB' }"
+        />
       </el-form-item>
     </el-form>
 

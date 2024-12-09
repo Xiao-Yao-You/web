@@ -7,6 +7,17 @@ defineOptions({
   name: 'BatchPicturesUploader'
 })
 
+const message = useMessage()
+
+const props = withDefaults(
+  defineProps<{
+    limitSize: { size: number; unit: 'KB' | 'MB' } // 文件大小限制，默认 0，不限制
+  }>(),
+  {
+    limitSize: () => ({ size: 0, unit: 'KB' })
+  }
+)
+
 const fileList = defineModel<UploadUserFile[]>('fileList', { type: Array, default: () => [] })
 
 const PlusIcon = useIcon({ icon: 'ep:plus', size: 20 })
@@ -14,6 +25,26 @@ const { uploadUrl, httpRequest } = useUpload()
 
 const dialogImageUrl = ref('')
 const dialogVisible = ref(false)
+
+// 处理文件大小
+const handleFileSize = (fileSize: number) => {
+  const size =
+    props.limitSize.unit === 'KB'
+      ? (fileSize / 1024).toFixed(2)
+      : (fileSize / 1024 / 1024).toFixed(2)
+
+  if (+size > props.limitSize.size) {
+    message.error(`文件大小不能超过 ${props.limitSize.size} ${props.limitSize.unit}！`)
+    return false
+  } else {
+    return true
+  }
+}
+
+// 文件上传前的操作
+const handleBeforeUpload: UploadProps['beforeUpload'] = (rawFile) => {
+  return handleFileSize(rawFile.size)
+}
 
 const handleSuccess: UploadProps['onSuccess'] = (_response, _uploadFile, uploadFiles) => {
   fileList.value = uploadFiles.map((file) => {
@@ -39,6 +70,7 @@ const handlePictureCardPreview: UploadProps['onPreview'] = (uploadFile) => {
       :http-request="httpRequest"
       :on-preview="handlePictureCardPreview"
       :on-success="handleSuccess"
+      :before-upload="handleBeforeUpload"
       accept=".jpg, .png, .jpeg"
     >
       <PlusIcon />
