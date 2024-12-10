@@ -506,15 +506,16 @@ export const deleteRepairOrder = (id: number) => {
 // 处理工单
 export interface HandlePayload {
   id: number
+  operateMethod: OperateMethod
   code?: string
   userId?: number
   userNickName?: string
-  url?: PictureItem[]
   remark?: string
-  operateMethod: OperateMethod
   requestType?: string // 现场确认时必填
   questionType?: number // 现场确认时必填
   level?: CommonLevelEnum // 现场确认时必填
+  pictureList?: PictureItem[] // 上传的图片（已弃用，新需求请使用下面的 picture）
+  picture?: string // 以 ';' 号连接的图片名，例：aaa.jpg;bbb.png
 }
 export const handleRepairOrder = (data: HandlePayload) => {
   return request.put({ url: '/operation-order/workOrderCirculation', data })

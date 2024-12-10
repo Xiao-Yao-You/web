@@ -47,7 +47,7 @@
       </el-form-item>
     </el-form>
     <template #footer>
-      <el-button @click="onConfirm" type="primary">确 定</el-button>
+      <el-button @click="onConfirm" type="primary" :loading="loading">确 定</el-button>
       <el-button @click="dialogVisible = false">取 消</el-button>
     </template>
   </Dialog>

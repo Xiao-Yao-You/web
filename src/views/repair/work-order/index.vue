@@ -256,6 +256,9 @@
   <!-- 开始 -->
   <OrderStartForm ref="startRef" @success="getList" />
 
+  <!-- 挂起 -->
+  <OrderHangupForm ref="HangupRef" @success="getList" />
+
   <!-- 结束 -->
   <OrderCompleteForm ref="completeRef" @success="getList" />
 
@@ -272,6 +275,7 @@ import { ElMessageBox } from 'element-plus'
 import OrderCreate from './OrderCreate.vue'
 import OrderDispatchForm from './OrderDispatchForm.vue'
 import OrderTransferForm from './OrderTransferForm.vue'
+import OrderHangupForm from './OrderHangupForm.vue'
 import OrderCompleteForm from './OrderCompleteForm.vue'
 import OrderStartForm from './OrderStartForm.vue'
 import OrderSubscriber from './OrderSubscriber.vue'
@@ -372,7 +376,7 @@ const handleCommand = (command: string, row: RepairOrder) => {
       openStartForm(row.id)
       break
     case OperateMethod.HangUp:
-      onHangUp(row)
+      openHangupForm(row.id)
       break
     case OperateMethod.Finish:
       openCompleteForm(row)
@@ -462,33 +466,9 @@ const openStartForm = (id: number) => {
 }
 
 // 挂起
-const onHangUp = ({ id }: RepairOrder) => {
-  ElMessageBox.prompt('请输入挂起原因', '系统提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    inputPattern: /^(?=.*\S).+$/,
-    inputErrorMessage: '原因不能为空',
-    beforeClose(action, instance, done) {
-      if (action === 'confirm') {
-        instance.confirmButtonLoading = true
-        handleRepairOrder({
-          id,
-          operateMethod: OperateMethod.HangUp,
-          remark: instance.inputValue
-        })
-          .then(() => {
-            message.success('挂起成功')
-            handleQuery()
-            done()
-          })
-          .finally(() => {
-            instance.confirmButtonLoading = false
-          })
-      } else {
-        done()
-      }
-    }
-  })
+const HangupRef = ref<InstanceType<typeof OrderStartForm>>()
+const openHangupForm = (id: number) => {
+  HangupRef.value?.open(id)
 }
 
 // 重启
