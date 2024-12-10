@@ -101,6 +101,7 @@ import { IssueTypeEnum, OperateMethod, RepairSourceType } from '@/api/repair/con
 import { isMobilePhone } from '@/utils/is'
 import { CommonLevelEnum } from '@/utils/constants'
 import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
+import { getPictureName } from './utils'
 import type { ElFormItem, FormInstance, UploadUserFile } from 'element-plus'
 
 defineOptions({
@@ -213,15 +214,6 @@ const closeDialog = () => {
 
 /** 提交表单 */
 const emit = defineEmits(['success'])
-const getPictureName = (url?: string) => {
-  if (!url) return
-  const match = url.match(/\w+\.(jpg|png|jpeg)$/)
-  if (match) {
-    return match[0]
-  } else {
-    console.error('未找到图片名')
-  }
-}
 const submitForm = async () => {
   await formRef.value?.validate()
   const { code, addressId, picture, ...data } = formData.value

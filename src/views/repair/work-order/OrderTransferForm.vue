@@ -39,6 +39,12 @@
           maxlength="500"
         />
       </el-form-item>
+      <el-form-item label="转交照片" prop="picture">
+        <BatchPicturesUploader
+          v-model:fileList="formData.picture"
+          :limit-size="{ size: 5, unit: 'MB' }"
+        />
+      </el-form-item>
     </el-form>
     <template #footer>
       <el-button @click="onConfirm" type="primary">确 定</el-button>
@@ -50,10 +56,13 @@
 <script setup lang="ts">
 import { useRepairStoreWithOut } from '@/store/modules/repair'
 import { useEmployeeStoreWithOut } from '@/store/modules/employee'
-import { handleRepairOrder, type AccessoryItem } from '@/api/repair'
+import { handleRepairOrder } from '@/api/repair'
 import { OperateMethod } from '@/api/repair/constant'
 import { defaultProps } from '@/utils/tree'
+import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
+import { getPictureName } from './utils'
 import { type UserVO } from '@/api/system/user'
+import type { UploadUserFile } from 'element-plus'
 
 defineOptions({
   name: 'OrderTransferForm'
@@ -71,7 +80,8 @@ const formData = ref({
   code: undefined as unknown as string,
   questionType: undefined as unknown as number,
   user: undefined as unknown as UserVO,
-  remark: ''
+  remark: '',
+  picture: [] as UploadUserFile[]
 })
 const formRules = reactive({
   questionType: [{ required: true, message: '问题类型不能为空', trigger: 'blur' }],
@@ -96,7 +106,8 @@ const resetForm = () => {
     code: undefined as unknown as string,
     questionType: undefined as unknown as number,
     user: undefined as unknown as UserVO,
-    remark: ''
+    remark: '',
+    picture: [] as UploadUserFile[]
   }
 }
 
@@ -108,12 +119,16 @@ const onCancel = () => {
 const emit = defineEmits(['success'])
 const onConfirm = async () => {
   await formRef.value.validate()
-  const { user, ...rest } = formData.value
+  const { user, picture, ...rest } = formData.value
   const data = {
     ...rest,
     userId: user.id,
     userNickName: user.nickname,
-    operateMethod: OperateMethod.Transfer
+    operateMethod: OperateMethod.Transfer,
+    picture: picture
+      .map((p) => getPictureName(p.url))
+      .filter((p) => p)
+      .join(';')
   }
   loading.value = true
   try {
