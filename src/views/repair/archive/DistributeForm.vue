@@ -78,7 +78,10 @@
         <el-input v-model="formData.ip2" placeholder="请输入 IP 地址2" />
       </el-form-item>
       <el-form-item label="现场照片" prop="pictureList">
-        <BatchPicturesUploader v-model:fileList="formData.pictureList" />
+        <BatchPicturesUploader
+          v-model:fileList="formData.pictureList"
+          :limit-size="{ size: 5, unit: 'MB' }"
+        />
       </el-form-item>
     </el-form>
     <template #footer>

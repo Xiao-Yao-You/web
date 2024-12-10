@@ -63,7 +63,10 @@
         />
       </el-form-item>
       <el-form-item label="报废照片" prop="pictureList">
-        <BatchPicturesUploader v-model:fileList="formData.pictureList" />
+        <BatchPicturesUploader
+          v-model:fileList="formData.pictureList"
+          :limit-size="{ size: 5, unit: 'MB' }"
+        />
       </el-form-item>
     </el-form>
     <template #footer>

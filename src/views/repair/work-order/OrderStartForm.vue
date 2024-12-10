@@ -2,7 +2,10 @@
   <Dialog title="现场确认" v-model="dialogVisible" :fullscreen="false" :draggable="false">
     <el-form ref="formRef" :model="formData" :rules="formRules" v-loading="loading">
       <el-form-item label="现场照片" prop="pictureList">
-        <BatchPicturesUploader v-model:fileList="formData.pictureList" />
+        <BatchPicturesUploader
+          v-model:fileList="formData.pictureList"
+          :limit-size="{ size: 5, unit: 'MB' }"
+        />
       </el-form-item>
       <el-form-item label="紧急程度" prop="level">
         <el-select v-model="formData.level" placeholder="请选择紧急程度" clearable class="!w-150px">

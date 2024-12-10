@@ -146,7 +146,10 @@
         <el-switch v-model="formData.needCheckFlag" :active-value="0" :inactive-value="1" />
       </el-form-item>
       <el-form-item label="设备照片" prop="pictureList">
-        <BatchPicturesUploader v-model:fileList="formData.pictureList" />
+        <BatchPicturesUploader
+          v-model:fileList="formData.pictureList"
+          :limit-size="{ size: 5, unit: 'MB' }"
+        />
       </el-form-item>
       <el-form-item label="设备配置" prop="accessoryList">
         <el-table :data="formData.accessoryList" border>
