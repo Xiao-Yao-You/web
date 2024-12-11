@@ -24,6 +24,12 @@
           />
         </el-select>
       </el-form-item>
+      <el-form-item label="完成照片" prop="picture">
+        <BatchPicturesUploader
+          v-model:fileList="formData.picture"
+          :limit-size="{ size: 5, unit: 'MB' }"
+        />
+      </el-form-item>
       <el-form-item label="完成时间" prop="endTime">
         <el-input v-model="formData.endTime" disabled :prefix-icon="Calendar" class="!w-180px" />
       </el-form-item>
@@ -47,11 +53,14 @@
 
 <script setup lang="ts">
 import { Calendar } from '@element-plus/icons-vue'
+import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
 import { handleRepairOrder } from '@/api/repair'
 import { OperateMethod, OperateStatus } from '@/api/repair/constant'
 import { useUserStore } from '@/store/modules/user'
 import { formatDate } from '@/utils/formatTime'
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
+import { getPictureName } from './utils'
+import type { UploadUserFile, FormInstance } from 'element-plus'
 
 defineOptions({
   name: 'OrderCompleteForm'
@@ -67,18 +76,20 @@ const defaultType = resultOptions[0]?.value
 const isCompleted = ref(false)
 const dialogVisible = ref(false)
 const loading = ref(false)
-const formRef = ref()
+const formRef = ref<FormInstance>()
 const formData = ref({
   id: undefined as unknown as number,
   code: undefined as unknown as string,
   operateUser: userInfo,
   completeResult: defaultType,
   endTime: formatDate(new Date()),
-  remark: ''
+  remark: '',
+  picture: [] as UploadUserFile[]
 })
 const formRules = reactive({
   completeResult: [{ required: true, message: '处理结果不能为空', trigger: 'blur' }],
-  remark: [{ required: true, message: '处理说明不能为空', trigger: 'blur' }]
+  remark: [{ required: true, message: '处理说明不能为空', trigger: 'blur' }],
+  picture: [{ required: true, message: '请上传完成照片', trigger: 'blur' }]
 })
 
 const open = (payload: { id: number; code: string; status: OperateStatus }) => {
@@ -104,19 +115,24 @@ const resetForm = () => {
     operateUser: userInfo,
     completeResult: defaultType,
     endTime: formatDate(new Date()),
-    remark: ''
+    remark: '',
+    picture: [] as UploadUserFile[]
   }
 }
 
 const emit = defineEmits(['success'])
 const onConfirm = async () => {
-  await formRef.value.validate()
-  const { operateUser, ...rest } = formData.value
+  await formRef.value?.validate()
+  const { operateUser, picture, ...rest } = formData.value
   const data = {
     ...rest,
     operateUserId: operateUser.id,
     operateUserNickName: operateUser.nickname,
-    operateMethod: OperateMethod.Finish
+    operateMethod: OperateMethod.Finish,
+    picture: picture
+      .map((p) => getPictureName(p.url))
+      .filter((p) => p)
+      .join(';')
   }
   loading.value = true
   try {
