@@ -21,7 +21,7 @@
         <el-input
           v-model="formData.name"
           placeholder="请输入设备名称"
-          maxlength="20"
+          maxlength="50"
           show-word-limit
         />
       </el-form-item>
@@ -51,7 +51,7 @@
           :loading="modelLoading"
           :disabled="!formData.deviceType?.value"
         >
-          <el-option v-for="m in modelOptions" :key="m.id" :label="m.label" :value="m.value" />
+          <el-option v-for="m in modelOptions" :key="m.value" :label="m.label" :value="m.value" />
         </el-select>
       </el-form-item>
       <el-form-item label="序列号" prop="serialNumber">
@@ -186,7 +186,6 @@ import {
   createRepairArchive,
   updateRepairArchive,
   getModelById
-  // ArchivePayload
 } from '@/api/repair'
 import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
@@ -237,12 +236,9 @@ const formRules = reactive({
   model: [{ required: true, message: '设备型号不能为空', trigger: 'blur' }],
   serialNumber: [{ required: true, message: '序列号不能为空', trigger: 'blur' }],
   numberName: [{ required: true, message: '编码规则不能为空', trigger: 'blur' }],
-  macAddress1: [{ required: true, message: 'mac地址1不能为空', trigger: 'blur' }],
   manufactureDate: [{ required: true, message: '生产日期不能为空', trigger: 'blur' }],
   company: [{ required: true, message: '所属公司不能为空', trigger: 'change' }],
   effectLevel: [{ required: true, message: '影响程度不能为空', trigger: 'change' }],
-  warrantyDate: [{ required: true, message: '质保日期不能为空', trigger: 'blur' }],
-  assetNumber: [{ required: true, message: '资产编号不能为空', trigger: 'blur' }],
   pictureList: [{ required: true, message: '设备照片不能为空', trigger: 'blur' }]
 })
 const formRef = ref() // 表单 Ref
@@ -250,13 +246,13 @@ const configRef = ref()
 
 /** 切换设备类型，跟换对应设备型号 */
 const modelLoading = ref(false)
-const modelOptions = ref<OptionItem<string>[]>([])
+const modelOptions = ref<OptionItem<number>[]>([])
 const getModelOptions = async (deviceTypeId: number) => {
   if (!deviceTypeId) return
   try {
     modelLoading.value = true
     const models = await getModelById(deviceTypeId)
-    modelOptions.value = models.map((m) => ({ value: m.model, label: m.model, id: m.id }))
+    modelOptions.value = models.map((m) => ({ value: m.id, label: m.model }))
   } finally {
     modelLoading.value = false
   }
@@ -295,8 +291,8 @@ const open = async (type: string, id?: number) => {
       getModelOptions(deviceType)
       formData.value = {
         ...rest,
-        manufactureDate: dateTransfer(manufactureDate).format('YYYY-MM-DD'),
-        warrantyDate: dateTransfer(warrantyDate).format('YYYY-MM-DD'),
+        manufactureDate: manufactureDate ? dateTransfer(manufactureDate).format('YYYY-MM-DD') : '',
+        warrantyDate: warrantyDate ? dateTransfer(warrantyDate).format('YYYY-MM-DD') : '',
         deviceType: {
           value: deviceType,
           label: deviceTypeName

@@ -16,7 +16,7 @@
           <el-descriptions-item label="设备类型">
             {{ info.deviceTypeName || '/' }}
           </el-descriptions-item>
-          <el-descriptions-item label="设备型号"> {{ info.model }}</el-descriptions-item>
+          <el-descriptions-item label="设备型号"> {{ info.modelName }}</el-descriptions-item>
           <el-descriptions-item label="序列号">
             {{ info.serialNumber || '/' }}
           </el-descriptions-item>

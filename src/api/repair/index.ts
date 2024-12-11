@@ -236,7 +236,8 @@ export interface RepairArchive {
   code: string // 设备编码
   deviceType: number // 设备类型
   deviceTypeName: string // 设备类型描述
-  model: string // 型号
+  model: string // 型号 ID
+  modelName: string // 型号名称
   labelCode: string // 标签code
   status: number // 状态 0:在用,1:闲置,2:报废
   company: number // 所属单位 0:恒科,1:轩达,2:其他
@@ -427,6 +428,11 @@ export interface DistributePayload {
 
 export const distributeDevice = (data: DistributePayload) => {
   return request.put({ url: '/operation-device/register', data })
+}
+
+// 同步老系统的设备档案
+export const syncOldDevice = () => {
+  return request.post({ url: '/operation-device/syncOldDevice' })
 }
 // #endregion
 
