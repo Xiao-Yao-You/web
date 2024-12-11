@@ -121,7 +121,11 @@ export default {
   usingStatus: {
     InUse: 'In Use',
     Idle: 'Idle',
-    Scrap: 'Scrap'
+    Scrap: 'Scrap',
+    Maintain: 'Maintenance',
+    Inventory: 'Inventory',
+    Borrow: 'Borrowing',
+    Repealed: 'Repealed'
   },
   login: {
     welcome: 'Welcome to the system',

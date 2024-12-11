@@ -153,9 +153,7 @@
         :filters="filterOptions"
       >
         <template #default="{ row: { status } }">
-          <el-text :type="status ? (status == 1 ? 'success' : 'danger') : 'warning'">
-            {{ t(`usingStatus.${UsingStatus[status]}`) }}
-          </el-text>
+          {{ t(`usingStatus.${UsingStatus[status]}`) }}
         </template>
       </el-table-column>
       <el-table-column label="设备编码" align="center" prop="code" />

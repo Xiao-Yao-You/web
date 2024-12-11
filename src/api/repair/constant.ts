@@ -29,13 +29,21 @@ export enum CompanyEnum {
 export enum UsingStatus {
   InUse, // 使用中
   Idle, // 闲置
-  Scrap // 报废
+  Scrap, // 报废
+  Maintain, // 维修
+  Inventory, // 库存
+  Borrow, // 借用
+  Repealed // 作废
 }
 
 export const UsingStatusOptions = [
   { label: '使用中', value: UsingStatus.InUse },
   { label: '闲置', value: UsingStatus.Idle },
-  { label: '报废', value: UsingStatus.Scrap }
+  { label: '报废', value: UsingStatus.Scrap },
+  { label: '维修', value: UsingStatus.Maintain },
+  { label: '库存', value: UsingStatus.Inventory },
+  { label: '借用', value: UsingStatus.Borrow },
+  { label: '作废', value: UsingStatus.Repealed }
 ]
 
 // 照片类型

@@ -121,7 +121,11 @@ export default {
   usingStatus: {
     InUse: '使用中',
     Idle: '闲置',
-    Scrap: '报废'
+    Scrap: '报废',
+    Maintain: '维修',
+    Inventory: '库存',
+    Borrow: '借用',
+    Repealed: '作废'
   },
   login: {
     welcome: '欢迎使用本系统',
