@@ -82,13 +82,6 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-row>
-        <el-col :span="24">
-          <el-form-item label="备注" prop="remark">
-            <el-input v-model="formData.remark" placeholder="请输入内容" type="textarea" />
-          </el-form-item>
-        </el-col>
-      </el-row>
     </el-form>
     <template #footer>
       <el-button :disabled="formLoading" type="primary" @click="submitForm">确 定</el-button>
@@ -108,7 +101,7 @@ import { UserVO } from '@/api/system/user'
 
 defineOptions({ name: 'SystemUserForm' })
 
-interface FormData extends Omit<UserVO, 'deptList' | 'id'> {
+interface FormData extends Omit<UserVO, 'deptList' | 'id' | 'remark'> {
   id: number | undefined
   deptList: (number | never)[]
 }
@@ -130,7 +123,6 @@ const formData = ref<FormData>({
   password: '',
   sex: undefined,
   postIds: [],
-  remark: '',
   status: CommonStatusEnum.ENABLE
 })
 const formRules = reactive<FormRules>({
@@ -225,7 +217,6 @@ const resetForm = () => {
     password: '',
     sex: undefined,
     postIds: [],
-    remark: '',
     status: CommonStatusEnum.ENABLE
   }
   formRef.value?.resetFields()
