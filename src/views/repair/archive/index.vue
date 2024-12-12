@@ -115,7 +115,12 @@
         >
           <Icon icon="ep:plus" class="mr-5px" /> 新增
         </el-button>
-        <el-button plain type="warning" @click="syncOldArchives">
+        <el-button
+          v-hasPermi="['hk:operation-device:sync']"
+          plain
+          type="warning"
+          @click="syncOldArchives"
+        >
           <Icon icon="ep:refresh" />
           老系统同步
         </el-button>
