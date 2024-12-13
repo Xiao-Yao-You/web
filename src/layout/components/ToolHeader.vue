@@ -11,7 +11,6 @@ import { TenantSwitch } from '@/layout/components/TenantSwitch'
 import RouterSearch from '@/components/RouterSearch/index.vue'
 import { useAppStore } from '@/store/modules/app'
 import { useDesign } from '@/hooks/web/useDesign'
-import { checkPermi } from '@/utils/permission'
 
 const { getPrefixCls, variables } = useDesign()
 
@@ -38,7 +37,7 @@ const size = computed(() => appStore.getSize)
 const layout = computed(() => appStore.getLayout)
 
 // 多语言图标
-const locale = computed(() => appStore.getLocale)
+// const locale = computed(() => appStore.getLocale)
 
 // 消息图标
 const message = computed(() => appStore.getMessage)
@@ -79,7 +78,7 @@ export default defineComponent({
             ></LocaleDropdown>
             ) : undefined
           } */}
-          <SpeechBoardcast v-show={checkPermi(['repair:speech'])} />
+          <SpeechBoardcast v-hasPermi="['repair:speech']" />
           {message.value ? <Message class="custom-hover"></Message> : undefined}
           <TenantSwitch class="custom-hover" color="var(--top-header-text-color)" />
           <UserInfo></UserInfo>
