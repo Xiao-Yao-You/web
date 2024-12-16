@@ -6,12 +6,7 @@ const { t } = useI18n() // 国际化
 export function hasPermi(app: App<Element>) {
   app.directive('hasPermi', (el, binding) => {
     const { wsCache } = useCache()
-
-    let { value } = binding
-    if (typeof value === 'string') {
-      value = eval(value) // 将字符串数组转成数组
-    }
-
+    const { value } = binding
     const all_permission = '*:*:*'
     const permissions = wsCache.get(CACHE_KEY.USER).permissions
 
