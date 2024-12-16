@@ -127,10 +127,7 @@ const formRules = reactive({
   dept: [{ message: '使用部门不能为空', trigger: 'blur', required: true }],
   addressId: [{ type: 'array', required: true, message: '所在地点不能为空', trigger: 'blur' }],
   location: [{ required: true, message: '设备位置不能为空', trigger: 'blur' }],
-  ip1: [
-    { required: true, message: 'IP 地址1不能为空', trigger: 'blur' },
-    { pattern: isIPV4, message: 'IP 格式不正确' }
-  ],
+  ip1: { pattern: isIPV4, message: 'IP 格式不正确' },
   ip2: [{ pattern: isIPV4, message: 'IP 格式不正确' }],
   pictureList: [{ required: true, message: '现场图片不能为空', trigger: 'blur' }]
 })
