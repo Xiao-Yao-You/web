@@ -3,7 +3,8 @@ import { useSpeechSynthesis } from '@vueuse/core'
 import { useIcon } from '@/hooks/web/useIcon'
 import { getNewRepairOrder } from '@/api/repair'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { checkPermi } from '@/utils/permission'
+import { useWebSocket } from '@vueuse/core'
+import { getAccessToken } from '@/utils/auth'
 
 defineOptions({
   name: 'SpeechBoardcast'
@@ -12,104 +13,121 @@ defineOptions({
 const message = useMessage()
 const MicroPhoneIcon = useIcon({ icon: 'ep:microphone', size: 18 })
 const MuteIcon = useIcon({ icon: 'ep:mute', size: 18 })
-
 const disabled = ref(false)
-// 开启/关闭语音播报
-// const handleToggle = () => {
-//   disabled.value = !disabled.value
-//   if (disabled.value) {
-//     message.notify('语音播报已关闭')
-//     stop()
-//   } else {
-//     message.notifySuccess('语音播报已开启')
-//     text.value = '语音播报已开启'
-//     play()
-//   }
-// }
 
 // #region 语音播报 https://github.com/vueuse/vueuse/blob/main/packages/core/useSpeechSynthesis/demo.vue
 const text = ref(' ')
 const speech = useSpeechSynthesis(text, { lang: 'zh-CN' })
 
-// 语音初始化
-const initSpeech = () => {
-  if (speech.isSupported.value) {
-    enableSpeech()
-  } else {
-    message.alert('您的浏览器暂不支持语音播报，请知悉')
-  }
-}
-// 语音启用
-const enableSpeech = () => {
-  // 1. 尝试首次播报
-  speech.speak()
-
-  // 2. 根据播报结果，判断是否需要再执行一次
-  if (speech.error.value) {
-    console.error('speech error: ' + speech.error.value.error)
-    message
-      .confirm(
-        '系统检测到语音自动播报失败，请手动开启。（温馨提示：请确保扬声器已打开。）',
-        '系统提示',
-        {
-          type: 'warning',
-          confirmButtonText: '开启',
-          showCancelButton: false,
-          showClose: false,
-          closeOnClickModal: false,
-          closeOnPressEscape: false
-        }
-      )
-      .then(() => {
-        text.value = '语音播报已开启'
-        play()
-        disabled.value = false
-      })
-  }
-}
-
 // 语音播报
-const play = () => {
+const play = (content?: string) => {
+  if (!speech.isSupported.value) {
+    return message.alert('您的浏览器暂不支持语音播报，请知悉')
+  }
+  if (content) text.value = content
   if (speech.status.value === 'pause') {
     window.speechSynthesis.resume()
   } else {
     speech.speak()
   }
 }
-// 语音取消
-// const stop = () => speech.stop()
-// 语音暂停
-// const pause = () => {
-//   window.speechSynthesis.pause()
-// }
+
+// 开启/关闭语音播报
+const handleToggle = () => {
+  play('语音播报已开启')
+  // disabled.value = !disabled.value
+  // if (disabled.value) {
+  //   message.notify('语音播报已关闭')
+  //   speech.stop()
+  // } else {
+  //   message.notifySuccess('语音播报已开启')
+  //   play('语音播报已开启')
+  // }
+}
 // #endregion
 
-// 新工单数量查询
+// #region WebSocket
+const { data } = useWebSocket(
+  (import.meta.env.VITE_BASE_URL + '/infra/ws').replace('http', 'ws') +
+    '?token=' +
+    getAccessToken(),
+  {
+    autoReconnect: false,
+    heartbeat: true
+  }
+)
+
+// 监听接收到的数据
+const timer = ref<null | number>(null)
+const clearTimer = () => {
+  if (timer.value) {
+    window.clearInterval(timer.value)
+    timer.value = null
+  }
+}
+
+watchEffect(() => {
+  if (!data.value || data.value === 'pong') return
+
+  try {
+    const jsonMessage = JSON.parse(data.value)
+    const type = jsonMessage.type
+    const content = JSON.parse(jsonMessage.content)
+    switch (type) {
+      case 'order-push':
+        if (content.NewOrder) {
+          // 1. NewOrder: true，有新工单，一直播报
+          clearTimer()
+          timer.value = window.setInterval(() => {
+            play('您有新的运维工单，请及时处理。')
+          }, 1000 * 6)
+        } else {
+          // 2. NewOrder: false，没有新工单，停止播报
+          clearTimer()
+          speech.stop()
+        }
+        break
+      default:
+        console.log('未处理消息：' + data.value)
+        break
+    }
+  } catch (error) {
+    message.error('处理消息发生异常：' + data.value)
+  }
+})
+// #endregion
+
+// #region 新工单数量查询
 const { emitter } = useEmitt()
 const query = async () => {
   const count = await getNewRepairOrder()
   if (count) {
     emitter.emit('getNewOrder')
-    if (!disabled.value) {
-      text.value = `您有${count}份新的运维工单，请及时处理。`
-      play()
-    }
+    if (disabled.value) return
+
+    // 只要有新工单就一直播报
+    clearTimer()
+    timer.value = window.setInterval(() => {
+      play('您有新的运维工单，请及时处理。')
+    }, 1000 * 6)
   }
 }
 
+// 首次进入页面查询一次，主动获取工单嘴型情况（Websocket 只会在工单发生变化的时候推送）
 onMounted(() => {
-  // 有播报权限的才初始化
-  if (checkPermi(['repair:speech'])) initSpeech()
-  // 主动查询一次（后续通过 Websocket 推送）
   query()
+})
+// #endregion
+
+onUnmounted(() => {
+  clearTimer()
+  speech.stop()
 })
 </script>
 
 <template>
-  <div class="custom-hover">
-    <el-tooltip effect="dark" content="点击开启或关闭语音播报" placement="bottom-end">
-      <MuteIcon v-if="disabled" />
-      <MicroPhoneIcon v-else />
-    </el-tooltip>
+  <div class="custom-hover" @click="handleToggle">
+    <MuteIcon v-if="disabled" />
+    <MicroPhoneIcon v-else />
   </div>
 </template>
