@@ -27,7 +27,7 @@
               type="primary"
               style="vertical-align: text-bottom"
               :disabled="!info.labelCode"
-              @click="printRef?.open([{ name: info.deviceTypeName, labelCode: info.labelCode }])"
+              @click="openPrintDialog(info)"
             >
               打印
             </el-button>
@@ -118,6 +118,7 @@ import { formatDate } from '@/utils/formatTime'
 import PrintDialog from '../device/PrintDialog.vue'
 import { SysTab } from './index.vue'
 import { OldLevelTransfer, OldCompanyTransfer } from '@/api/repair/constant'
+import { DEVICE_QR_HREF } from '@/utils/constants'
 
 defineOptions({
   name: 'ArchiveDetail'
@@ -195,7 +196,16 @@ const resetInfo = () => {
 const activeTab = ref('basic') // basic | distribute
 
 // 打印二维码
-const printRef = ref()
+const printRef = ref<InstanceType<typeof PrintDialog>>()
+const openPrintDialog = ({ deviceTypeName: name, labelCode }: RepairArchive) => {
+  printRef.value?.open([
+    {
+      name,
+      labelCode,
+      qr: DEVICE_QR_HREF + labelCode
+    }
+  ])
+}
 </script>
 
 <style scoped></style>

@@ -10,6 +10,9 @@ export const DEPARTMENT_ID = {
   INFORMATION: 732 // 信息部
 }
 
+// 设备二维码标签号的前缀
+export const DEVICE_QR_HREF = 'https://szh.jshkxcl.cn/repair/device?qr='
+
 // ========== COMMON 模块 ==========
 export enum CommonLevelEnum {
   Low,

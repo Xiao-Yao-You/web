@@ -34,6 +34,7 @@
 
 <script setup lang="ts">
 import { useRepairStoreWithOut } from '@/store/modules/repair'
+import { DEVICE_QR_HREF } from '@/utils/constants'
 import { printBatchLabels, type LabelItem } from '@/api/repair'
 
 defineOptions({
@@ -77,7 +78,11 @@ const onConfirm = async () => {
       if (!selectLabels.value?.length) return message.alertWarning('请选择编号')
       emit(
         'confirm',
-        selectLabels.value.map((l) => ({ name: labelName.value, labelCode: l }))
+        selectLabels.value.map((l) => ({
+          name: labelName.value,
+          labelCode: l,
+          qr: DEVICE_QR_HREF + l
+        }))
       )
       visible.value = false
       break

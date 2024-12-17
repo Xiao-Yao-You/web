@@ -33,7 +33,7 @@ const init = () => {
 }
 
 // hiprint 函数式编辑（内容写死，不需要用户自定义编辑）
-const render = ({ name, labelCode }: LabelItem) => {
+const render = ({ name, qr, labelCode }: LabelItem) => {
   // 添加面板
   const panel = hiprintInstance.value?.addPrintPanel({
     width: 70,
@@ -43,7 +43,7 @@ const render = ({ name, labelCode }: LabelItem) => {
   if (panel) {
     // 添加二维码
     panel.addPrintText({
-      options: { width: 60, height: 60, top: 20, left: 20, title: labelCode, textType: 'qrcode' }
+      options: { width: 60, height: 60, top: 20, left: 20, title: qr, textType: 'qrcode' }
     })
     // 添加文字
     panel.addPrintText({

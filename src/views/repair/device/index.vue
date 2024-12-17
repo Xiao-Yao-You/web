@@ -95,7 +95,7 @@ const pageLoading = ref(true)
 const list = ref<RepairDevice[]>([])
 const total = ref(0)
 const batchLabelList = ref<LabelItem[]>([]) // 批量的标签打印信息
-const printRef = ref()
+const printRef = ref<InstanceType<typeof PrintDialog>>()
 const queryFormRef = ref()
 const queryParams = reactive({
   pageNo: 1,
@@ -150,7 +150,7 @@ const print = (id: number, name: string) => {
 }
 const handleLabelConfirm = (labels: LabelItem[]) => {
   batchLabelList.value = labels
-  printRef.value.open()
+  printRef.value?.open()
 }
 
 onMounted(() => {
