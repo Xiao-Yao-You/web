@@ -66,6 +66,16 @@ const clearTimer = () => {
   }
 }
 
+// 语音轮播
+const carouselPlay = () => {
+  clearTimer()
+  text.value = '您有新的运维工单，请及时处理。'
+  play()
+  timer.value = window.setInterval(() => {
+    play()
+  }, 1000 * 6)
+}
+
 watchEffect(() => {
   if (!data.value || data.value === 'pong') return
 
@@ -75,12 +85,10 @@ watchEffect(() => {
     const content = JSON.parse(jsonMessage.content)
     switch (type) {
       case 'order-push':
+        emitter.emit('getNewOrder')
         if (content.NewOrder) {
           // 1. NewOrder: true，有新工单，一直播报
-          clearTimer()
-          timer.value = window.setInterval(() => {
-            play('您有新的运维工单，请及时处理。')
-          }, 1000 * 6)
+          carouselPlay()
         } else {
           // 2. NewOrder: false，没有新工单，停止播报
           clearTimer()
@@ -103,13 +111,9 @@ const query = async () => {
   const count = await getNewRepairOrder()
   if (count) {
     emitter.emit('getNewOrder')
-    if (disabled.value) return
 
     // 只要有新工单就一直播报
-    clearTimer()
-    timer.value = window.setInterval(() => {
-      play('您有新的运维工单，请及时处理。')
-    }, 1000 * 6)
+    if (!disabled.value) carouselPlay()
   }
 }
 

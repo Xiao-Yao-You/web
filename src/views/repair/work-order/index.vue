@@ -297,6 +297,7 @@ import { useEmployeeStoreWithOut } from '@/store/modules/employee'
 import { useIcon } from '@/hooks/web/useIcon'
 import { useUserStore } from '@/store/modules/user'
 import { useCountDown } from '@/hooks/web/useCountDown'
+import { useEmitt } from '@/hooks/web/useEmitt'
 
 defineOptions({
   name: 'RepairWorkOrder'
@@ -569,6 +570,10 @@ const onRefresh = () => {
   countDown.start()
 }
 countDown.start()
+
+// 事件总线（WebSocket 推送工单处理的最新情况后，立即刷新，主要针对工单播报员）
+const { emitter } = useEmitt()
+emitter.on('getNewOrder', onRefresh)
 // #endregion
 
 onMounted(() => {
