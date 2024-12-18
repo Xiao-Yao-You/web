@@ -59,11 +59,12 @@ export enum OperateStatus {
   Receive = '01', // 待处理（此时已派单或主动接单）
   Handling = '02', // 进行中
   HangUp = '03', // 挂起
-  Done = '04', // 已处理
-  Finish = '05', // 已完成
-  NoHandle = '0501', // 无需处理
-  UnableFix = '0502', // 无法排除的故障
-  Revoke = '06' // 撤销
+  OutSourcing = '04', // 委外维修
+  Done = '05', // 已处理
+  Finish = '06', // 已完成
+  NoHandle = '0601', // 无需处理
+  UnableFix = '0602', // 无法排除的故障
+  Revoke = '07' // 撤销
 }
 
 // 工单处理方式
