@@ -305,7 +305,6 @@ defineOptions({
 const message = useMessage()
 const repairStore = useRepairStoreWithOut()
 const employeeStore = useEmployeeStoreWithOut()
-const InfoIcon = useIcon({ icon: 'ep:info-filled' })
 const PauseIcon = useIcon({ icon: 'ep:video-pause' })
 const ResumeIcon = useIcon({ icon: 'ep:video-play' })
 const TimerIcon = useIcon({ icon: 'ep:timer' })

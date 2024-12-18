@@ -483,7 +483,7 @@ export interface OrderPayload {
   id?: number
   title: string
   labelCode?: string
-  deviceName: string
+  deviceName?: string
   deviceId?: number
   addressIdList: number[]
   location: string

@@ -7,6 +7,10 @@
     :close-on-click-modal="false"
     :close-on-press-escape="false"
   >
+    <el-radio-group v-model="radio" class="mb-18px ml-120px" @change="onRadioChange">
+      <el-radio :value="RepairType.QR" border>二维码设备标签号报修</el-radio>
+      <el-radio :value="RepairType.WithoutQR" border>软件、监控等其他报修</el-radio>
+    </el-radio-group>
     <el-form
       ref="formRef"
       :model="formData"
@@ -25,7 +29,12 @@
           show-word-limit
         />
       </el-form-item>
-      <el-form-item label="二维码标签号" prop="labelCode" ref="labelRef">
+      <el-form-item
+        v-if="radio === RepairType.QR"
+        label="二维码标签号"
+        prop="labelCode"
+        ref="labelRef"
+      >
         <el-input
           v-model="formData.labelCode"
           placeholder="请输入二维码标签号"
@@ -35,14 +44,32 @@
           @change="onLabelChange"
         />
       </el-form-item>
-      <el-form-item label="设备名称" prop="deviceName">
+      <el-form-item v-if="isQR" label="设备名称" prop="deviceName">
         <el-input v-model="formData.deviceName" placeholder="输入二维码标签号自动查询" disabled />
       </el-form-item>
-      <el-form-item label="设备所在地点" prop="address">
-        <el-input v-model="formData.address" placeholder="输入二维码标签号自动查询" disabled />
+      <el-form-item v-if="isQR" label="设备所在地点" prop="address">
+        <el-input
+          v-model="formData.address"
+          placeholder="输入二维码标签号自动查询"
+          :disabled="isQR"
+        />
+      </el-form-item>
+      <el-form-item v-else label="设备所在地点" prop="addressId">
+        <el-cascader
+          ref="cascaderRef"
+          v-model="formData.addressId"
+          :props="{ label: 'addressName', value: 'id' }"
+          :options="repairStore.locationsTree"
+          placeholder="请选择所在地点"
+          @change="onAddressChange"
+        />
       </el-form-item>
       <el-form-item label="设备具体位置" prop="location">
-        <el-input v-model="formData.location" placeholder="输入二维码标签号自动查询" disabled />
+        <el-input
+          v-model="formData.location"
+          :placeholder="isQR ? '输入二维码标签号自动查询' : '请输入设备具体位置'"
+          :disabled="isQR"
+        />
       </el-form-item>
       <el-form-item label="报修人" prop="submitUserId">
         <el-select
@@ -102,7 +129,8 @@ import { isMobilePhone } from '@/utils/is'
 import { CommonLevelEnum } from '@/utils/constants'
 import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
 import { getPictureName } from './utils'
-import type { ElFormItem, FormInstance, UploadUserFile } from 'element-plus'
+import { useRepairStoreWithOut } from '@/store/modules/repair'
+import type { ElFormItem, FormInstance, UploadUserFile, ElCascader } from 'element-plus'
 
 defineOptions({
   name: 'OrderCreate'
@@ -110,6 +138,7 @@ defineOptions({
 
 const { t } = useI18n()
 const message = useMessage()
+const repairStore = useRepairStoreWithOut()
 
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
@@ -124,7 +153,7 @@ const formData = ref({
   deviceId: undefined as unknown as number,
   address: '',
   addressId: [] as number[],
-  location: undefined as unknown as string,
+  location: '',
   submitUserId: undefined as unknown as number,
   submitUserMobile: undefined as unknown as string,
   requestType: undefined as unknown as IssueTypeEnum,
@@ -138,6 +167,7 @@ const formRules = reactive({
   labelCode: [{ required: true, message: '二维码标签不能为空', trigger: 'blur' }],
   deviceName: [{ required: true, message: '设备名称不能为空', trigger: 'blur' }],
   address: [{ required: true, message: '设备地点不能为空', trigger: 'blur' }],
+  addressId: [{ required: true, message: '设备地点不能为空', trigger: 'change' }],
   location: [{ required: true, message: '设备位置不能为空', trigger: 'blur' }],
   submitUserId: [{ required: true, message: '报修人不能为空', trigger: 'blur' }],
   submitUserMobile: [
@@ -158,6 +188,32 @@ const open = async () => {
   resetForm()
 }
 defineExpose({ open })
+
+/** 选择不同的报修类型 */
+enum RepairType {
+  QR = 1, // 二维码报修
+  WithoutQR // 没有二维码的报修（软件、监控等）
+}
+const radio = ref(RepairType.QR)
+const isQR = computed(() => radio.value === RepairType.QR)
+const onRadioChange = () => {
+  Object.assign(formData.value, {
+    labelCode: '',
+    deviceName: '',
+    deviceId: undefined as unknown as number,
+    address: '',
+    addressId: [],
+    location: ''
+  })
+  formRef.value?.clearValidate()
+}
+
+// 地点切换，重置对应地点名信息
+const cascaderRef = ref<InstanceType<typeof ElCascader>>()
+const onAddressChange = () => {
+  const nodes = cascaderRef.value?.getCheckedNodes(false)
+  if (nodes) formData.value.address = nodes[0]?.text
+}
 
 /** 根据二维码标签号自动获取其设备名称 */
 const labelRef = ref<InstanceType<typeof ElFormItem>>()
@@ -216,19 +272,24 @@ const closeDialog = () => {
 const emit = defineEmits(['success'])
 const submitForm = async () => {
   await formRef.value?.validate()
-  const { code, addressId, picture, ...data } = formData.value
+  const { code, labelCode, deviceName, deviceId, addressId, picture, ...data } = formData.value
   formLoading.value = true
   try {
-    await createRepairOrder({
-      ...data,
-      addressIdList: addressId,
-      operateMethod: OperateMethod.Create,
-      sourceType: RepairSourceType.Offline,
-      picture: picture
-        .map((p) => getPictureName(p.url))
-        .filter((p) => p)
-        .join(';')
-    })
+    await createRepairOrder(
+      Object.assign(
+        {
+          ...data,
+          addressIdList: addressId,
+          operateMethod: OperateMethod.Create,
+          sourceType: RepairSourceType.Offline,
+          picture: picture
+            .map((p) => getPictureName(p.url))
+            .filter((p) => p)
+            .join(';')
+        },
+        isQR.value ? { labelCode, deviceName, deviceId } : {}
+      )
+    )
     message.success(t('common.createSuccess'))
     closeDialog()
     emit('success')
@@ -248,7 +309,7 @@ const resetForm = () => {
     deviceId: undefined as unknown as number,
     address: '',
     addressId: [] as number[],
-    location: undefined as unknown as string,
+    location: '',
     submitUserId: undefined as unknown as number,
     submitUserMobile: undefined as unknown as string,
     requestType: undefined as unknown as IssueTypeEnum,
