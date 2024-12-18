@@ -395,32 +395,39 @@ const formId = ref(0)
 /** 打开弹窗 */
 const open = async (type: string, id?: number) => {
   dialogVisible.value = true
-
-  if (type == 'view') {
-    dialogTitle.value = '详情'
-  } else {
-    dialogTitle.value = t('action.' + type)
-  }
-
+  dialogTitle.value = type == 'view' ? '详情' : t('action.' + type)
   formType.value = type
   resetForm()
-  /**查询当前用户所在的部门列表 */
+
+  // 查询当前用户所在的部门列表
   const deptList = await getDeptsByUserId(formData.value.userId)
   depts.value = handleTree(deptList)
-  // 修改时，设置数据
+
   if (id) {
+    // 修改时，设置数据
     formId.value = id
     formLoading.value = true
     try {
       const res = await UserReportApi.getUserReport(id)
       res.dateReport = dayjs(res.dateReport).format('YYYY-MM-DD')
-      list.value = res.userList.map((item) => {
-        return { value: item.id, label: `${item.nickname}-${item.username}` }
-      })
+      list.value = res.userList.map((item) => ({
+        label: `${item.nickname}-${item.username}`,
+        value: item.id
+      }))
       reportObjects.value = list.value
       formData.value = res
     } finally {
       formLoading.value = false
+    }
+  } else {
+    // 新增时，查询最近一次汇报对象
+    const object = await UserReportApi.getLatestObject()
+    if (Array.isArray(object) && object.length) {
+      formData.value.reportObject = object.map((obj) => obj.id)
+      reportObjects.value = object.map((obj) => ({
+        label: `${obj.nickname}-${obj.username}`,
+        value: obj.id
+      }))
     }
   }
 }

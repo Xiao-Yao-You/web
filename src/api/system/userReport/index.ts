@@ -165,7 +165,10 @@ export const UserReportApi = {
   // 查询所有设置的对象
   getAllReportUser: async () => {
     return await request.get({ url: `report-object/page` })
-  }
+  },
+
+  // 查询最近一条回报的汇报对象
+  getLatestObject: () => request.get({ url: '/user-report/getLastReportObject' })
 }
 
 // 获取“我的跟进”数量汇总信息
