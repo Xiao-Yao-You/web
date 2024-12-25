@@ -5,6 +5,7 @@
     v-model="visible"
     scroll
     maxHeight="500px"
+    :fullscreen="false"
     :close-on-click-modal="false"
     :close-on-press-escape="false"
   >
