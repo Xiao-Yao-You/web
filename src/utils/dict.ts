@@ -222,5 +222,7 @@ export enum DICT_TYPE {
   REPAIR_ORDER_COMPLETE_TYPE = 'repair_order_complete_type', // 工单处理结果类型
   REPAIR_ORDER_STATUS = 'repair_order_status', // 工单处理状态
   REPAIR_REQUEST_TYPE = 'repair_request_type', // 工单请求类型
-  REPAIR_OLD_DEVICE_STATE = 'repair_old_device_state' // 老系统设备状态
+  REPAIR_OLD_DEVICE_STATE = 'repair_old_device_state', // 老系统设备状态
+  //============ 奖品等级 ===========
+  PRIZE_LEVEL = 'prize_level'
 }
