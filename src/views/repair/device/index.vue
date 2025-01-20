@@ -15,7 +15,7 @@
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
         <el-button type="primary" @click="openImportTable()">
-          <Icon class="mr-5px" icon="ep:zoom-in" />
+          <Icon class="mr-5px" icon="ep:upload" />
           导入
         </el-button>
         <el-button type="primary" plain @click="openForm('create')">
