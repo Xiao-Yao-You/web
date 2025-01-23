@@ -1,124 +1,125 @@
 <template>
-  <!-- 顶部 Header，height: 112px -->
-  <el-card class="header" shadow="never">
-    <el-skeleton :loading="loading" animated>
-      <el-row :gutter="16" justify="space-between">
-        <el-col :xl="12" :lg="12" :md="12" :sm="24" :xs="24">
-          <div class="flex items-center">
-            <el-avatar :src="avatar" :size="70" class="mr-16px" />
-            <div>
-              <div class="text-20px">
-                {{ t('workplace.welcome') }} {{ username }} {{ t('workplace.happyDay') }}
+  <div class="home-wrapper overflow-hidden">
+    <!-- 顶部 Header，height: 112px -->
+    <el-card class="h-110px mb-8px" shadow="never">
+      <el-skeleton :loading="loading" animated>
+        <el-row :gutter="16" justify="space-between">
+          <el-col :xl="12" :lg="12" :md="12" :sm="24" :xs="24">
+            <div class="flex items-center">
+              <el-avatar :src="avatar" :size="70" class="mr-16px" />
+              <div>
+                <div class="text-20px">
+                  {{ t('workplace.welcome') }} {{ username }} {{ t('workplace.happyDay') }}
+                </div>
+                <!-- <div class="mt-10px text-14px text-gray-500">
+                    {{ t('workplace.toady') }}，20℃ - 32℃！
+                  </div> -->
               </div>
-              <!-- <div class="mt-10px text-14px text-gray-500">
-                  {{ t('workplace.toady') }}，20℃ - 32℃！
-                </div> -->
             </div>
-          </div>
-        </el-col>
-        <el-col :xl="12" :lg="12" :md="12" :sm="24" :xs="24">
-          <div class="h-70px flex items-center justify-end lt-sm:mt-10px">
-            <div class="px-8px text-right">
-              <div class="mb-16px text-14px text-gray-400">待办事项</div>
-              <CountTo class="text-20px" :start-val="0" :end-val="0" :duration="2600" />
+          </el-col>
+          <el-col :xl="12" :lg="12" :md="12" :sm="24" :xs="24">
+            <div class="h-70px flex items-center justify-end lt-sm:mt-10px">
+              <div class="px-8px text-right">
+                <div class="mb-16px text-14px text-gray-400">待办事项</div>
+                <CountTo class="text-20px" :start-val="0" :end-val="0" :duration="2600" />
+              </div>
+              <el-divider direction="vertical" border-style="dashed" />
+              <div class="px-8px text-right">
+                <div class="mb-16px text-14px text-gray-400">日程安排</div>
+                <CountTo class="text-20px" :start-val="0" :end-val="0" :duration="2600" />
+              </div>
             </div>
-            <el-divider direction="vertical" border-style="dashed" />
-            <div class="px-8px text-right">
-              <div class="mb-16px text-14px text-gray-400">日程安排</div>
-              <CountTo class="text-20px" :start-val="0" :end-val="0" :duration="2600" />
-            </div>
-          </div>
-        </el-col>
-      </el-row>
-    </el-skeleton>
-  </el-card>
+          </el-col>
+        </el-row>
+      </el-skeleton>
+    </el-card>
 
-  <el-row class="content mt-8px" :gutter="8" justify="space-between">
-    <!-- 1. 左侧工单与流程模块 -->
-    <el-col class="left h-full" :xl="14" :lg="14" :md="24" :sm="24" :xs="24">
-      <!-- 1.1 工单模块 -->
-      <el-card class="work-card" shadow="never">
-        <el-skeleton :loading="loading" animated>
-          <el-tabs
-            class="h-full"
-            v-model="activeWork"
-            addable
-            @tab-change="onWorkTabChange"
-            @edit="router.push({ name: 'RepairWorkOrder' })"
-          >
-            <template #add-icon><ArrowRightIcon /></template>
-            <el-tab-pane label="待办工单" name="todoWork">
-              <el-table :data="newOrders" stripe show-overflow-tooltip height="100%">
-                <el-table-column type="index" width="40" />
-                <el-table-column label="工单标题" prop="title" />
-                <el-table-column label="紧急程度" prop="level">
-                  <template #default="scope">
-                    <dict-tag :type="DICT_TYPE.LEVEL" :value="scope.row.level" />
-                  </template>
-                </el-table-column>
-                <el-table-column label="请求类型" prop="requestType">
-                  <template #default="scope">
-                    {{ IssueTypeLabel[scope.row.requestType] }}
-                  </template>
-                </el-table-column>
-                <el-table-column label="问题类型" prop="questionTypeStr" />
-              </el-table>
-            </el-tab-pane>
-            <el-tab-pane label="我的工单" name="myWork">
-              <el-table :data="myOrders" stripe show-overflow-tooltip height="100%">
-                <el-table-column type="index" width="40" />
-                <el-table-column label="工单标题" prop="title" />
-                <el-table-column label="工单状态" prop="status">
-                  <template #default="scope">
-                    <dict-tag :type="DICT_TYPE.REPAIR_ORDER_STATUS" :value="scope.row.status" />
-                  </template>
-                </el-table-column>
-                <el-table-column label="紧急程度" prop="level">
-                  <template #default="scope">
-                    <dict-tag :type="DICT_TYPE.LEVEL" :value="scope.row.level" />
-                  </template>
-                </el-table-column>
-                <el-table-column label="请求类型" prop="requestType">
-                  <template #default="scope">
-                    {{ IssueTypeLabel[scope.row.requestType] }}
-                  </template>
-                </el-table-column>
-                <el-table-column label="问题类型" prop="questionTypeStr" />
-              </el-table>
-            </el-tab-pane>
-          </el-tabs>
-        </el-skeleton>
-      </el-card>
-      <!-- 1.2 流程模块 -->
-      <el-card class="task-card mt-8px" shadow="never">
-        <el-skeleton :loading="loading" animated>
-          <el-tabs class="h-full" v-model="activeTask" addable @edit="handleTaskTab">
-            <template #add-icon><ArrowRightIcon /></template>
-            <el-tab-pane label="待办任务" name="todoTask">
-              <el-scrollbar>
-                <el-empty description="敬请期待" :image-size="100" />
-              </el-scrollbar>
-            </el-tab-pane>
-            <el-tab-pane label="我的流程" name="myWorkflow">
-              <el-scrollbar>
-                <el-empty description="敬请期待" :image-size="100" />
-              </el-scrollbar>
-            </el-tab-pane>
-            <el-tab-pane label="抄送我的" name="copy">
-              <el-scrollbar>
-                <el-empty description="敬请期待" :image-size="100" />
-              </el-scrollbar>
-            </el-tab-pane>
-          </el-tabs>
-        </el-skeleton>
-      </el-card>
-    </el-col>
+    <div class="body flex h-full gap-8px">
+      <!-- 1. 左侧-->
+      <div class="left flex-1 flex flex-col gap-8px">
+        <!-- 1.1 工单模块 -->
+        <el-card class="flex-grow-4 flex-basis-0" shadow="never" body-class="h-full box-border">
+          <el-skeleton :loading="loading" animated>
+            <el-tabs
+              v-model="activeWork"
+              addable
+              class="h-full"
+              @tab-change="onWorkTabChange"
+              @edit="router.push({ name: 'RepairWorkOrder' })"
+            >
+              <template #add-icon><ArrowRightIcon /></template>
+              <el-tab-pane label="待办工单" name="todoWork">
+                <el-table :data="newOrders" stripe show-overflow-tooltip height="100%">
+                  <el-table-column type="index" width="40" />
+                  <el-table-column label="工单标题" prop="title" />
+                  <el-table-column label="紧急程度" prop="level">
+                    <template #default="scope">
+                      <dict-tag :type="DICT_TYPE.LEVEL" :value="scope.row.level" />
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="请求类型" prop="requestType">
+                    <template #default="scope">
+                      {{ IssueTypeLabel[scope.row.requestType] }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="问题类型" prop="questionTypeStr" />
+                </el-table>
+              </el-tab-pane>
+              <el-tab-pane label="我的工单" name="myWork">
+                <el-table :data="myOrders" stripe show-overflow-tooltip height="100%">
+                  <el-table-column type="index" width="40" />
+                  <el-table-column label="工单标题" prop="title" />
+                  <el-table-column label="工单状态" prop="status">
+                    <template #default="scope">
+                      <dict-tag :type="DICT_TYPE.REPAIR_ORDER_STATUS" :value="scope.row.status" />
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="紧急程度" prop="level">
+                    <template #default="scope">
+                      <dict-tag :type="DICT_TYPE.LEVEL" :value="scope.row.level" />
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="请求类型" prop="requestType">
+                    <template #default="scope">
+                      {{ IssueTypeLabel[scope.row.requestType] }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="问题类型" prop="questionTypeStr" />
+                </el-table>
+              </el-tab-pane>
+            </el-tabs>
+          </el-skeleton>
+        </el-card>
 
-    <!-- 2. 右侧日程会议模块 -->
-    <el-col class="right h-full" :xl="10" :lg="10" :md="24" :sm="24" :xs="24">
-      <el-card class="calendar-card" shadow="never">
+        <!-- 1.2 流程模块 -->
+        <el-card class="flex-grow-3 flex-basis-0" shadow="never" body-class="h-full box-border">
+          <el-skeleton :loading="loading" animated>
+            <el-tabs class="h-full" v-model="activeTask" addable @edit="handleTaskTab">
+              <template #add-icon><ArrowRightIcon /></template>
+              <el-tab-pane label="待办任务" name="todoTask">
+                <el-scrollbar>
+                  <el-empty description="敬请期待" :image-size="100" />
+                </el-scrollbar>
+              </el-tab-pane>
+              <el-tab-pane label="我的流程" name="myWorkflow">
+                <el-scrollbar>
+                  <el-empty description="敬请期待" :image-size="100" />
+                </el-scrollbar>
+              </el-tab-pane>
+              <el-tab-pane label="抄送我的" name="copy">
+                <el-scrollbar>
+                  <el-empty description="敬请期待" :image-size="100" />
+                </el-scrollbar>
+              </el-tab-pane>
+            </el-tabs>
+          </el-skeleton>
+        </el-card>
+      </div>
+
+      <!-- 2. 右侧 -->
+      <el-card class="right flex-1" shadow="never" body-class="h-[calc(100%-60px)] box-border">
         <template #header>
-          <div class="h-3 flex justify-between">
+          <div class="h-20px flex justify-between p-20px">
             <span>我的日程</span>
             <el-button type="primary" link @click="router.push({ name: 'SystemMeetingSubscribe' })">
               更多
@@ -127,11 +128,11 @@
         </template>
 
         <!-- 2.1 日历 -->
-        <el-calendar v-model="date" />
+        <el-calendar v-model="date" class="h-250px mb-20px" />
 
         <!-- 2.2 会议 -->
         <el-skeleton :loading="loading" animated>
-          <el-scrollbar class="mt-20px">
+          <el-scrollbar class="p-[0_20px]">
             <template v-if="meetingList.length">
               <div v-for="item in meetingList" :key="item.id" class="meeting-item">
                 <div class="flex justify-between gap-x-10">
@@ -167,8 +168,8 @@
           </el-scrollbar>
         </el-skeleton>
       </el-card>
-    </el-col>
-  </el-row>
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -267,79 +268,63 @@ const getOrders = async (params: Partial<{ dealUserId: number; status: string }>
 </script>
 
 <style lang="scss" scoped>
-$content-height: calc(100% - 112px - 8px /* marginTop */);
+.home-wrapper {
+  height: calc(100vh - 40px /* padding */ - 85px /* header */ - 50px /* footer */);
+  min-height: 650px;
+}
 
-$col-height: calc((100% - 8px /* marginTop */ - 4px /* border */));
+.body {
+  height: calc(100% - 120px);
 
-.content {
-  height: $content-height;
+  .left {
+    :deep(.el-tabs__content) {
+      height: calc(100% - 40px /*top*/);
 
-  .work-card,
-  .task-card {
-    height: calc($col-height / 2);
+      .el-tab-pane {
+        height: 100%;
+      }
+    }
+  }
 
-    :deep(.el-card__body) {
-      height: calc(100% - var(--el-card-padding) * 2);
+  .right.el-card {
+    :deep(.el-card__header) {
+      padding: unset;
+    }
 
-      .el-tabs {
-        .el-tabs__content {
-          height: calc(100% - var(--el-tabs-header-height) - 15px);
+    .el-calendar {
+      :deep(.el-calendar__body) {
+        padding: 0 20px;
+
+        .el-calendar-day {
+          height: 20px;
+          padding: 5px 0;
+          line-height: 20px;
+          text-align: center;
+          box-sizing: content-box;
         }
-        /* stylelint-disable */
-        .el-tab-pane {
-          height: 100%;
+      }
+    }
 
-          .el-scrollbar > .el-scrollbar__wrap {
-            height: 100%;
-          }
+    .el-scrollbar {
+      height: calc(100% - 270px);
+
+      .meeting-item {
+        padding: 10px 20px;
+        margin-bottom: 10px;
+        color: var(--el-color-text-default);
+        cursor: pointer;
+        border: 1px solid var(--el-border-color);
+        border-radius: 10px;
+
+        &:hover {
+          background-color: var(--el-color-hover-bg);
         }
       }
     }
   }
 
-  .calendar-card {
-    height: calc(100% - 1px /*border*/);
-
-    :deep(.el-card__body) {
-      height: calc(100% - 50px /* el-card__header */);
-      padding: 0 var(--el-card-padding);
-
-      .el-calendar {
-        .el-calendar__body {
-          padding: 0px 20px;
-        }
-
-        .el-calendar-day {
-          box-sizing: content-box;
-          height: 20px;
-          padding: 5px 0;
-          line-height: 20px;
-          text-align: center;
-        }
-      }
-
-      .el-scrollbar > .el-scrollbar__wrap {
-        height: calc(100% - 270px);
-        padding: 0px 20px;
-      }
-    }
-
-    .meeting-item {
-      padding: 10px 20px;
-      margin-bottom: 10px;
-      color: var(--el-color-text-default);
-      cursor: pointer;
-      border: 1px solid var(--el-border-color);
-      border-radius: 10px;
-
-      &:hover {
-        background-color: var(--el-color-hover-bg);
-      }
-    }
-
-    .el-empty {
-      padding: unset;
-    }
+  .el-empty {
+    padding: unset;
   }
 }
 </style>

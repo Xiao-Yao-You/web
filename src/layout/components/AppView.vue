@@ -75,7 +75,6 @@ provide('reload', reload)
 
 <style scoped lang="scss">
 section.app-view {
-  // height: calc(100% - var(--app-footer-height));
-  min-height: 700px !important;
+  min-height: 650px !important;
 }
 </style>
