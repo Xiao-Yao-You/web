@@ -31,19 +31,6 @@ const play = (content?: string) => {
     speech.speak()
   }
 }
-
-// 开启/关闭语音播报
-const handleToggle = () => {
-  play('语音播报已开启')
-  // disabled.value = !disabled.value
-  // if (disabled.value) {
-  //   message.notify('语音播报已关闭')
-  //   speech.stop()
-  // } else {
-  //   message.notifySuccess('语音播报已开启')
-  //   play('语音播报已开启')
-  // }
-}
 // #endregion
 
 // #region WebSocket
@@ -69,8 +56,7 @@ const clearTimer = () => {
 // 语音轮播
 const carouselPlay = () => {
   clearTimer()
-  text.value = '您有新的运维工单，请及时处理。'
-  play()
+  play('您有新的运维工单，请及时处理。')
   timer.value = window.setInterval(() => {
     play()
   }, 1000 * 6)
@@ -130,7 +116,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="custom-hover" @click="handleToggle">
+  <div class="custom-hover">
     <MuteIcon v-if="disabled" />
     <MicroPhoneIcon v-else />
   </div>
