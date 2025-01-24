@@ -19,6 +19,7 @@ const title = computed(() => appStore.getTitle)
     :class="prefixCls"
     class="h-[var(--app-footer-height)] bg-[var(--app-content-bg-color)] text-center leading-[var(--app-footer-height)] text-[var(--el-text-color-placeholder)] dark:bg-[var(--el-bg-color)]"
   >
-    <span class="text-14px">Copyright ©2024-{{ title }}</span>
+    <span class="text-14px">备案号: 苏ICP备18016608号-3</span>&nbsp;&nbsp;
+    <span class="text-14px">Copyright ©2024-2025 {{ title }} All Rights Reserved</span>
   </div>
 </template>
