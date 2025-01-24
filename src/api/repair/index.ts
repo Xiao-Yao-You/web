@@ -569,6 +569,11 @@ export const getQuestionImportTemplate = async () => {
 export const getAddressImportTemplate = async () => {
   return request.download({ url: '/operation-address/get-import-template' })
 }
+
+// 导出运维工单
+export const exportRepairOrder = async (params: RepairOrderPage) => {
+  return request.download({ url: '/operation-order/export-excel', params })
+}
 // #endregion
 
 // #region 设备型号管理

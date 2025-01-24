@@ -12,7 +12,7 @@
         />
       </el-form-item>
       <el-form-item label="工单状态" prop="status">
-        <el-select v-model="queryParams.status" clearable class="!w-110px">
+        <el-select v-model="queryParams.status" clearable class="!w-120px">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.REPAIR_ORDER_STATUS)"
             :key="dict.value"
@@ -22,7 +22,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="紧急程度" prop="level">
-        <el-select v-model="queryParams.level" clearable class="!w-90px">
+        <el-select v-model="queryParams.level" clearable class="!w-120px">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.LEVEL)"
             :key="dict.value"
@@ -40,6 +40,22 @@
           class="!w-110px"
         />
       </el-form-item>
+      <el-form-item label="请求类型" prop="requestType">
+        <el-select v-model="queryParams.requestType" clearable class="!w-120px">
+          <el-option
+            v-for="dict in getIntDictOptions(DICT_TYPE.REPAIR_REQUEST_TYPE)"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="时间段" prop="dayNight">
+        <el-select v-model="queryParams.dayNight" clearable class="!w-120px">
+          <el-option label="日间" :value="1" />
+          <el-option label="夜间" :value="3" />
+        </el-select>
+      </el-form-item>
       <el-form-item label="问题类型" prop="questionType">
         <el-tree-select
           v-model="queryParams.questionType"
@@ -48,7 +64,7 @@
           :props="defaultProps"
           check-strictly
           node-key="id"
-          class="!w-180px"
+          class="!w-200px"
           clearable
         />
       </el-form-item>
@@ -61,15 +77,11 @@
         <el-button class="ml-12px" type="warning" plain @click="openSubscriber">
           <Icon icon="ep:setting" class="mr-5px" />推送对象
         </el-button>
+        <el-button plain type="success" :loading="exportLoading" @click="openExportModal">
+          <Icon class="mr-5px" icon="ep:download" />
+          导出当前表格
+        </el-button>
       </el-form-item>
-      <!-- <el-button
-        type="success"
-        plain
-        @click="handleExport"
-        :loading="exportLoading"
-      >
-        <Icon icon="ep:download" class="mr-5px" /> 导出
-      </el-button> -->
     </el-form>
   </ContentWrap>
 
@@ -280,7 +292,12 @@ import OrderCompleteForm from './OrderCompleteForm.vue'
 import OrderStartForm from './OrderStartForm.vue'
 import OrderSubscriber from './OrderSubscriber.vue'
 import OrderDetail from './OrderDetail.vue'
-import { getRepairOrderPage, handleRepairOrder, type RepairOrder } from '@/api/repair'
+import {
+  getRepairOrderPage,
+  handleRepairOrder,
+  exportRepairOrder,
+  type RepairOrder
+} from '@/api/repair'
 import {
   IssueTypeLabel,
   OperateMethod,
@@ -298,6 +315,7 @@ import { useIcon } from '@/hooks/web/useIcon'
 import { useUserStore } from '@/store/modules/user'
 import { useCountDown } from '@/hooks/web/useCountDown'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import download from '@/utils/download'
 
 defineOptions({
   name: 'RepairWorkOrder'
@@ -320,9 +338,11 @@ const queryParams = reactive({
   pageSize: 10,
   title: undefined as unknown as string,
   status: undefined as unknown as string, // 工单状态
-  dealUserNickName: '',
+  dealUserNickName: undefined,
   questionType: undefined, // 问题类型
-  level: undefined // 紧急程度
+  level: undefined, // 紧急程度
+  requestType: undefined, // 请求类型
+  dayNight: undefined
 })
 // 查询
 const getList = async () => {
@@ -574,6 +594,19 @@ countDown.start()
 // 事件总线（WebSocket 推送工单处理的最新情况后，立即刷新，主要针对工单播报员）
 const { emitter } = useEmitt()
 emitter.on('getNewOrder', onRefresh)
+// #endregion
+
+// #region 六、工单导出
+const exportLoading = ref(false)
+const openExportModal = async () => {
+  exportLoading.value = true
+  try {
+    const blob = await exportRepairOrder(queryParams)
+    download.excel(blob, '工单列表.xls')
+  } finally {
+    exportLoading.value = false
+  }
+}
 // #endregion
 
 onMounted(() => {
