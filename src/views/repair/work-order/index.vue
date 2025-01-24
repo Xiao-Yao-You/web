@@ -14,8 +14,8 @@
       <el-form-item label="工单状态" prop="status">
         <el-select v-model="queryParams.status" clearable class="!w-120px">
           <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.REPAIR_ORDER_STATUS)"
-            :key="dict.value"
+            v-for="dict in getStrDictOptions(DICT_TYPE.REPAIR_ORDER_STATUS)"
+            :key="dict.value as string"
             :label="dict.label"
             :value="dict.value"
           />
@@ -305,7 +305,7 @@ import {
   RepairSourceType,
   OperateStatus
 } from '@/api/repair/constant'
-import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
+import { DICT_TYPE, getIntDictOptions, getStrDictOptions } from '@/utils/dict'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
 import { defaultProps } from '@/utils/tree'
 import { isEmptyVal } from '@/utils/is'
@@ -349,11 +349,7 @@ const getList = async () => {
   await queryFormRef.value.validate()
   loading.value = true
   try {
-    const { status, ...rest } = queryParams
-    const data = await getRepairOrderPage({
-      ...rest,
-      status: status ? '0' + status : undefined
-    })
+    const data = await getRepairOrderPage(queryParams)
     list.value = data.list
     total.value = data.total
   } finally {
