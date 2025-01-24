@@ -38,7 +38,7 @@
           </div>
           <div class="flex items-center justify-end space-x-10px">
             <ThemeSwitch />
-            <LocaleDropdown class="dark:text-white lt-xl:text-white" />
+            <!-- <LocaleDropdown class="dark:text-white lt-xl:text-white" /> -->
           </div>
         </div>
         <!-- 右边的登录界面 -->
@@ -49,34 +49,44 @@
             <!-- 账号登录 -->
             <LoginForm class="m-auto h-auto p-20px lt-xl:(rounded-3xl light:bg-white)" />
             <!-- 手机登录 -->
-            <MobileForm class="m-auto h-auto p-20px lt-xl:(rounded-3xl light:bg-white)" />
+            <!-- <MobileForm class="m-auto h-auto p-20px lt-xl:(rounded-3xl light:bg-white)" /> -->
             <!-- 二维码登录 -->
-            <QrCodeForm class="m-auto h-auto p-20px lt-xl:(rounded-3xl light:bg-white)" />
+            <!-- <QrCodeForm class="m-auto h-auto p-20px lt-xl:(rounded-3xl light:bg-white)" /> -->
             <!-- 注册 -->
-            <RegisterForm class="m-auto h-auto p-20px lt-xl:(rounded-3xl light:bg-white)" />
+            <!-- <RegisterForm class="m-auto h-auto p-20px lt-xl:(rounded-3xl light:bg-white)" /> -->
             <!-- 三方登录 -->
-            <SSOLoginVue class="m-auto h-auto p-20px lt-xl:(rounded-3xl light:bg-white)" />
+            <!-- <SSOLoginVue class="m-auto h-auto p-20px lt-xl:(rounded-3xl light:bg-white)" /> -->
           </div>
         </Transition>
+
+        <!-- 备案号、版权 -->
+        <p
+          class="absolute bottom-0 left-0 right-0 m-0 h-[var(--app-footer-height)] text-center leading-[var(--app-footer-height)] text-[var(--el-text-color-placeholder)] select-none"
+        >
+          <span class="text-14px">备案号: 苏ICP备18016608号-3</span>&nbsp;&nbsp;
+          <span class="text-14px">Copyright ©2024-2025 {{ title }} All Rights Reserved</span>
+        </p>
       </div>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
 import { underlineToHump } from '@/utils'
-
 import { useDesign } from '@/hooks/web/useDesign'
 import { useAppStore } from '@/store/modules/app'
 import { ThemeSwitch } from '@/layout/components/ThemeSwitch'
-import { LocaleDropdown } from '@/layout/components/LocaleDropdown'
+// import { LocaleDropdown } from '@/layout/components/LocaleDropdown'
 
-import { LoginForm, MobileForm, QrCodeForm, RegisterForm, SSOLoginVue } from './components'
+import { LoginForm } from './components'
 
 defineOptions({ name: 'Login' })
 
 const { t } = useI18n()
 const appStore = useAppStore()
 const { getPrefixCls } = useDesign()
+
+const title = computed(() => appStore.getTitle)
+
 const prefixCls = getPrefixCls('login')
 </script>
 
