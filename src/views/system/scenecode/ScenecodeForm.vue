@@ -13,6 +13,15 @@
       <el-form-item label="编码名称" prop="description">
         <el-input v-model="formData.description" placeholder="请输入编码名称" />
       </el-form-item>
+      <el-form-item label="编码类型" prop="codeType">
+        <el-select v-model="formData.codeType" placeholder="请选择建议类型">
+          <el-option
+            v-for="dict in getIntDictOptions(DICT_TYPE.CODE_TYPE)"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+        /></el-select>
+      </el-form-item>
       <el-form-item label="前缀" prop="prefix">
         <el-input v-model="formData.prefix" placeholder="请输入编码前缀" />
       </el-form-item>
@@ -69,6 +78,7 @@
 <script setup lang="ts">
 import { SceneCodeApi, SceneCodeVO } from '@/api/system/scenecode'
 import * as FixOptions from './constant'
+import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 
 /** 单据编码类型配置 表单 */
 defineOptions({ name: 'SceneCodeForm' })
@@ -85,6 +95,7 @@ const formData = ref({
   keyCode: undefined,
   description: undefined,
   prefix: undefined,
+  codeType: undefined,
   infix: FixOptions.infixOptions[0].value,
   suffix: FixOptions.suffixOptions[0].value,
   type: FixOptions.sceneType[2].value,
@@ -95,7 +106,8 @@ const formData = ref({
 const formRules = reactive({
   keyCode: [{ required: true, message: '编码编号不能为空', trigger: 'blur' }],
   description: [{ required: true, message: '编码名称不能为空', trigger: 'blur' }],
-  prefix: [{ required: true, message: '编码前缀不能为空', trigger: 'blur' }]
+  prefix: [{ required: true, message: '编码前缀不能为空', trigger: 'blur' }],
+  codeType: [{ required: true, message: '编码类型不能为空', trigger: 'blur' }]
 })
 const formRef = ref() // 表单 Ref
 
@@ -148,6 +160,7 @@ const resetForm = () => {
     keyCode: undefined,
     description: undefined,
     prefix: undefined,
+    codeType: undefined,
     infix: FixOptions.infixOptions[0].value,
     suffix: FixOptions.suffixOptions[0].value,
     type: FixOptions.sceneType[2].value,

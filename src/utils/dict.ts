@@ -224,5 +224,11 @@ export enum DICT_TYPE {
   REPAIR_REQUEST_TYPE = 'repair_request_type', // 工单请求类型
   REPAIR_OLD_DEVICE_STATE = 'repair_old_device_state', // 老系统设备状态
   //============ 奖品等级 ===========
-  PRIZE_LEVEL = 'prize_level'
+  PRIZE_LEVEL = 'prize_level',
+  // ============= 合理化建议 =================
+  ADOPTION_STATUS = 'adoption_status', //合理化建议采纳状态
+  SUGGESTION_TYPE = 'suggestion_type', //合理化建议类型
+
+  // =============== 补充:编码类型 ================
+  CODE_TYPE = 'code_type'
 }

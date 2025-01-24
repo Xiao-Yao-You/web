@@ -12,6 +12,7 @@ export interface SceneCodeVO {
   start: number // 起始值
   step: number // 步长
   status: string // 状态
+  codeType: number
 }
 
 export type SceneCodeParams = Partial<
