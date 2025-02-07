@@ -18,7 +18,13 @@ const props = withDefaults(
   }
 )
 
-const fileList = defineModel<UploadUserFile[]>('fileList', { type: Array, default: () => [] })
+const fileList = defineModel<UploadUserFile[]>('fileList', {
+  type: Array,
+  default: () => [],
+  get(value) {
+    return value || []
+  }
+})
 
 const PlusIcon = useIcon({ icon: 'ep:plus', size: 20 })
 const { uploadUrl, httpRequest } = useUpload()
