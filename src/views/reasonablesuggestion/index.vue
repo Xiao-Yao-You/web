@@ -98,7 +98,11 @@
       <el-table-column label="申报人工号" align="center" prop="workNum" />
       <el-table-column label="手机号" align="center" prop="phoneNum" />
       <el-table-column label="申报部门" align="center" prop="deptName" />
-      <el-table-column label="采纳状态" align="center" prop="status" />
+      <el-table-column label="采纳状态" align="center" prop="status">
+        <template #default="{ row: { status } }">
+          <dict-tag :type="DICT_TYPE.ADOPTION_STATUS" :value="status" />
+        </template>
+      </el-table-column>
       <el-table-column
         label="申报时间"
         align="center"
@@ -106,14 +110,9 @@
         :formatter="dateFormatter"
         width="180px"
       />
-      <el-table-column label="操作" align="center">
+      <el-table-column label="操作" align="center" width="260px">
         <template #default="scope">
-          <el-button
-            link
-            type="primary"
-            @click="openForm('update', scope.row.id)"
-            v-hasPermi="['reasonableSuggestion::update']"
-          >
+          <el-button link type="primary" @click="openViewForm('详情', scope.row.id)">
             详情
           </el-button>
           <el-button
@@ -124,6 +123,15 @@
             v-if="scope.row.userId == userInfo.id"
           >
             编辑
+          </el-button>
+          <el-button
+            link
+            type="primary"
+            @click="openViewForm('审核', scope.row.id)"
+            v-if="scope.row.status == 1"
+            v-hasPermi="['reasonableSuggestion::examine']"
+          >
+            审核
           </el-button>
           <el-button
             link
@@ -147,6 +155,7 @@
 
   <!-- 表单弹窗：添加/修改 -->
   <ReasonableSuggestionForm ref="formRef" @success="getList" />
+  <ReasonableSuggestionViewForm ref="viewFormRef" @success="getList" />
 </template>
 
 <script setup lang="ts">
@@ -154,7 +163,9 @@ import { dateFormatter } from '@/utils/formatTime'
 import download from '@/utils/download'
 import { ReasonableSuggestionApi, ReasonableSuggestionVO } from '@/api/reasonablesuggestion'
 import ReasonableSuggestionForm from './ReasonableSuggestionForm.vue'
+import ReasonableSuggestionViewForm from './ReasonableSuggestionViewForm.vue'
 import { useUserStore } from '@/store/modules/user'
+import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 
 /** 合理化建议 列表 */
 defineOptions({ name: 'ReasonableSuggestion' })
@@ -208,6 +219,12 @@ const resetQuery = () => {
 const formRef = ref()
 const openForm = (type: string, id?: number) => {
   formRef.value.open(type, id)
+}
+
+/** 详情页 */
+const viewFormRef = ref()
+const openViewForm = (type: string, id?: number) => {
+  viewFormRef.value.open(type, id)
 }
 
 /** 删除按钮操作 */

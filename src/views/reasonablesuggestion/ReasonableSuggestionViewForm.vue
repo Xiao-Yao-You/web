@@ -13,10 +13,11 @@
           placeholder="请输入建议主题"
           maxlength="50"
           show-word-limit
+          disabled
         />
       </el-form-item>
       <el-form-item label="建议类型" prop="suggestionType">
-        <el-select v-model="formData.suggestionType" placeholder="请选择建议类型">
+        <el-select v-model="formData.suggestionType" placeholder="请选择建议类型" disabled>
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.SUGGESTION_TYPE)"
             :key="dict.value"
@@ -31,13 +32,13 @@
         <el-input v-model="formData.workNum" placeholder="请输入申报人工号" disabled />
       </el-form-item>
       <el-form-item label="是否匿名" prop="anonymous">
-        <el-radio-group v-model="formData.anonymous" @change="handleRadioChange">
+        <el-radio-group v-model="formData.anonymous" @change="handleRadioChange" disabled>
           <el-radio label="1">是</el-radio>
           <el-radio label="2">否</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="手机号" prop="phoneNum">
-        <el-input v-model="formData.phoneNum" placeholder="请输入手机号" />
+        <el-input v-model="formData.phoneNum" placeholder="请输入手机号" disabled />
       </el-form-item>
       <el-form-item label="申报部门" prop="deptId">
         <el-tree-select
@@ -46,6 +47,7 @@
           :props="defaultProps"
           check-strictly
           node-key="id"
+          disabled
           placeholder="请选择归属部门"
         />
       </el-form-item>
@@ -56,6 +58,7 @@
           placeholder="请输入问题描述"
           maxlength="200"
           :autosize="{ minRows: 3 }"
+          disabled
           show-word-limit
         />
       </el-form-item>
@@ -67,6 +70,7 @@
           maxlength="200"
           :autosize="{ minRows: 3 }"
           show-word-limit
+          disabled
         />
       </el-form-item>
       <el-form-item label="效果预估" prop="effectEstimation">
@@ -77,6 +81,7 @@
           maxlength="200"
           :autosize="{ minRows: 3 }"
           show-word-limit
+          disabled
         />
       </el-form-item>
 
@@ -84,12 +89,26 @@
         <BatchPicturesUploader
           v-model:fileList="formData.fileList"
           :limit-size="{ size: 5, unit: 'MB' }"
+          disabled
         />
       </el-form-item>
     </el-form>
     <template #footer>
-      <el-button @click="submitForm" type="primary" :disabled="formLoading">确 定</el-button>
-      <el-button @click="dialogVisible = false">取 消</el-button>
+      <el-button
+        @click="examine(3)"
+        v-if="formType == '审核'"
+        type="primary"
+        :disabled="formLoading"
+        >不 采 纳</el-button
+      >
+      <el-button
+        @click="examine(2)"
+        v-if="formType == '审核'"
+        type="primary"
+        :disabled="formLoading"
+        >采 纳</el-button
+      >
+      <el-button @click="dialogVisible = false">返 回</el-button>
     </template>
   </Dialog>
 </template>
@@ -103,7 +122,7 @@ import type { UploadFiles } from 'element-plus'
 import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
 
 /** 合理化建议 表单 */
-defineOptions({ name: 'ReasonableSuggestionForm' })
+defineOptions({ name: 'ReasonableSuggestionViewForm' })
 
 const { t } = useI18n() // 国际化
 const message = useMessage() // 消息弹窗
@@ -118,7 +137,7 @@ const formType = ref('') // 表单的类型：create - 新增；update - 修改
 const depts = ref<Tree[]>([])
 
 const formData = ref({
-  id: undefined,
+  id: undefined as unknown as number,
   title: undefined,
   suggestionType: undefined,
   userId: undefined as unknown as number,
@@ -147,7 +166,7 @@ const formRef = ref() // 表单 Ref
 /** 打开弹窗 */
 const open = async (type: string, id?: number) => {
   dialogVisible.value = true
-  dialogTitle.value = t('action.' + type)
+  dialogTitle.value = type
   formType.value = type
   resetForm()
   // 查询当前用户所在的部门列表
@@ -178,6 +197,20 @@ defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 
 /** 提交表单 */
 const emit = defineEmits(['success']) // 定义 success 事件，用于操作成功后的回调
+
+const examine = async (examineType: number) => {
+  formLoading.value = true
+  try {
+    dialogVisible.value = false
+    await ReasonableSuggestionApi.examine(formData.value.id, examineType)
+    message.success('审核成功')
+    // 发送操作成功的事件
+    emit('success')
+  } finally {
+    formLoading.value = false
+  }
+}
+
 const submitForm = async () => {
   // 校验表单
   await formRef.value.validate()
@@ -208,7 +241,7 @@ const handleRadioChange = (value: string) => {
 /** 重置表单 */
 const resetForm = () => {
   formData.value = {
-    id: undefined,
+    id: undefined as unknown as number,
     title: undefined,
     suggestionType: undefined,
     userId: undefined as unknown as number,

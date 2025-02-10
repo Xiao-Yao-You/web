@@ -33,6 +33,13 @@ export const ReasonableSuggestionApi = {
     return await request.get({ url: `/reasonableSuggestion/get?id=` + id })
   },
 
+  // 审核合理化建议详情
+  examine: async (id: number, examineType: number) => {
+    return await request.post({
+      url: `/reasonableSuggestion/examine?id=` + id + `&examineType=` + examineType
+    })
+  },
+
   // 新增合理化建议
   create: async (data: VO) => {
     return await request.post({ url: `/reasonableSuggestion/create`, data })
