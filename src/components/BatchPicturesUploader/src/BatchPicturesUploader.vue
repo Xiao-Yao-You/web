@@ -12,9 +12,11 @@ const message = useMessage()
 const props = withDefaults(
   defineProps<{
     limitSize: { size: number; unit: 'KB' | 'MB' } // 文件大小限制，默认 0，不限制
+    disabled?: boolean // 是否禁用
   }>(),
   {
-    limitSize: () => ({ size: 0, unit: 'KB' })
+    limitSize: () => ({ size: 0, unit: 'KB' }),
+    disabled: false
   }
 )
 
@@ -68,7 +70,14 @@ const handlePictureCardPreview: UploadProps['onPreview'] = (uploadFile) => {
 </script>
 
 <template>
-  <div class="batch-pictures-uploader">
+  <div class="batch-pictures-uploader relative">
+    <!-- disbaled 遮罩层 -->
+    <div
+      v-if="props.disabled"
+      class="absolute top-0 left-0 w-full h-full cursor-not-allowed z-1"
+    ></div>
+
+    <!-- 上传组件 -->
     <el-upload
       :file-list="fileList"
       :action="uploadUrl"
@@ -82,6 +91,7 @@ const handlePictureCardPreview: UploadProps['onPreview'] = (uploadFile) => {
       <PlusIcon />
     </el-upload>
 
+    <!-- 预览 -->
     <el-dialog v-model="dialogVisible">
       <div class="text-center">
         <img width="400" height="auto" :src="dialogImageUrl" alt="Preview Image" />
@@ -89,3 +99,11 @@ const handlePictureCardPreview: UploadProps['onPreview'] = (uploadFile) => {
     </el-dialog>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.disabled {
+  &:hover {
+    cursor: not-allowed;
+  }
+}
+</style>
