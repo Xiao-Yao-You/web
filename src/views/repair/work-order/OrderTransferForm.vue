@@ -60,7 +60,6 @@ import { handleRepairOrder } from '@/api/repair'
 import { OperateMethod } from '@/api/repair/constant'
 import { defaultProps } from '@/utils/tree'
 import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
-import { getPictureName } from './utils'
 import { type UserVO } from '@/api/system/user'
 import type { UploadUserFile } from 'element-plus'
 
@@ -126,8 +125,8 @@ const onConfirm = async () => {
     userNickName: user.nickname,
     operateMethod: OperateMethod.Transfer,
     picture: picture
-      .map((p) => getPictureName(p.url))
-      .filter((p) => p)
+      .map((p) => p.url)
+      .filter((url) => url)
       .join(';')
   }
   loading.value = true

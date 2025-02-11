@@ -59,7 +59,6 @@ import { OperateMethod, OperateStatus } from '@/api/repair/constant'
 import { useUserStore } from '@/store/modules/user'
 import { formatDate } from '@/utils/formatTime'
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
-import { getPictureName } from './utils'
 import type { UploadUserFile, FormInstance } from 'element-plus'
 
 defineOptions({
@@ -130,8 +129,8 @@ const onConfirm = async () => {
     operateUserNickName: operateUser.nickname,
     operateMethod: OperateMethod.Finish,
     picture: picture
-      .map((p) => getPictureName(p.url))
-      .filter((p) => p)
+      .map((p) => p.url)
+      .filter((url) => url)
       .join(';')
   }
   loading.value = true

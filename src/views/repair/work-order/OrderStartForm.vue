@@ -1,9 +1,9 @@
 <template>
   <Dialog title="现场确认" v-model="dialogVisible" :fullscreen="false" :draggable="false">
     <el-form ref="formRef" :model="formData" :rules="formRules" v-loading="loading">
-      <el-form-item label="现场照片" prop="pictureList">
+      <el-form-item label="现场照片" prop="picture">
         <BatchPicturesUploader
-          v-model:fileList="formData.pictureList"
+          v-model:fileList="formData.picture"
           :limit-size="{ size: 5, unit: 'MB' }"
         />
       </el-form-item>
@@ -54,12 +54,12 @@
 
 <script setup lang="ts">
 import { handleRepairOrder } from '@/api/repair'
-import { PictureType, IssueTypeOptions, IssueTypeEnum, OperateMethod } from '@/api/repair/constant'
+import { IssueTypeOptions, IssueTypeEnum, OperateMethod } from '@/api/repair/constant'
 import { CommonLevelEnum } from '@/utils/constants'
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
 import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
-import type { UploadFiles } from 'element-plus'
+import type { UploadUserFile } from 'element-plus'
 
 defineOptions({
   name: 'OrderTransferForm'
@@ -73,14 +73,14 @@ const loading = ref(false)
 const formRef = ref()
 const formData = ref({
   id: undefined as unknown as number,
-  pictureList: undefined as unknown as UploadFiles,
+  picture: [] as UploadUserFile[],
   remark: '',
   requestType: undefined as unknown as IssueTypeEnum,
   questionType: [] as number[],
   level: undefined as unknown as CommonLevelEnum
 })
 const formRules = reactive({
-  pictureList: [{ required: true, message: '现场图片不能为空', trigger: ['blur', 'change'] }],
+  picture: [{ required: true, message: '现场图片不能为空', trigger: ['blur', 'change'] }],
   remark: [{ required: true, message: '确认说明不能为空', trigger: 'blur' }],
   requestType: [{ required: true, message: '请求类型不能为空', trigger: ['blur', 'change'] }],
   questionType: [{ type: 'array', required: true, message: '问题类型不能为空', trigger: 'blur' }],
@@ -97,7 +97,7 @@ defineExpose({ open })
 const resetForm = () => {
   formData.value = {
     id: undefined as unknown as number,
-    pictureList: undefined as unknown as UploadFiles,
+    picture: [] as UploadUserFile[],
     remark: '',
     requestType: undefined as unknown as IssueTypeEnum,
     questionType: [],
@@ -113,15 +113,14 @@ const onCancel = () => {
 const emit = defineEmits(['success'])
 const onConfirm = async () => {
   await formRef.value.validate()
-  const { pictureList, questionType, ...rest } = formData.value
+  const { picture, questionType, ...rest } = formData.value
   const data = {
     ...rest,
     questionType: questionType[questionType.length - 1],
-    pictureList: pictureList.map((p) => ({
-      name: p.name,
-      url: p.url!,
-      type: PictureType.Scene
-    })),
+    picture: picture
+      .map((p) => p.url)
+      .filter((url) => url)
+      .join(';'),
     operateMethod: OperateMethod.Confirm
   }
   loading.value = true

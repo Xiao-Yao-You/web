@@ -28,7 +28,6 @@
 import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
 import { OperateMethod } from '@/api/repair/constant'
 import { handleRepairOrder } from '@/api/repair'
-import { getPictureName } from './utils'
 import type { UploadUserFile, FormInstance } from 'element-plus'
 
 defineOptions({
@@ -78,8 +77,8 @@ const onConfirm = async () => {
     ...rest,
     operateMethod: OperateMethod.HangUp,
     picture: picture
-      .map((p) => getPictureName(p.url))
-      .filter((p) => p)
+      .map((p) => p.url)
+      .filter((url) => url)
       .join(';')
   }
   loading.value = true

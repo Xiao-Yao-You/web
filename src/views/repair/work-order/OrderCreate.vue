@@ -128,7 +128,6 @@ import { IssueTypeEnum, OperateMethod, RepairSourceType } from '@/api/repair/con
 import { isMobilePhone } from '@/utils/is'
 import { CommonLevelEnum } from '@/utils/constants'
 import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
-import { getPictureName } from './utils'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
 import type { ElFormItem, FormInstance, UploadUserFile, ElCascader } from 'element-plus'
 
@@ -283,8 +282,8 @@ const submitForm = async () => {
           operateMethod: OperateMethod.Create,
           sourceType: RepairSourceType.Offline,
           picture: picture
-            .map((p) => getPictureName(p.url))
-            .filter((p) => p)
+            .map((p) => p.url)
+            .filter((url) => url)
             .join(';')
         },
         isQR.value ? { labelCode, deviceName, deviceId } : {}
