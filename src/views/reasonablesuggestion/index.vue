@@ -93,7 +93,11 @@
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
       <el-table-column label="序号" type="index" width="80" />
       <el-table-column label="建议主题" align="center" prop="title" width="250" />
-      <el-table-column label="建议类型" align="center" prop="suggestionType" />
+      <el-table-column label="建议类型" align="center" prop="suggestionType">
+        <template #default="{ row: { suggestionType } }">
+          <dict-tag :type="DICT_TYPE.SUGGESTION_TYPE" :value="suggestionType" />
+        </template>
+      </el-table-column>
       <el-table-column label="申报人" align="center" prop="nickname" />
       <el-table-column label="申报人工号" align="center" prop="workNum" />
       <el-table-column label="手机号" align="center" prop="phoneNum" />
