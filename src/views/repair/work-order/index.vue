@@ -547,9 +547,11 @@ const handleDisabled = (
     case OperateMethod.Restart:
       res = status === OperateStatus.HangUp && dealUserId === user.value.id
       break
-    // 撤销的前提条件：不是已完成
+    // 撤销的前提条件：不是已完成、已撤销、已处理
     case OperateMethod.Revoke:
-      res = status !== OperateStatus.Finish && submitUserId === user.value.id
+      res =
+        ![OperateStatus.Revoke, OperateStatus.Done, OperateStatus.Finish].includes(status) &&
+        submitUserId === user.value.id
       break
     default:
       break
