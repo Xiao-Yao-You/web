@@ -78,14 +78,47 @@ export enum OperateMethod {
   Finish = 'WANCHENG',
   Revoke = 'CHEXIAO',
   Restart = 'KAISHI'
-  // 'CHUANGJIAN' = '创建',
-  // 'PAIDAN' = '派单',
-  // 'LINGDAN' = '领单',
-  // 'ZHUANJIAO' = '转交',
-  // 'XIANCHNAGQUEREN' = '现场确认',
-  // 'GUAQI' = '挂起',
-  // 'WANCHENG' = '已完成',
-  // 'CHEXIAO' = '撤销'
+  // CHUANGJIAN: '创建',
+  // PAIDAN: '派单',
+  // LINGDAN: '抢单',
+  // ZHUANJIAO: '转交',
+  // XIANCHNAGQUEREN: '现场确认',
+  // GUAQI: '挂起',
+  // WANCHENG: '已完成',
+  // CHEXIAO: '撤销',
+  // KAISHI: '重启',
+}
+
+/**
+ * @description 后端工单处理方式对应的枚举
+ * @readonly
+ * @enum {string}
+ */
+export const OperateType = {
+  CHUANGJIAN: 99,
+  PAIDAN: 0,
+  LINGDAN: 1,
+  ZHUANJIAO: 2,
+  XIANCHNAGQUEREN: 3,
+  GUAQI: 4,
+  WANCHENG: 5,
+  CHEXIAO: 6,
+  KAISHI: 7,
+  OUTSOURCING: 8,
+  OUTSOURCING_RESTART: 9,
+  99: '创建',
+  0: '派单',
+  1: '抢单',
+  2: '转交',
+  3: '现场确认',
+  4: '挂起',
+  5: '已完成',
+  501: '无需处理',
+  502: '无法排除故障',
+  6: '撤销',
+  7: '重启',
+  8: '委外维修',
+  9: '委外维修/重启'
 }
 
 // 工单报修方式

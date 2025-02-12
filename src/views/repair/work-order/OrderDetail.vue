@@ -24,6 +24,19 @@
         {{ getDictLabel(DICT_TYPE.LEVEL, info.level) }}
       </el-descriptions-item>
       <el-descriptions-item label="问题描述"> {{ info.description }} </el-descriptions-item>
+      <el-descriptions-item label="问题图片">
+        <el-empty
+          v-if="!pictures.length"
+          style="padding: unset"
+          :image-size="80"
+          description="暂无数据"
+        />
+        <el-carousel v-else trigger="click">
+          <el-carousel-item v-for="(url, index) in pictures" :key="index">
+            <el-image style="width: 100%; height: 100%" :src="url" fit="contain" />
+          </el-carousel-item>
+        </el-carousel>
+      </el-descriptions-item>
     </el-descriptions>
   </Dialog>
 </template>
@@ -32,6 +45,7 @@
 import { ElLoading } from 'element-plus'
 import { DICT_TYPE, getDictLabel } from '@/utils/dict'
 import { getRepairOrder, type RepairOrder } from '@/api/repair'
+import { OperateType } from '@/api/repair/constant'
 
 defineOptions({
   name: 'OrderDetail'
@@ -39,6 +53,14 @@ defineOptions({
 
 const visible = ref(false)
 const info = ref({} as RepairOrder)
+const pictures = computed(() => {
+  if (Array.isArray(info.value.recordList)) {
+    const record = info.value.recordList.find((item) => item.operateType === OperateType.CHUANGJIAN)
+    return record?.picture ? record.picture.split(';') : []
+  } else {
+    return []
+  }
+})
 const open = async (id: number) => {
   info.value = {} as RepairOrder
   visible.value = true

@@ -467,6 +467,7 @@ export interface RepairOrder {
   questionType: number // 问题管理中的某个具体问题的 id
   level: CommonLevelEnum // 紧急程度
   desc: string
+  recordList: any[] // 处理记录
   [key: string]: any
 }
 
