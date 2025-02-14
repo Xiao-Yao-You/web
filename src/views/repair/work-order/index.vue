@@ -112,72 +112,72 @@
     <el-table v-loading="loading" :data="list" stripe show-overflow-tooltip>
       <el-table-column type="index" align="center" width="40" fixed="left" />
       <el-table-column label="工单标题" prop="title" width="150" fixed="left" />
-      <el-table-column label="工单状态" align="center" prop="status" width="100" fixed="left">
+      <el-table-column label="工单状态" prop="status" width="100" fixed="left">
         <template #default="{ row: { status } }">
           <dict-tag :type="DICT_TYPE.REPAIR_ORDER_STATUS" :value="status" />
         </template>
       </el-table-column>
-      <el-table-column label="工单编号" align="center" prop="code" />
-      <el-table-column label="请求类型" align="center" prop="requestType" width="80">
-        <template #default="scope">
-          {{ IssueTypeLabel[scope.row.requestType] || '/' }}
-        </template>
-      </el-table-column>
-      <el-table-column label="问题类型" align="center" prop="questionTypeStr" width="140">
-        <template #default="scope">
-          {{ scope.row.questionTypeStr || '/' }}
-        </template>
-      </el-table-column>
-      <el-table-column label="紧急程度" align="center" prop="level">
-        <template #default="{ row: { level } }">
-          <span v-if="isEmptyVal(level)">/</span>
-          <dict-tag v-else :type="DICT_TYPE.LEVEL" :value="level" />
-        </template>
-      </el-table-column>
-      <el-table-column label="报修人" align="center" prop="submitUserNickName" />
-      <el-table-column label="处理人" align="center" prop="dealUserNickName">
+      <el-table-column label="工单编号" prop="code" width="100" />
+      <el-table-column label="报修人" prop="submitUserNickName" />
+      <el-table-column label="处理人" prop="dealUserNickName">
         <template #default="{ row: { dealUserNickName } }">
-          {{ dealUserNickName || '/' }}
+          {{ dealUserNickName }}
         </template>
       </el-table-column>
-      <el-table-column label="响应时长" align="center" prop="allocationConsume" width="120">
-        <template #default="{ row: { allocationConsume } }">
-          {{ allocationConsume ? formatPast2(allocationConsume) : '/' }}
-        </template>
-      </el-table-column>
-      <el-table-column label="个人处置时长" align="center" prop="dealConsume" width="120">
-        <template #default="{ row: { dealConsume } }">
-          {{ dealConsume ? formatPast2(dealConsume) : '/' }}
-        </template>
-      </el-table-column>
-      <el-table-column label="挂起时长" align="center" prop="hangUpConsume" width="120">
-        <template #default="{ row: { hangUpConsume } }">
-          {{ hangUpConsume ? formatPast2(hangUpConsume) : '/' }}
-        </template>
-      </el-table-column>
-      <el-table-column label="处置总时长" align="center" prop="completeConsume" width="120">
-        <template #default="{ row: { completeConsume } }">
-          {{ completeConsume ? formatPast2(completeConsume) : '/' }}
-        </template>
-      </el-table-column>
-      <el-table-column label="任务类型" align="center" prop="type" width="100">
-        <template #default="{ row: { type } }">
-          {{ OrderTakeType[type] || '/' }}
-        </template>
-      </el-table-column>
-      <el-table-column label="工单来源" align="center" prop="sourceType">
-        <template #default="{ row: { sourceType } }">
-          {{ RepairSourceType[sourceType] }}
-        </template>
-      </el-table-column>
-      <el-table-column label="发起时间" align="center" prop="createTime" width="180">
+      <el-table-column label="发起时间" prop="createTime" width="180">
         <template #default="{ row: { createTime } }">
           {{ formatDate(createTime) }}
         </template>
       </el-table-column>
-      <el-table-column label="完成时间" align="center" prop="completeTime" width="180">
+      <el-table-column label="紧急程度" prop="level">
+        <template #default="{ row: { level } }">
+          <span v-if="isEmptyVal(level)">待定</span>
+          <dict-tag v-else :type="DICT_TYPE.LEVEL" :value="level" />
+        </template>
+      </el-table-column>
+      <el-table-column label="请求类型" prop="requestType" width="80">
+        <template #default="scope">
+          {{ IssueTypeLabel[scope.row.requestType] || '待定' }}
+        </template>
+      </el-table-column>
+      <el-table-column label="问题类型" prop="questionTypeStr" width="150">
+        <template #default="scope">
+          {{ scope.row.questionTypeStr || '待定' }}
+        </template>
+      </el-table-column>
+      <el-table-column label="完成时间" prop="completeTime" width="180">
         <template #default="{ row: { completeTime } }">
-          {{ formatDate(completeTime) || '/' }}
+          {{ formatDate(completeTime) }}
+        </template>
+      </el-table-column>
+      <el-table-column label="响应时长" prop="allocationConsume" width="120">
+        <template #default="{ row: { allocationConsume } }">
+          {{ allocationConsume ? formatPast2(allocationConsume) : '' }}
+        </template>
+      </el-table-column>
+      <el-table-column label="个人处置时长" prop="dealConsume" width="120">
+        <template #default="{ row: { dealConsume } }">
+          {{ dealConsume ? formatPast2(dealConsume) : '' }}
+        </template>
+      </el-table-column>
+      <el-table-column label="挂起时长" prop="hangUpConsume" width="120">
+        <template #default="{ row: { hangUpConsume } }">
+          {{ hangUpConsume ? formatPast2(hangUpConsume) : '' }}
+        </template>
+      </el-table-column>
+      <el-table-column label="处置总时长" prop="completeConsume" width="120">
+        <template #default="{ row: { completeConsume } }">
+          {{ completeConsume ? formatPast2(completeConsume) : '' }}
+        </template>
+      </el-table-column>
+      <el-table-column label="任务类型" prop="type" width="100">
+        <template #default="{ row: { type } }">
+          {{ OrderTakeType[type] || '' }}
+        </template>
+      </el-table-column>
+      <el-table-column label="工单来源" prop="sourceType">
+        <template #default="{ row: { sourceType } }">
+          {{ RepairSourceType[sourceType] }}
         </template>
       </el-table-column>
       <el-table-column
