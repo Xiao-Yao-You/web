@@ -1,5 +1,5 @@
 import request from '@/config/axios'
-import { IssueTypeEnum, CompanyEnum, PictureType, OperateMethod, OperateStatus } from './constant'
+import { RequsetTypeEnum, CompanyEnum, PictureType, OperateMethod, OperateStatus } from './constant'
 import { CommonLevelEnum } from '@/utils/constants'
 
 // #region 问题
@@ -13,7 +13,7 @@ export type RepairIssue = {
   id: number
   name: string
   parentId?: number
-  type: IssueTypeEnum
+  type: RequsetTypeEnum
   deviceTypeId: number
   deviceTypeName?: string
   description: string
@@ -23,7 +23,7 @@ export type RepairIssue = {
 export type IssuePayload = {
   name: string
   parentId?: number
-  type: IssueTypeEnum
+  type: RequsetTypeEnum
   deviceTypeId: number
   description?: string
   solution?: string
@@ -463,7 +463,7 @@ export interface RepairOrder {
   submitUserId: number // 报修人
   submitUserNickName: string
   submitUserMobile: string // 报修人电话
-  requestType: string // 请求（问题）类型
+  requestType: RequsetTypeEnum // 请求（问题）类型
   questionType: number // 问题管理中的某个具体问题的 id
   level: CommonLevelEnum // 紧急程度
   desc: string

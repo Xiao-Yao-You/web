@@ -59,7 +59,7 @@
                   </el-table-column>
                   <el-table-column label="请求类型" prop="requestType">
                     <template #default="scope">
-                      {{ IssueTypeLabel[scope.row.requestType] }}
+                      {{ getRequestTypeLabel(scope.row.requestType) }}
                     </template>
                   </el-table-column>
                   <el-table-column label="问题类型" prop="questionTypeStr" />
@@ -81,7 +81,7 @@
                   </el-table-column>
                   <el-table-column label="请求类型" prop="requestType">
                     <template #default="scope">
-                      {{ IssueTypeLabel[scope.row.requestType] }}
+                      {{ getRequestTypeLabel(scope.row.requestType) }}
                     </template>
                   </el-table-column>
                   <el-table-column label="问题类型" prop="questionTypeStr" />
@@ -182,7 +182,7 @@ import MeetingStatusTag from '@/views/system/meeting/subscribe/MeetingStatusTag.
 import avatarImg from '@/assets/imgs/avatar.gif'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { getRepairOrderPage, type RepairOrder } from '@/api/repair'
-import { IssueTypeLabel, OperateStatus } from '@/api/repair/constant'
+import { getRequestTypeLabel, OperateStatus } from '@/api/repair/constant'
 import { DICT_TYPE } from '@/utils/dict'
 
 defineOptions({ name: 'Home' })

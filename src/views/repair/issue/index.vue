@@ -39,9 +39,9 @@
       :default-expand-all="isExpandAll"
     >
       <el-table-column label="问题名称" prop="name" show-overflow-tooltip width="250" />
-      <el-table-column label="问题类型" align="center" prop="type">
+      <el-table-column label="请求类型" align="center" prop="type">
         <template #default="{ row: { type } }">
-          {{ type ? IssueTypeOptions[type].label : '/' }}
+          {{ type ? getRequestTypeLabel(type) : '/' }}
         </template>
       </el-table-column>
       <el-table-column label="设备类型" align="center" prop="deviceTypeName" />
@@ -74,7 +74,7 @@ import {
   type RepairIssue
 } from '@/api/repair'
 import { handleTree } from '@/utils/tree'
-import { IssueTypeOptions } from '@/api/repair/constant'
+import { getRequestTypeLabel } from '@/api/repair/constant'
 import IssueForm from './IssueForm.vue'
 import QuestionTypeImportForm from './QuestionTypeImportForm.vue'
 

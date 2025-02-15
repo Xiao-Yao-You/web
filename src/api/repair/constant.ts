@@ -1,23 +1,18 @@
 import { CommonLevelEnum } from '@/utils/constants'
+import { getDictLabel, DICT_TYPE } from '@/utils/dict'
 
-// 问题类型
-export enum IssueTypeEnum {
-  Software = '0',
-  Hardware = '1',
-  Other = '2'
+// 请求类型（从字典管理中获取）
+export enum RequsetTypeEnum {
+  Software = '0', // 软件
+  Hardware = '1', // 硬件
+  Monitor = '2', // 监控
+  Other = '3' // 其他
 }
 
-export const IssueTypeLabel = {
-  '0': '软件',
-  '1': '硬件',
-  '2': '其他'
+// 获取请求类型的名称
+export const getRequestTypeLabel = (value: any) => {
+  return getDictLabel(DICT_TYPE.REPAIR_REQUEST_TYPE, value)
 }
-
-export const IssueTypeOptions = [
-  { label: '软件', value: IssueTypeEnum.Software },
-  { label: '硬件', value: IssueTypeEnum.Hardware },
-  { label: '其他', value: IssueTypeEnum.Other }
-]
 
 // 所属公司
 export enum CompanyEnum {

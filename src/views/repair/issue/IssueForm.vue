@@ -27,13 +27,13 @@
           :disabled="formType === 'create'"
         />
       </el-form-item>
-      <el-form-item v-if="formData.parentId" label="问题类型" prop="type">
-        <el-select v-model="formData.type" placeholder="选择问题类型">
+      <el-form-item v-if="formData.parentId" label="请求类型" prop="type">
+        <el-select v-model="formData.type" placeholder="选择请求类型">
           <el-option
-            v-for="item in IssueTypeOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+            v-for="dict in getDictOptions(DICT_TYPE.REPAIR_REQUEST_TYPE)"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
           />
         </el-select>
       </el-form-item>
@@ -80,9 +80,10 @@ import {
   type RepairIssue,
   type IssuePayload
 } from '@/api/repair'
-import { IssueTypeOptions, IssueTypeEnum } from '@/api/repair/constant'
+import { RequsetTypeEnum } from '@/api/repair/constant'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
 import { defaultProps } from '@/utils/tree'
+import { DICT_TYPE, getDictOptions } from '@/utils/dict'
 
 /** 会议室管理 表单 */
 defineOptions({ name: 'RepairIssueForm' })
@@ -100,7 +101,7 @@ const formData = ref({
   id: undefined as unknown as number,
   name: '', // 问题名称
   parentId: 0, // 父级问题
-  type: undefined as unknown as IssueTypeEnum, // 问题类型
+  type: undefined as unknown as RequsetTypeEnum, // 问题类型
   deviceTypeId: undefined as unknown as number, // 设备类型
   description: '', // 问题描述
   solution: '' // 解决方案
@@ -180,7 +181,7 @@ const resetForm = () => {
     id: undefined as unknown as number,
     name: '',
     parentId: 0,
-    type: undefined as unknown as IssueTypeEnum,
+    type: undefined as unknown as RequsetTypeEnum,
     deviceTypeId: undefined as unknown as number,
     description: '',
     solution: ''

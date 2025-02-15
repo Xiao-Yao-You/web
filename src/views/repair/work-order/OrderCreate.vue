@@ -124,7 +124,7 @@
 <script setup lang="ts">
 import { getAll } from '@/api/system/user'
 import { createRepairOrder, getArchiveByLabelCode } from '@/api/repair'
-import { IssueTypeEnum, OperateMethod, RepairSourceType } from '@/api/repair/constant'
+import { RequsetTypeEnum, OperateMethod, RepairSourceType } from '@/api/repair/constant'
 import { isMobilePhone } from '@/utils/is'
 import { CommonLevelEnum } from '@/utils/constants'
 import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
@@ -155,7 +155,7 @@ const formData = ref({
   location: '',
   submitUserId: undefined as unknown as number,
   submitUserMobile: undefined as unknown as string,
-  requestType: undefined as unknown as IssueTypeEnum,
+  requestType: undefined as unknown as RequsetTypeEnum,
   questionType: undefined as unknown as number,
   level: undefined as unknown as CommonLevelEnum,
   description: '',
@@ -311,7 +311,7 @@ const resetForm = () => {
     location: '',
     submitUserId: undefined as unknown as number,
     submitUserMobile: undefined as unknown as string,
-    requestType: undefined as unknown as IssueTypeEnum,
+    requestType: undefined as unknown as RequsetTypeEnum,
     questionType: undefined as unknown as number,
     level: undefined as unknown as CommonLevelEnum,
     description: '',
