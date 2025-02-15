@@ -1,8 +1,24 @@
 <template>
   <Dialog title="工单转交" v-model="dialogVisible" :fullscreen="false" :draggable="false">
-    <el-form ref="formRef" :model="formData" :rules="formRules" v-loading="loading">
+    <el-form
+      ref="formRef"
+      :model="formData"
+      :rules="formRules"
+      v-loading="loading"
+      label-width="80"
+    >
       <el-form-item label="工单编号" prop="code">
         <el-input v-model="formData.code" disabled />
+      </el-form-item>
+      <el-form-item label="请求类型" prop="requestType">
+        <el-select v-model="formData.requestType" placeholder="请选择请求类型" class="!w-150px">
+          <el-option
+            v-for="dict in getDictOptions(DICT_TYPE.REPAIR_REQUEST_TYPE)"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="问题类型" prop="questionType">
         <el-tree-select
@@ -57,9 +73,10 @@
 import { useRepairStoreWithOut } from '@/store/modules/repair'
 import { useEmployeeStoreWithOut } from '@/store/modules/employee'
 import { handleRepairOrder } from '@/api/repair'
-import { OperateMethod } from '@/api/repair/constant'
+import { RequsetTypeEnum, OperateMethod } from '@/api/repair/constant'
 import { defaultProps } from '@/utils/tree'
 import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
+import { DICT_TYPE, getDictOptions } from '@/utils/dict'
 import { type UserVO } from '@/api/system/user'
 import type { UploadUserFile } from 'element-plus'
 
@@ -77,12 +94,14 @@ const formRef = ref()
 const formData = ref({
   id: undefined as unknown as number,
   code: undefined as unknown as string,
+  requestType: undefined as unknown as RequsetTypeEnum,
   questionType: undefined as unknown as number,
   user: undefined as unknown as UserVO,
   remark: '',
   picture: [] as UploadUserFile[]
 })
 const formRules = reactive({
+  requestType: [{ required: true, message: '请求类型不能为空', trigger: 'blur' }],
   questionType: [{ required: true, message: '问题类型不能为空', trigger: 'blur' }],
   user: [{ required: true, message: '转交对象不能为空', trigger: 'blur' }],
   remark: [{ required: true, message: '转交说明不能为空', trigger: 'blur' }]
@@ -103,6 +122,7 @@ const resetForm = () => {
   formData.value = {
     id: undefined as unknown as number,
     code: undefined as unknown as string,
+    requestType: undefined as unknown as RequsetTypeEnum,
     questionType: undefined as unknown as number,
     user: undefined as unknown as UserVO,
     remark: '',

@@ -1,6 +1,12 @@
 <template>
   <Dialog title="现场确认" v-model="dialogVisible" :fullscreen="false" :draggable="false">
-    <el-form ref="formRef" :model="formData" :rules="formRules" v-loading="loading">
+    <el-form
+      ref="formRef"
+      :model="formData"
+      :rules="formRules"
+      v-loading="loading"
+      label-width="110px"
+    >
       <el-form-item label="现场照片" prop="picture">
         <BatchPicturesUploader
           v-model:fileList="formData.picture"
@@ -8,7 +14,7 @@
         />
       </el-form-item>
       <el-form-item label="紧急程度" prop="level">
-        <el-select v-model="formData.level" placeholder="请选择紧急程度" clearable class="!w-150px">
+        <el-select v-model="formData.level" placeholder="请选择紧急程度" clearable class="!w-200px">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.LEVEL)"
             :key="dict.value"
@@ -17,15 +23,22 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="请求类型" prop="requestType">
-        <el-select v-model="formData.requestType" placeholder="请选择请求类型" class="!w-150px">
-          <el-option
-            v-for="item in IssueTypeOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
+      <el-form-item
+        v-if="requestType === RequsetTypeEnum.Hardware"
+        label="二维码标签号"
+        prop="labelCode"
+        ref="labelRef"
+      >
+        <el-input
+          v-model="formData.labelCode"
+          placeholder="请输入二维码标签号"
+          maxlength="20"
+          clearable
+          class="!w-200px"
+        />
+      </el-form-item>
+      <el-form-item label="请求类型">
+        <el-input disabled :model-value="requestTypeLabel" class="!w-200px" />
       </el-form-item>
       <el-form-item label="问题类型" prop="questionType">
         <el-cascader
@@ -53,8 +66,8 @@
 </template>
 
 <script setup lang="ts">
-import { handleRepairOrder } from '@/api/repair'
-import { IssueTypeOptions, IssueTypeEnum, OperateMethod } from '@/api/repair/constant'
+import { handleRepairOrder, type RepairOrder } from '@/api/repair'
+import { RequsetTypeEnum, OperateMethod, getRequestTypeLabel } from '@/api/repair/constant'
 import { CommonLevelEnum } from '@/utils/constants'
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
@@ -75,21 +88,38 @@ const formData = ref({
   id: undefined as unknown as number,
   picture: [] as UploadUserFile[],
   remark: '',
-  requestType: undefined as unknown as IssueTypeEnum,
   questionType: [] as number[],
-  level: undefined as unknown as CommonLevelEnum
+  level: undefined as unknown as CommonLevelEnum,
+  labelCode: undefined as undefined | string
 })
 const formRules = reactive({
   picture: [{ required: true, message: '现场图片不能为空', trigger: ['blur', 'change'] }],
   remark: [{ required: true, message: '确认说明不能为空', trigger: 'blur' }],
-  requestType: [{ required: true, message: '请求类型不能为空', trigger: ['blur', 'change'] }],
   questionType: [{ type: 'array', required: true, message: '问题类型不能为空', trigger: 'blur' }],
-  level: [{ required: true, message: '紧急程度不能为空', trigger: 'blur' }]
+  level: [{ required: true, message: '紧急程度不能为空', trigger: 'blur' }],
+  labelCode: [
+    { required: true, message: '二维码标签号不能为空', trigger: 'blur' },
+    {
+      validator(_rule, value: string, callback) {
+        if (!Number.isInteger(+value)) {
+          callback(new Error('请输入数字类型的标签号'))
+        } else {
+          callback()
+        }
+      },
+      trigger: 'change'
+    }
+  ]
 })
 
-const open = (id: number) => {
+const requestType = ref(undefined as unknown as RequsetTypeEnum)
+const requestTypeLabel = computed(() => getRequestTypeLabel(requestType.value))
+
+const open = (row: RepairOrder) => {
+  requestType.value = row.requestType
   resetForm()
-  formData.value.id = id
+  formData.value.id = row.id
+  formData.value.labelCode = row.labelCode
   dialogVisible.value = true
 }
 defineExpose({ open })
@@ -99,9 +129,9 @@ const resetForm = () => {
     id: undefined as unknown as number,
     picture: [] as UploadUserFile[],
     remark: '',
-    requestType: undefined as unknown as IssueTypeEnum,
     questionType: [],
-    level: undefined as unknown as CommonLevelEnum
+    level: undefined as unknown as CommonLevelEnum,
+    labelCode: undefined as undefined | string
   }
 }
 

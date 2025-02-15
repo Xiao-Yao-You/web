@@ -137,7 +137,7 @@
       </el-table-column>
       <el-table-column label="请求类型" prop="requestType" width="80">
         <template #default="scope">
-          {{ IssueTypeLabel[scope.row.requestType] || '待定' }}
+          {{ getRequestTypeLabel(scope.row.requestType) || '待定' }}
         </template>
       </el-table-column>
       <el-table-column label="问题类型" prop="questionTypeStr" width="150">
@@ -200,47 +200,47 @@
                   派单
                 </el-dropdown-item>
                 <el-dropdown-item
-                  :command="OperateMethod.Receive"
-                  :disabled="handleDisabled(OperateMethod.Receive, row)"
-                >
-                  抢单
-                </el-dropdown-item>
-                <el-dropdown-item
                   :command="OperateMethod.Transfer"
                   :disabled="handleDisabled(OperateMethod.Transfer, row)"
                 >
                   转交
                 </el-dropdown-item>
-                <el-dropdown-item
-                  :command="OperateMethod.Restart"
-                  :disabled="handleDisabled(OperateMethod.Restart, row)"
+                <!-- <el-dropdown-item
+                  :command="OperateMethod.Receive"
+                  :disabled="handleDisabled(OperateMethod.Receive, row)"
                 >
-                  重启
-                </el-dropdown-item>
-                <el-dropdown-item
+                  抢单
+                </el-dropdown-item> -->
+                <!-- <el-dropdown-item
                   :command="OperateMethod.Confirm"
                   :disabled="handleDisabled(OperateMethod.Confirm, row)"
                 >
                   确认
-                </el-dropdown-item>
-                <el-dropdown-item
+                </el-dropdown-item> -->
+                <!-- <el-dropdown-item
                   :command="OperateMethod.HangUp"
                   :disabled="handleDisabled(OperateMethod.HangUp, row)"
                 >
                   挂起
-                </el-dropdown-item>
-                <el-dropdown-item
+                </el-dropdown-item> -->
+                <!-- <el-dropdown-item
+                  :command="OperateMethod.Restart"
+                  :disabled="handleDisabled(OperateMethod.Restart, row)"
+                >
+                  重启
+                </el-dropdown-item> -->
+                <!-- <el-dropdown-item
                   :command="OperateMethod.Finish"
                   :disabled="handleDisabled(OperateMethod.Finish, row)"
                 >
                   完成
-                </el-dropdown-item>
-                <el-dropdown-item
+                </el-dropdown-item> -->
+                <!-- <el-dropdown-item
                   :command="OperateMethod.Revoke"
                   :disabled="handleDisabled(OperateMethod.Revoke, row)"
                 >
                   撤销
-                </el-dropdown-item>
+                </el-dropdown-item> -->
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -299,7 +299,7 @@ import {
   type RepairOrder
 } from '@/api/repair'
 import {
-  IssueTypeLabel,
+  getRequestTypeLabel,
   OperateMethod,
   OrderTakeType,
   RepairSourceType,
@@ -389,7 +389,7 @@ const handleCommand = (command: string, row: RepairOrder) => {
       restart(row)
       break
     case OperateMethod.Confirm:
-      openStartForm(row.id)
+      openStartForm(row)
       break
     case OperateMethod.HangUp:
       openHangupForm(row.id)
@@ -441,7 +441,7 @@ const openDispatchForm = (row: RepairOrder) => {
   dispatchRef.value?.open({ id: row.id, code: row.code })
 }
 
-// 领单
+// 抢单
 const receiveOrder = (id: number) => {
   ElMessageBox.confirm('抢单后将开始记录工单处置时长，是否确定抢单并开始执行工单？', '系统提示', {
     confirmButtonText: '确定',
@@ -477,12 +477,12 @@ const openTransferForm = (row: RepairOrder) => {
 
 // 现场确认
 const startRef = ref<InstanceType<typeof OrderStartForm>>()
-const openStartForm = (id: number) => {
-  startRef.value?.open(id)
+const openStartForm = (row: RepairOrder) => {
+  startRef.value?.open(row)
 }
 
 // 挂起
-const HangupRef = ref<InstanceType<typeof OrderStartForm>>()
+const HangupRef = ref<InstanceType<typeof OrderHangupForm>>()
 const openHangupForm = (id: number) => {
   HangupRef.value?.open(id)
 }
