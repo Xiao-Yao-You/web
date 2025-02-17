@@ -40,14 +40,7 @@
         <!-- 1.1 工单模块 -->
         <el-card class="flex-grow-4 flex-basis-0" shadow="never" body-class="h-full box-border">
           <el-skeleton :loading="loading" animated>
-            <el-tabs
-              v-model="activeWork"
-              addable
-              class="h-full"
-              @tab-change="onWorkTabChange"
-              @edit="router.push({ name: 'RepairWorkOrder' })"
-            >
-              <template #add-icon><ArrowRightIcon /></template>
+            <el-tabs v-model="activeWork" class="h-full" @tab-change="onWorkTabChange">
               <el-tab-pane label="待办工单" name="todoWork">
                 <el-table :data="newOrders" stripe show-overflow-tooltip height="100%">
                   <el-table-column type="index" width="40" />
