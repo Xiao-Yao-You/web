@@ -576,7 +576,7 @@ const openDetail = (id: number) => {
 
 // #region 五、倒计时刷新
 const countDown = useCountDown({
-  time: 5 * 60 * 1000,
+  time: 2 * 60 * 1000,
   onFinish: () => onRefresh()
 })
 const timer = computed(
