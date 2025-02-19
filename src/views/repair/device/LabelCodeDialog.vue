@@ -93,7 +93,10 @@ const onConfirm = async () => {
           confirmLoading.value = true
           const res = await printBatchLabels({ id: labelId.value!, num: num.value })
           if (Array.isArray(res) && res.length) {
-            emit('confirm', res)
+            emit(
+              'confirm',
+              res.map((l) => ({ ...l, qr: DEVICE_QR_HREF + l.labelCode }))
+            )
             visible.value = false
           } else {
             message.warning('没有可打印的标签')
