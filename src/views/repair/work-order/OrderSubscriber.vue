@@ -2,16 +2,7 @@ vue
 <template>
   <Dialog title="设置工单推送对象" v-model="visible" :close-on-click-modal="false">
     <span>人员选择名单：</span>
-    <el-select
-      v-model="subscribers"
-      class="w-60%!"
-      multiple
-      filterable
-      collapse-tags
-      collapse-tags-tooltip
-      :max-collapse-tags="4"
-      value-key="value"
-    >
+    <el-select v-model="subscribers" class="w-60%!" multiple filterable value-key="value">
       <el-option
         v-for="item in options"
         :key="item.value"
