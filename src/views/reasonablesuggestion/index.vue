@@ -24,7 +24,12 @@
           clearable
           class="!w-240px"
         >
-          <el-option label="请选择字典生成" value="" />
+          <el-option
+            v-for="dict in getDictOptions(DICT_TYPE.SUGGESTION_TYPE)"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
         </el-select>
       </el-form-item>
       <el-form-item label="申报人" prop="nickname">
@@ -45,24 +50,20 @@
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="建议状态" prop="status">
+      <el-form-item label="采纳状态" prop="status">
         <el-select
           v-model="queryParams.status"
-          placeholder="请选择建议状态"
+          placeholder="请选择采纳状态"
           clearable
           class="!w-240px"
         >
-          <el-option label="请选择字典生成" value="" />
+          <el-option
+            v-for="dict in getDictOptions(DICT_TYPE.ADOPTION_STATUS)"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
         </el-select>
-      </el-form-item>
-      <el-form-item label="附件地址" prop="filePath">
-        <el-input
-          v-model="queryParams.filePath"
-          placeholder="请输入附件地址"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
       </el-form-item>
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
@@ -98,8 +99,8 @@
           <dict-tag :type="DICT_TYPE.SUGGESTION_TYPE" :value="suggestionType" />
         </template>
       </el-table-column>
-      <el-table-column label="申报人" align="center" prop="nickname" />
-      <el-table-column label="申报人工号" align="center" prop="workNum" />
+      <!-- <el-table-column label="申报人" align="center" prop="nickname" />
+      <el-table-column label="申报人工号" align="center" prop="workNum" /> -->
       <el-table-column label="手机号" align="center" prop="phoneNum" />
       <el-table-column label="申报部门" align="center" prop="deptName" />
       <el-table-column label="采纳状态" align="center" prop="status">
@@ -169,7 +170,7 @@ import { ReasonableSuggestionApi, ReasonableSuggestionVO } from '@/api/reasonabl
 import ReasonableSuggestionForm from './ReasonableSuggestionForm.vue'
 import ReasonableSuggestionViewForm from './ReasonableSuggestionViewForm.vue'
 import { useUserStore } from '@/store/modules/user'
-import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
+import { DICT_TYPE, getDictOptions } from '@/utils/dict'
 
 /** 合理化建议 列表 */
 defineOptions({ name: 'ReasonableSuggestion' })
