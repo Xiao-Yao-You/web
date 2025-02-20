@@ -14,9 +14,6 @@
       label-width="100px"
       v-loading="formLoading"
     >
-      <el-form-item label="设备编码" prop="code">
-        <el-input v-model="formData.code" placeholder="自动生成" disabled />
-      </el-form-item>
       <el-form-item label="设备名称" prop="name">
         <el-input
           v-model="formData.name"
@@ -54,6 +51,24 @@
           <el-option v-for="m in modelOptions" :key="m.value" :label="m.label" :value="m.value" />
         </el-select>
       </el-form-item>
+      <el-form-item label="编码规则" prop="numberName">
+        <el-select
+          v-model="formData.numberName"
+          placeholder="设备的编码规则，请勿选择标签"
+          clearable
+          filterable
+        >
+          <el-option
+            v-for="item in numberNameOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="设备编码" prop="code">
+        <el-input v-model="formData.code" placeholder="自动生成" disabled />
+      </el-form-item>
       <el-form-item label="序列号" prop="serialNumber">
         <el-input
           v-model="formData.serialNumber"
@@ -63,19 +78,14 @@
         />
       </el-form-item>
       <el-form-item label="二维码编号" prop="labelCode">
-        <el-select v-model="formData.labelCode" placeholder="请选择可用的二维码" clearable>
+        <el-select
+          v-model="formData.labelCode"
+          placeholder="请选择可用的二维码"
+          clearable
+          filterable
+        >
           <el-option
             v-for="item in repairStore.labelCodeOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="编码规则" prop="numberName">
-        <el-select v-model="formData.numberName" placeholder="请选择编码规则" clearable filterable>
-          <el-option
-            v-for="item in numberNameOptions"
             :key="item.value"
             :label="item.label"
             :value="item.value"
