@@ -6,6 +6,7 @@
       :rules="formRules"
       label-width="100px"
       v-loading="formLoading"
+      disabled
     >
       <el-form-item label="建议主题" prop="title">
         <el-input
@@ -13,11 +14,10 @@
           placeholder="请输入建议主题"
           maxlength="50"
           show-word-limit
-          disabled
         />
       </el-form-item>
       <el-form-item label="建议类型" prop="suggestionType">
-        <el-select v-model="formData.suggestionType" placeholder="请选择建议类型" disabled>
+        <el-select v-model="formData.suggestionType">
           <el-option
             v-for="dict in getIntDictOptions(DICT_TYPE.SUGGESTION_TYPE)"
             :key="dict.value"
@@ -26,30 +26,22 @@
         /></el-select>
       </el-form-item>
       <el-form-item label="申报人" prop="nickname" v-if="isanonymous">
-        <el-input v-model="formData.nickname" placeholder="请选择申报人" disabled />
+        <el-input v-model="formData.nickname" placeholder="请选择申报人" />
       </el-form-item>
       <el-form-item label="申报人工号" prop="workNum" v-if="isanonymous">
-        <el-input v-model="formData.workNum" placeholder="请输入申报人工号" disabled />
+        <el-input v-model="formData.workNum" placeholder="请输入申报人工号" />
       </el-form-item>
       <el-form-item label="是否匿名" prop="anonymous">
-        <el-radio-group v-model="formData.anonymous" @change="handleRadioChange" disabled>
+        <el-radio-group v-model="formData.anonymous" @change="handleRadioChange">
           <el-radio label="1">是</el-radio>
           <el-radio label="2">否</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="手机号" prop="phoneNum">
-        <el-input v-model="formData.phoneNum" placeholder="请输入手机号" disabled />
+        <el-input v-model="formData.phoneNum" placeholder="请输入手机号" />
       </el-form-item>
-      <el-form-item label="申报部门" prop="deptId">
-        <el-tree-select
-          v-model="formData.deptId"
-          :data="depts"
-          :props="defaultProps"
-          check-strictly
-          node-key="id"
-          disabled
-          placeholder="请选择归属部门"
-        />
+      <el-form-item label="申报部门" prop="deptName">
+        <el-input :model-value="formData.deptName" placeholder="请输入手机号" />
       </el-form-item>
       <el-form-item label="问题描述" prop="problemDescription">
         <el-input
@@ -58,7 +50,6 @@
           placeholder="请输入问题描述"
           maxlength="200"
           :autosize="{ minRows: 3 }"
-          disabled
           show-word-limit
         />
       </el-form-item>
@@ -70,7 +61,6 @@
           maxlength="200"
           :autosize="{ minRows: 3 }"
           show-word-limit
-          disabled
         />
       </el-form-item>
       <el-form-item label="效果预估" prop="effectEstimation">
@@ -81,15 +71,12 @@
           maxlength="200"
           :autosize="{ minRows: 3 }"
           show-word-limit
-          disabled
         />
       </el-form-item>
-
       <el-form-item label="附件地址" prop="fileList">
         <BatchPicturesUploader
           v-model:fileList="formData.fileList"
           :limit-size="{ size: 5, unit: 'MB' }"
-          disabled
         />
       </el-form-item>
     </el-form>
@@ -99,32 +86,32 @@
         v-if="formType == '审核'"
         type="primary"
         :disabled="formLoading"
-        >不 采 纳</el-button
       >
+        不 采 纳
+      </el-button>
       <el-button
         @click="examine(2)"
         v-if="formType == '审核'"
         type="primary"
         :disabled="formLoading"
-        >采 纳</el-button
       >
+        采 纳
+      </el-button>
       <el-button @click="dialogVisible = false">返 回</el-button>
     </template>
   </Dialog>
 </template>
 <script setup lang="ts">
-import { ReasonableSuggestionApi, ReasonableSuggestionVO } from '@/api/reasonablesuggestion'
+import { ReasonableSuggestionApi } from '@/api/reasonablesuggestion'
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import { useUserStore } from '@/store/modules/user'
 import { getDeptsByUserId } from '@/api/system/dept'
-import { defaultProps, handleTree } from '@/utils/tree'
-import type { UploadFiles } from 'element-plus'
+import { handleTree } from '@/utils/tree'
 import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
 
 /** 合理化建议 表单 */
 defineOptions({ name: 'ReasonableSuggestionViewForm' })
 
-const { t } = useI18n() // 国际化
 const message = useMessage() // 消息弹窗
 const isanonymous = ref(true)
 
@@ -204,28 +191,6 @@ const examine = async (examineType: number) => {
     dialogVisible.value = false
     await ReasonableSuggestionApi.examine(formData.value.id, examineType)
     message.success('审核成功')
-    // 发送操作成功的事件
-    emit('success')
-  } finally {
-    formLoading.value = false
-  }
-}
-
-const submitForm = async () => {
-  // 校验表单
-  await formRef.value.validate()
-  // 提交请求
-  formLoading.value = true
-  try {
-    const data = formData.value as unknown as ReasonableSuggestionVO
-    if (formType.value === 'create') {
-      await ReasonableSuggestionApi.create(data)
-      message.success(t('common.createSuccess'))
-    } else {
-      await ReasonableSuggestionApi.update(data)
-      message.success(t('common.updateSuccess'))
-    }
-    dialogVisible.value = false
     // 发送操作成功的事件
     emit('success')
   } finally {
