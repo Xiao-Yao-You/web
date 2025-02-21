@@ -50,8 +50,8 @@
                 <el-descriptions-item :label="`${index ? '处理' : '报修'}人：`">
                   {{ record.operateUserNickName }}
                 </el-descriptions-item>
-                <el-descriptions-item label="说明：">
-                  {{ record.remark || '无' }}
+                <el-descriptions-item :label="`${index ? '说明：' : '描述：'}`">
+                  {{ index ? record.remark || '无' : info.description }}
                 </el-descriptions-item>
                 <el-descriptions-item label="图片：" label-class-name="block">
                   <el-empty v-if="!record.picture" style="padding: unset" :image-size="50" />
