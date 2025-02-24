@@ -1,6 +1,21 @@
 import request from '@/config/axios'
 import type { UploadFiles } from 'element-plus'
 
+// 是否匿名
+export enum Anonymous {
+  Yes = '1',
+  No = '2'
+}
+
+// 建议的采纳状态（从字典管理中获取，请注意更新）
+export enum AdoptionStatus {
+  Pending = 1, // 未审核
+  Resolve, // 已采纳
+  Reject, // 不采纳
+  Unread, // 未读
+  Read // 已读
+}
+
 // 合理化建议 VO
 export interface ReasonableSuggestionVO {
   id: number // 主键
@@ -41,12 +56,12 @@ export const ReasonableSuggestionApi = {
   },
 
   // 新增合理化建议
-  create: async (data: VO) => {
+  create: async (data: ReasonableSuggestionVO) => {
     return await request.post({ url: `/reasonableSuggestion/create`, data })
   },
 
   // 修改合理化建议
-  update: async (data: VO) => {
+  update: async (data: ReasonableSuggestionVO) => {
     return await request.put({ url: `/reasonableSuggestion/update`, data })
   },
 
@@ -58,5 +73,15 @@ export const ReasonableSuggestionApi = {
   // 导出合理化建议 Excel
   export: async (params) => {
     return await request.download({ url: `/reasonableSuggestion/export-excel`, params })
+  },
+
+  // 单条建议已读
+  read: (id: number) => {
+    request.get({ url: '/reasonableSuggestion/read', params: { id } })
+  },
+
+  // 一键批量已读所有建议
+  readAll: () => {
+    request.get({ url: '/reasonableSuggestion/read' })
   }
 }

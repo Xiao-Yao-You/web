@@ -94,6 +94,11 @@
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
       <el-table-column label="序号" type="index" width="80" />
       <el-table-column label="建议主题" align="center" prop="title" width="250" />
+      <el-table-column label="采纳状态" align="center" prop="status">
+        <template #default="{ row: { status } }">
+          <dict-tag :type="DICT_TYPE.ADOPTION_STATUS" :value="status" />
+        </template>
+      </el-table-column>
       <el-table-column label="建议类型" align="center" prop="suggestionType">
         <template #default="{ row: { suggestionType } }">
           <dict-tag :type="DICT_TYPE.SUGGESTION_TYPE" :value="suggestionType" />
@@ -103,11 +108,6 @@
       <el-table-column label="申报人工号" align="center" prop="workNum" /> -->
       <el-table-column label="手机号" align="center" prop="phoneNum" />
       <el-table-column label="申报部门" align="center" prop="deptName" />
-      <el-table-column label="采纳状态" align="center" prop="status">
-        <template #default="{ row: { status } }">
-          <dict-tag :type="DICT_TYPE.ADOPTION_STATUS" :value="status" />
-        </template>
-      </el-table-column>
       <el-table-column
         label="申报时间"
         align="center"
@@ -115,34 +115,31 @@
         :formatter="dateFormatter"
         width="180px"
       />
-      <el-table-column label="操作" align="center" width="260px">
-        <template #default="scope">
-          <el-button link type="primary" @click="openViewForm('详情', scope.row.id)">
-            详情
-          </el-button>
+      <el-table-column label="操作" width="210px">
+        <template #default="{ row: { id, userId, status } }">
+          <el-button link type="primary" @click="openViewForm('详情', id)"> 查看 </el-button>
           <el-button
-            link
-            type="primary"
-            @click="openForm('update', scope.row.id)"
-            v-hasPermi="['reasonableSuggestion::update']"
-            v-if="scope.row.userId == userInfo.id"
-          >
-            编辑
-          </el-button>
-          <el-button
-            link
-            type="primary"
-            @click="openViewForm('审核', scope.row.id)"
-            v-if="scope.row.status == 1"
             v-hasPermi="['reasonableSuggestion::examine']"
+            :disabled="[AdoptionStatus.Read, AdoptionStatus.Pending].includes(status)"
+            link
+            type="primary"
+            @click="openViewForm('审核', id)"
           >
             审核
           </el-button>
           <el-button
+            v-if="isOnlySelf(['reasonableSuggestion::delete'], userId)"
+            link
+            type="primary"
+            @click="openForm('update', id)"
+          >
+            编辑
+          </el-button>
+          <el-button
+            v-if="isOnlySelf(['reasonableSuggestion::delete'], userId)"
             link
             type="danger"
-            @click="handleDelete(scope.row.id)"
-            v-hasPermi="['reasonableSuggestion::delete']"
+            @click="handleDelete(id)"
           >
             删除
           </el-button>
@@ -158,19 +155,28 @@
     />
   </ContentWrap>
 
-  <!-- 表单弹窗：添加/修改 -->
-  <ReasonableSuggestionForm ref="formRef" @success="getList" />
-  <ReasonableSuggestionViewForm ref="viewFormRef" @success="getList" />
+  <!-- 表单弹窗：新增/编辑 -->
+  <ReasonableSuggestionForm ref="formRef" :user-info="userInfo" :depts="depts" @success="getList" />
+
+  <!-- 详情 -->
+  <ReasonableSuggestionViewForm ref="viewFormRef" :user-info="userInfo" @success="getList" />
 </template>
 
 <script setup lang="ts">
 import { dateFormatter } from '@/utils/formatTime'
 import download from '@/utils/download'
-import { ReasonableSuggestionApi, ReasonableSuggestionVO } from '@/api/reasonablesuggestion'
+import {
+  ReasonableSuggestionApi,
+  ReasonableSuggestionVO,
+  AdoptionStatus
+} from '@/api/reasonablesuggestion'
 import ReasonableSuggestionForm from './ReasonableSuggestionForm.vue'
 import ReasonableSuggestionViewForm from './ReasonableSuggestionViewForm.vue'
 import { useUserStore } from '@/store/modules/user'
 import { DICT_TYPE, getDictOptions } from '@/utils/dict'
+import { checkPermi } from '@/utils/permission'
+import { getDeptsByUserId } from '@/api/system/dept'
+import { handleTree } from '@/utils/tree'
 
 /** 合理化建议 列表 */
 defineOptions({ name: 'ReasonableSuggestion' })
@@ -196,6 +202,11 @@ const queryParams = reactive({
 const queryFormRef = ref() // 搜索的表单
 const exportLoading = ref(false) // 导出的加载中
 
+// 判断是否只有自己有权限
+const isOnlySelf = (permissions: string[], userId: number) => {
+  return checkPermi(permissions) && userId === userInfo.id
+}
+
 /** 查询列表 */
 const getList = async () => {
   loading.value = true
@@ -206,6 +217,13 @@ const getList = async () => {
   } finally {
     loading.value = false
   }
+}
+
+// 查询用户所在部门
+const depts = ref<Tree[]>([])
+const getUserDepts = async () => {
+  const deptList = await getDeptsByUserId(userInfo.id)
+  depts.value = handleTree(deptList || [])
 }
 
 /** 搜索按钮操作 */
@@ -263,5 +281,6 @@ const handleExport = async () => {
 /** 初始化 **/
 onMounted(() => {
   getList()
+  getUserDepts()
 })
 </script>

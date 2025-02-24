@@ -24,17 +24,17 @@
             :value="dict.value"
         /></el-select>
       </el-form-item>
-      <el-form-item label="申报人" prop="nickname" v-if="isanonymous">
+      <el-form-item label="是否匿名" prop="anonymous">
+        <el-radio-group v-model="formData.anonymous">
+          <el-radio :label="Anonymous.Yes">是</el-radio>
+          <el-radio :label="Anonymous.No">否</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item v-if="isRealName" label="申报人" prop="nickname">
         <el-input v-model="formData.nickname" placeholder="请选择申报人" disabled />
       </el-form-item>
-      <el-form-item label="申报人工号" prop="workNum" v-if="isanonymous">
+      <el-form-item v-if="isRealName" label="申报人工号" prop="workNum">
         <el-input v-model="formData.workNum" placeholder="请输入申报人工号" disabled />
-      </el-form-item>
-      <el-form-item label="是否匿名" prop="anonymous">
-        <el-radio-group v-model="formData.anonymous" @change="handleRadioChange">
-          <el-radio label="1">是</el-radio>
-          <el-radio label="2">否</el-radio>
-        </el-radio-group>
       </el-form-item>
       <el-form-item label="手机号" prop="phoneNum">
         <el-input v-model="formData.phoneNum" placeholder="请输入手机号" />
@@ -94,29 +94,37 @@
   </Dialog>
 </template>
 <script setup lang="ts">
-import { ReasonableSuggestionApi, ReasonableSuggestionVO } from '@/api/reasonablesuggestion'
+import {
+  Anonymous,
+  ReasonableSuggestionApi,
+  ReasonableSuggestionVO
+} from '@/api/reasonablesuggestion'
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
-import { useUserStore } from '@/store/modules/user'
-import { getDeptsByUserId } from '@/api/system/dept'
-import { defaultProps, handleTree } from '@/utils/tree'
-import type { UploadFiles } from 'element-plus'
+import { defaultProps } from '@/utils/tree'
 import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
+import { UserVO } from '@/store/modules/user'
 
 /** 合理化建议 表单 */
 defineOptions({ name: 'ReasonableSuggestionForm' })
 
 const { t } = useI18n() // 国际化
 const message = useMessage() // 消息弹窗
-const isanonymous = ref(true)
 
-const userInfo = useUserStore().getUser
+const props = defineProps({
+  userInfo: {
+    type: Object as PropType<UserVO>,
+    required: true
+  },
+  depts: {
+    type: Array as PropType<Tree[]>,
+    required: true
+  }
+})
+
 const dialogVisible = ref(false) // 弹窗的是否展示
 const dialogTitle = ref('') // 弹窗的标题
 const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
 const formType = ref('') // 表单的类型：create - 新增；update - 修改
-
-const depts = ref<Tree[]>([])
-
 const formData = ref({
   id: undefined,
   title: undefined,
@@ -131,7 +139,7 @@ const formData = ref({
   solution: undefined,
   effectEstimation: undefined,
   status: undefined,
-  anonymous: '2', //默认不匿名
+  anonymous: Anonymous.No, //默认不匿名
   filePath: undefined as unknown as string,
   fileList: []
 })
@@ -144,36 +152,33 @@ const formRules = reactive({
 })
 const formRef = ref() // 表单 Ref
 
+const isRealName = computed(() => formData.value.anonymous === Anonymous.No)
+
 /** 打开弹窗 */
 const open = async (type: string, id?: number) => {
   dialogVisible.value = true
   dialogTitle.value = t('action.' + type)
   formType.value = type
   resetForm()
-  // 查询当前用户所在的部门列表
-  const deptList = await getDeptsByUserId(userInfo.id)
-  depts.value = handleTree(deptList)
-  // 修改时，设置数据
   if (id) {
+    // 编辑
     formLoading.value = true
     try {
-      formData.value = await ReasonableSuggestionApi.get(id)
-      if (formData.value.anonymous === '1') {
-        isanonymous.value = false
-      } else {
-        isanonymous.value = true
-      }
+      const info = await ReasonableSuggestionApi.get(id)
+      Object.assign(formData.value, info)
     } finally {
       formLoading.value = false
     }
   } else {
-    formData.value.userId = userInfo.id
-    formData.value.nickname = userInfo.nickname
-    formData.value.workNum = userInfo.username
-    formData.value.phoneNum = userInfo.mobile
+    // 新增
+    Object.assign(formData.value, {
+      userId: props.userInfo.id,
+      nickname: props.userInfo.nickname,
+      workNum: props.userInfo.username,
+      phoneNum: props.userInfo.mobile
+    })
   }
 }
-
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 
 /** 提交表单 */
@@ -200,11 +205,6 @@ const submitForm = async () => {
   }
 }
 
-//单选change事件
-const handleRadioChange = (value: string) => {
-  isanonymous.value = value == '1' ? false : true
-}
-
 /** 重置表单 */
 const resetForm = () => {
   formData.value = {
@@ -221,7 +221,7 @@ const resetForm = () => {
     solution: undefined,
     effectEstimation: undefined,
     status: undefined,
-    anonymous: '2',
+    anonymous: Anonymous.No,
     filePath: undefined as unknown as string,
     fileList: []
   }
