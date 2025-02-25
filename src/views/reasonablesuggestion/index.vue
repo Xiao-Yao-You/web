@@ -26,7 +26,7 @@
         >
           <el-option
             v-for="dict in getDictOptions(DICT_TYPE.SUGGESTION_TYPE)"
-            :key="dict.value"
+            :key="dict.label"
             :label="dict.label"
             :value="dict.value"
           />
@@ -50,16 +50,16 @@
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="采纳状态" prop="status">
+      <el-form-item label="审核状态" prop="status">
         <el-select
           v-model="queryParams.status"
-          placeholder="请选择采纳状态"
+          placeholder="请选择审核状态"
           clearable
           class="!w-240px"
         >
           <el-option
             v-for="dict in getDictOptions(DICT_TYPE.ADOPTION_STATUS)"
-            :key="dict.value"
+            :key="dict.label"
             :label="dict.label"
             :value="dict.value"
           />
@@ -69,19 +69,28 @@
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
         <el-button
-          type="primary"
-          plain
-          @click="openForm('create')"
           v-hasPermi="['reasonableSuggestion::create']"
+          plain
+          type="primary"
+          @click="openForm('create')"
         >
           <Icon icon="ep:plus" class="mr-5px" /> 新增
         </el-button>
         <el-button
+          v-hasPermi="['reasonableSuggestion::allRead']"
+          plain
+          type="primary"
+          :loading="readLoading"
+          @click="handleRead"
+        >
+          <Icon icon="ep:reading" class="mr-5px" /> 一键已读
+        </el-button>
+        <el-button
+          v-hasPermi="['reasonableSuggestion::export']"
           type="success"
           plain
-          @click="handleExport"
           :loading="exportLoading"
-          v-hasPermi="['reasonableSuggestion::export']"
+          @click="handleExport"
         >
           <Icon icon="ep:download" class="mr-5px" /> 导出
         </el-button>
@@ -94,7 +103,7 @@
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
       <el-table-column label="序号" type="index" width="80" />
       <el-table-column label="建议主题" align="center" prop="title" width="250" />
-      <el-table-column label="采纳状态" align="center" prop="status">
+      <el-table-column label="审核状态" align="center" prop="status">
         <template #default="{ row: { status } }">
           <dict-tag :type="DICT_TYPE.ADOPTION_STATUS" :value="status" />
         </template>
@@ -115,15 +124,13 @@
         :formatter="dateFormatter"
         width="180px"
       />
-      <el-table-column label="操作" width="210px">
+      <el-table-column label="操作" width="200px">
         <template #default="{ row: { id, userId, status } }">
-          <el-button link type="primary" @click="openViewForm('详情', id)"> 查看 </el-button>
           <el-button
             v-hasPermi="['reasonableSuggestion::examine']"
-            :disabled="[AdoptionStatus.Read, AdoptionStatus.Pending].includes(status)"
             link
             type="primary"
-            @click="openViewForm('审核', id)"
+            @click="openViewForm(id, status)"
           >
             审核
           </el-button>
@@ -131,6 +138,7 @@
             v-if="isOnlySelf(['reasonableSuggestion::delete'], userId)"
             link
             type="primary"
+            :disabled="status !== AdoptionStatus.Unread"
             @click="openForm('update', id)"
           >
             编辑
@@ -139,6 +147,7 @@
             v-if="isOnlySelf(['reasonableSuggestion::delete'], userId)"
             link
             type="danger"
+            :disabled="[AdoptionStatus.Resolve, AdoptionStatus.Reject].includes(status)"
             @click="handleDelete(id)"
           >
             删除
@@ -158,20 +167,20 @@
   <!-- 表单弹窗：新增/编辑 -->
   <ReasonableSuggestionForm ref="formRef" :user-info="userInfo" :depts="depts" @success="getList" />
 
-  <!-- 详情 -->
-  <ReasonableSuggestionViewForm ref="viewFormRef" :user-info="userInfo" @success="getList" />
+  <!-- 审核与已读 -->
+  <ReasonableExamine ref="viewFormRef" :user-info="userInfo" @success="getList" @query="getList" />
 </template>
 
 <script setup lang="ts">
 import { dateFormatter } from '@/utils/formatTime'
 import download from '@/utils/download'
 import {
+  AdoptionStatus,
   ReasonableSuggestionApi,
-  ReasonableSuggestionVO,
-  AdoptionStatus
+  ReasonableSuggestionVO
 } from '@/api/reasonablesuggestion'
 import ReasonableSuggestionForm from './ReasonableSuggestionForm.vue'
-import ReasonableSuggestionViewForm from './ReasonableSuggestionViewForm.vue'
+import ReasonableExamine from './ReasonableExamine.vue'
 import { useUserStore } from '@/store/modules/user'
 import { DICT_TYPE, getDictOptions } from '@/utils/dict'
 import { checkPermi } from '@/utils/permission'
@@ -244,7 +253,7 @@ const openForm = (type: string, id?: number) => {
   formRef.value.open(type, id)
 }
 
-/** 详情页 */
+/** 审核页 */
 const viewFormRef = ref()
 const openViewForm = (type: string, id?: number) => {
   viewFormRef.value.open(type, id)
@@ -275,6 +284,19 @@ const handleExport = async () => {
   } catch {
   } finally {
     exportLoading.value = false
+  }
+}
+
+// 一键已读
+const readLoading = ref(false)
+const handleRead = async () => {
+  readLoading.value = true
+  try {
+    await ReasonableSuggestionApi.readAll()
+    message.success('一键已读成功')
+    getList()
+  } finally {
+    readLoading.value = false
   }
 }
 

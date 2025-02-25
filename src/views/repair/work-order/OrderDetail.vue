@@ -53,8 +53,11 @@
                 <el-descriptions-item :label="`${index ? '说明：' : '描述：'}`">
                   {{ index ? record.remark || '无' : info.description }}
                 </el-descriptions-item>
-                <el-descriptions-item label="图片：" label-class-name="block">
-                  <el-empty v-if="!record.picture" style="padding: unset" :image-size="50" />
+                <el-descriptions-item
+                  label="图片："
+                  :label-class-name="record.picture ? 'block' : ''"
+                >
+                  <span v-if="!record.picture">无</span>
                   <template v-else>
                     <el-image
                       class="mr-10px"

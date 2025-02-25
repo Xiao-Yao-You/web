@@ -9,11 +9,11 @@ export enum Anonymous {
 
 // 建议的采纳状态（从字典管理中获取，请注意更新）
 export enum AdoptionStatus {
-  Pending = 1, // 未审核
+  Pending = 1, // 未审核（暂未用上）
   Resolve, // 已采纳
   Reject, // 不采纳
-  Unread, // 未读
-  Read // 已读
+  Read, // 已读
+  Unread // 未读
 }
 
 // 合理化建议 VO
@@ -49,9 +49,10 @@ export const ReasonableSuggestionApi = {
   },
 
   // 审核合理化建议详情
-  examine: async (id: number, examineType: number) => {
-    return await request.post({
-      url: `/reasonableSuggestion/examine?id=` + id + `&examineType=` + examineType
+  examine: (params: { id: number; examineType: number; remark: string }) => {
+    return request.post({
+      url: '/reasonableSuggestion/examine',
+      params: params
     })
   },
 
@@ -77,11 +78,11 @@ export const ReasonableSuggestionApi = {
 
   // 单条建议已读
   read: (id: number) => {
-    request.get({ url: '/reasonableSuggestion/read', params: { id } })
+    return request.post({ url: '/reasonableSuggestion/read', params: { id } })
   },
 
   // 一键批量已读所有建议
   readAll: () => {
-    request.get({ url: '/reasonableSuggestion/read' })
+    return request.post({ url: '/reasonableSuggestion/allRead' })
   }
 }

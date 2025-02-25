@@ -79,8 +79,7 @@
           show-word-limit
         />
       </el-form-item>
-
-      <el-form-item label="附件地址" prop="fileList">
+      <el-form-item label="图片附件" prop="fileList">
         <BatchPicturesUploader
           v-model:fileList="formData.fileList"
           :limit-size="{ size: 5, unit: 'MB' }"
