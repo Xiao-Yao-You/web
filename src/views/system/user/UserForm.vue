@@ -9,8 +9,8 @@
     >
       <el-row>
         <el-col :span="12">
-          <el-form-item label="用户昵称" prop="nickname">
-            <el-input v-model="formData.nickname" placeholder="请输入用户昵称" />
+          <el-form-item label="姓名" prop="nickname">
+            <el-input v-model="formData.nickname" placeholder="请输入姓名" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -22,6 +22,7 @@
               check-strictly
               multiple
               node-key="id"
+              filterable
               placeholder="请选择归属部门"
             />
           </el-form-item>
@@ -41,8 +42,8 @@
       </el-row>
       <el-row>
         <el-col :span="12">
-          <el-form-item v-if="formData.id === undefined" label="用户名称" prop="username">
-            <el-input v-model="formData.username" placeholder="请输入用户名称" />
+          <el-form-item v-if="formData.id === undefined" label="工号" prop="username">
+            <el-input v-model="formData.username" placeholder="请输入工号" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -71,7 +72,7 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="岗位" prop="postIds">
-            <el-select v-model="formData.postIds" multiple placeholder="请选择">
+            <el-select v-model="formData.postIds" multiple filterable placeholder="请选择">
               <el-option
                 v-for="item in postList"
                 :key="item.id"
@@ -126,8 +127,8 @@ const formData = ref<FormData>({
   status: CommonStatusEnum.ENABLE
 })
 const formRules = reactive<FormRules>({
-  username: [{ required: true, message: '用户名称不能为空', trigger: 'blur' }],
-  nickname: [{ required: true, message: '用户昵称不能为空', trigger: 'blur' }],
+  username: [{ required: true, message: '工号不能为空', trigger: 'blur' }],
+  nickname: [{ required: true, message: '姓名不能为空', trigger: 'blur' }],
   password: [{ required: true, message: '用户密码不能为空', trigger: 'blur' }],
   email: [
     {
