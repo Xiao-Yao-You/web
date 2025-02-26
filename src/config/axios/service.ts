@@ -156,7 +156,9 @@ service.interceptors.response.use(
         })
       }
     } else if (code === 500) {
-      ElMessage.error(t('sys.api.errMsg500'))
+      if (!config.headers['X-Response-Handler']) {
+        ElMessage.error(t('sys.api.errMsg500'))
+      }
       return Promise.reject(new Error(msg))
     } else if (code === 901) {
       ElMessage.error({

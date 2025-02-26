@@ -44,8 +44,11 @@ export const ReasonableSuggestionApi = {
   },
 
   // 查询合理化建议详情
-  get: async (id: number) => {
-    return await request.get({ url: `/reasonableSuggestion/get?id=` + id })
+  get: (id: number) => {
+    return request.get({
+      url: `/reasonableSuggestion/get?id=${id}`,
+      headers: { 'X-Response-Handler': true }
+    })
   },
 
   // 审核合理化建议详情
@@ -78,7 +81,11 @@ export const ReasonableSuggestionApi = {
 
   // 单条建议已读
   read: (id: number) => {
-    return request.post({ url: '/reasonableSuggestion/read', params: { id } })
+    return request.post({
+      url: '/reasonableSuggestion/read',
+      params: { id },
+      headers: { 'X-Response-Handler': true }
+    })
   },
 
   // 一键批量已读所有建议

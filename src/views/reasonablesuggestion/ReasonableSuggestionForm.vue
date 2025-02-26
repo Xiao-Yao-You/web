@@ -102,12 +102,14 @@ import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import { defaultProps } from '@/utils/tree'
 import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
 import { UserVO } from '@/store/modules/user'
+import { ElMessageBox, type Action } from 'element-plus'
 
 /** 合理化建议 表单 */
 defineOptions({ name: 'ReasonableSuggestionForm' })
 
 const { t } = useI18n() // 国际化
 const message = useMessage() // 消息弹窗
+const emit = defineEmits(['query', 'success'])
 
 const props = defineProps({
   userInfo: {
@@ -165,6 +167,15 @@ const open = async (type: string, id?: number) => {
     try {
       const info = await ReasonableSuggestionApi.get(id)
       Object.assign(formData.value, info)
+    } catch (e) {
+      ElMessageBox.alert('查询失败，请确认建议是否存在或已删除。', '系统提示', {
+        confirmButtonText: '刷新列表',
+        type: 'error',
+        callback: (action: Action) => {
+          if (action === 'confirm') emit('query')
+          dialogVisible.value = false
+        }
+      })
     } finally {
       formLoading.value = false
     }
@@ -181,7 +192,6 @@ const open = async (type: string, id?: number) => {
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 
 /** 提交表单 */
-const emit = defineEmits(['success']) // 定义 success 事件，用于操作成功后的回调
 const submitForm = async () => {
   // 校验表单
   await formRef.value.validate()

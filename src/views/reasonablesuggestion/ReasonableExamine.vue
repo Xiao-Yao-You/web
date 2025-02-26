@@ -64,7 +64,7 @@
 import { Anonymous, AdoptionStatus, ReasonableSuggestionApi } from '@/api/reasonablesuggestion'
 import { DICT_TYPE, getDictLabel } from '@/utils/dict'
 import { checkPermi } from '@/utils/permission'
-import { ElMessageBox, ElLoading } from 'element-plus'
+import { ElMessageBox, ElLoading, type Action } from 'element-plus'
 
 /** 合理化建议 表单 */
 defineOptions({ name: 'ReasonableExamine' })
@@ -127,6 +127,15 @@ const open = async (id: number, preStatus: AdoptionStatus) => {
     // 2. 获取最新详情（已读状态变更后）
     const info = await ReasonableSuggestionApi.get(id)
     Object.assign(detail.value, info)
+  } catch (e) {
+    ElMessageBox.alert('查询失败，请确认建议是否存在或已删除。', '系统提示', {
+      confirmButtonText: '刷新列表',
+      type: 'error',
+      callback: (action: Action) => {
+        if (action === 'confirm') emit('query')
+        dialogVisible.value = false
+      }
+    })
   } finally {
     loadingInstance.close()
   }

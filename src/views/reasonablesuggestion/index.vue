@@ -165,7 +165,13 @@
   </ContentWrap>
 
   <!-- 表单弹窗：新增/编辑 -->
-  <ReasonableSuggestionForm ref="formRef" :user-info="userInfo" :depts="depts" @success="getList" />
+  <ReasonableSuggestionForm
+    ref="formRef"
+    :user-info="userInfo"
+    :depts="depts"
+    @success="getList"
+    @query="getList"
+  />
 
   <!-- 审核与已读 -->
   <ReasonableExamine ref="viewFormRef" :user-info="userInfo" @success="getList" @query="getList" />
@@ -254,9 +260,9 @@ const openForm = (type: string, id?: number) => {
 }
 
 /** 审核页 */
-const viewFormRef = ref()
-const openViewForm = (type: string, id?: number) => {
-  viewFormRef.value.open(type, id)
+const viewFormRef = ref<InstanceType<typeof ReasonableExamine>>()
+const openViewForm = (id: number, status: number) => {
+  viewFormRef.value?.open(id, status)
 }
 
 /** 删除按钮操作 */
