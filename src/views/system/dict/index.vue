@@ -200,7 +200,7 @@ const openForm = (type: string, id?: number) => {
 const handleDelete = async (id: number) => {
   try {
     // 删除的二次确认
-    await message.delConfirm()
+    await message.delConfirm('删除字典可能导致数据异常，确定要删除吗？')
     // 发起删除
     await DictTypeApi.deleteDictType(id)
     message.success(t('common.delSuccess'))

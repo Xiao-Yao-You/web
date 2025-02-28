@@ -18,6 +18,7 @@ export const useEmployeeStore = defineStore('employee', {
       if (list.length) this.infoEmployees = list
     },
     async fetchInfoEmployees() {
+      if (this.infoEmployees.length) return
       const { list } = await getUserPage({
         pageNo: 1,
         pageSize: 50,
