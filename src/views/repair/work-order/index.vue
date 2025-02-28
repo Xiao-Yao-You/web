@@ -111,13 +111,13 @@
   <ContentWrap>
     <el-table v-loading="loading" :data="list" stripe show-overflow-tooltip>
       <el-table-column type="index" align="center" width="40" fixed="left" />
-      <el-table-column label="工单标题" prop="title" width="150" fixed="left" />
-      <el-table-column label="工单状态" prop="status" width="100" fixed="left">
+      <el-table-column label="工单标题" prop="title" width="180" fixed="left" />
+      <el-table-column label="工单状态" prop="status" width="90" fixed="left">
         <template #default="{ row: { status } }">
           <dict-tag :type="DICT_TYPE.REPAIR_ORDER_STATUS" :value="status" />
         </template>
       </el-table-column>
-      <el-table-column label="工单编号" prop="code" width="100" />
+      <el-table-column label="工单编号" prop="code" width="150" />
       <el-table-column label="报修人" prop="submitUserNickName" />
       <el-table-column label="处理人" prop="dealUserNickName">
         <template #default="{ row: { dealUserNickName } }">
@@ -184,12 +184,38 @@
         label="操作"
         align="center"
         fixed="right"
-        width="120"
+        width="200"
         :show-overflow-tooltip="false"
       >
         <template #default="{ row }">
           <el-button link type="primary" @click="openDetail(row.id)">详情</el-button>
-          <el-dropdown class="align-baseline!" @command="(command) => handleCommand(command, row)">
+          <!-- 操作按钮少，用这个 ↓ -->
+          <el-button
+            link
+            type="primary"
+            :disabled="handleDisabled(OperateMethod.Dispatch, row)"
+            @click="handleCommand(OperateMethod.Dispatch, row)"
+          >
+            派单
+          </el-button>
+          <el-button
+            link
+            type="primary"
+            :disabled="handleDisabled(OperateMethod.Transfer, row)"
+            @click="handleCommand(OperateMethod.Transfer, row)"
+          >
+            转交
+          </el-button>
+          <el-button
+            link
+            type="danger"
+            :disabled="handleDisabled(OperateMethod.Close, row)"
+            @click="handleCommand(OperateMethod.Close, row)"
+          >
+            关单
+          </el-button>
+          <!-- 操作按钮多，用这个 ↓ -->
+          <!-- <el-dropdown class="align-baseline!" @command="(command) => handleCommand(command, row)">
             <el-button type="primary" link><Icon icon="ep:d-arrow-right" />更多</el-button>
             <template #dropdown>
               <el-dropdown-menu>
@@ -205,45 +231,51 @@
                 >
                   转交
                 </el-dropdown-item>
-                <!-- <el-dropdown-item
+                <el-dropdown-item
+                  :command="OperateMethod.Close"
+                  :disabled="handleDisabled(OperateMethod.Close, row)"
+                >
+                  关单
+                </el-dropdown-item>
+                <el-dropdown-item
                   :command="OperateMethod.Receive"
                   :disabled="handleDisabled(OperateMethod.Receive, row)"
                 >
                   抢单
-                </el-dropdown-item> -->
-                <!-- <el-dropdown-item
+                </el-dropdown-item>
+                <el-dropdown-item
                   :command="OperateMethod.Confirm"
                   :disabled="handleDisabled(OperateMethod.Confirm, row)"
                 >
                   确认
-                </el-dropdown-item> -->
-                <!-- <el-dropdown-item
+                </el-dropdown-item>
+                <el-dropdown-item
                   :command="OperateMethod.HangUp"
                   :disabled="handleDisabled(OperateMethod.HangUp, row)"
                 >
                   挂起
-                </el-dropdown-item> -->
-                <!-- <el-dropdown-item
+                </el-dropdown-item>
+                <el-dropdown-item
                   :command="OperateMethod.Restart"
                   :disabled="handleDisabled(OperateMethod.Restart, row)"
                 >
                   重启
-                </el-dropdown-item> -->
-                <!-- <el-dropdown-item
+                </el-dropdown-item>
+                <el-dropdown-item
                   :command="OperateMethod.Finish"
                   :disabled="handleDisabled(OperateMethod.Finish, row)"
                 >
                   完成
-                </el-dropdown-item> -->
-                <!-- <el-dropdown-item
+                </el-dropdown-item>
+                <el-dropdown-item
                   :command="OperateMethod.Revoke"
                   :disabled="handleDisabled(OperateMethod.Revoke, row)"
                 >
                   撤销
-                </el-dropdown-item> -->
+                </el-dropdown-item>
               </el-dropdown-menu>
             </template>
-          </el-dropdown>
+          </el-dropdown> -->
         </template>
       </el-table-column>
     </el-table>
@@ -400,6 +432,9 @@ const handleCommand = (command: string, row: RepairOrder) => {
     case OperateMethod.Revoke:
       handleRevoke(row.id)
       break
+    case OperateMethod.Close:
+      handleClose(row.id)
+      break
     default:
       break
   }
@@ -517,6 +552,38 @@ const openCompleteForm = ({ id, code, status }: RepairOrder) => {
   completeRef.value?.open({ id, code, status })
 }
 
+// 直接关单
+const handleClose = async (id: number) => {
+  ElMessageBox.prompt('工单还在处理流程中，确定关闭吗？', '系统提示', {
+    type: 'warning',
+    confirmButtonText: '直接关单',
+    cancelButtonText: '取消',
+    inputPattern: /^(?=.*\S).+$/,
+    inputPlaceholder: '请输入关单原因',
+    inputErrorMessage: '原因不能为空',
+    beforeClose(action, instance, done) {
+      if (action === 'confirm') {
+        instance.confirmButtonLoading = true
+        handleRepairOrder({
+          id,
+          operateMethod: OperateMethod.Close,
+          remark: instance.inputValue
+        })
+          .then(() => {
+            message.success('关单成功')
+            handleQuery()
+            done()
+          })
+          .finally(() => {
+            instance.confirmButtonLoading = false
+          })
+      } else {
+        done()
+      }
+    }
+  })
+}
+
 // 处理按钮的禁用状态
 const { user } = storeToRefs(useUserStore())
 const handleDisabled = (
@@ -552,6 +619,16 @@ const handleDisabled = (
       res =
         ![OperateStatus.Revoke, OperateStatus.Done, OperateStatus.Finish].includes(status) &&
         submitUserId === user.value.id
+      break
+    // 直接关单的前提条件：不是待分配、已完成、已关单、已撤销
+    case OperateMethod.Close:
+      res = ![
+        OperateStatus.Dispatch,
+        OperateStatus.Revoke,
+        OperateStatus.Done,
+        OperateStatus.Finish,
+        OperateStatus.Close
+      ].includes(status)
       break
     default:
       break

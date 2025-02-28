@@ -59,7 +59,8 @@ export enum OperateStatus {
   Finish = '06', // 已完成
   NoHandle = '0601', // 无需处理
   UnableFix = '0602', // 无法排除的故障
-  Revoke = '07' // 撤销
+  Revoke = '07', // 撤销
+  Close = '08' // 后台直接关闭
 }
 
 // 工单处理方式
@@ -72,7 +73,8 @@ export enum OperateMethod {
   HangUp = 'GUAQI',
   Finish = 'WANCHENG',
   Revoke = 'CHEXIAO',
-  Restart = 'KAISHI'
+  Restart = 'KAISHI',
+  Close = 'CLOSEORDER'
   // CHUANGJIAN: '创建',
   // PAIDAN: '派单',
   // LINGDAN: '抢单',
@@ -101,6 +103,7 @@ export const OperateType = {
   KAISHI: 7,
   OUTSOURCING: 8,
   OUTSOURCING_RESTART: 9,
+  CLOSEORDER: 10,
   99: '创建',
   0: '派单',
   1: '抢单',
@@ -113,7 +116,8 @@ export const OperateType = {
   6: '撤销',
   7: '重启',
   8: '委外维修',
-  9: '委外维修/重启'
+  9: '委外维修/重启',
+  10: '关单'
 }
 
 // 工单报修方式
