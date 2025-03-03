@@ -2,72 +2,104 @@
   <ContentWrap>
     <!-- 搜索工作栏 -->
     <el-form class="-mb-15px" :model="queryParams" ref="queryFormRef" inline label-width="80px">
-      <el-form-item label="工单标题" prop="title">
-        <el-input
-          v-model="queryParams.title"
-          placeholder="请输入标题"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-200px"
-        />
-      </el-form-item>
-      <el-form-item label="工单状态" prop="status">
-        <el-select v-model="queryParams.status" clearable class="!w-120px">
-          <el-option
-            v-for="dict in getStrDictOptions(DICT_TYPE.REPAIR_ORDER_STATUS)"
-            :key="dict.value as string"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="紧急程度" prop="level">
-        <el-select v-model="queryParams.level" clearable class="!w-120px">
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.LEVEL)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="处理人" prop="dealUserNickName">
-        <el-input
-          v-model="queryParams.dealUserNickName"
-          placeholder="请输入处理人"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-110px"
-        />
-      </el-form-item>
-      <el-form-item label="请求类型" prop="requestType">
-        <el-select v-model="queryParams.requestType" clearable class="!w-120px">
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.REPAIR_REQUEST_TYPE)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="时间段" prop="dayNight">
-        <el-select v-model="queryParams.dayNight" clearable class="!w-120px">
-          <el-option label="日间" :value="1" />
-          <el-option label="夜间" :value="3" />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="问题类型" prop="questionType">
-        <el-tree-select
-          v-model="queryParams.questionType"
-          :data="repairStore.issuesTree"
-          :default-expanded-keys="[0]"
-          :props="defaultProps"
-          check-strictly
-          node-key="id"
-          class="!w-200px"
-          clearable
-        />
-      </el-form-item>
+      <!-- 第一行 -->
+      <el-row>
+        <el-col :span="6">
+          <el-form-item label="工单编号" prop="code" class="w-full !mr-0">
+            <el-input
+              v-model="queryParams.code"
+              placeholder="请输入工单编号"
+              clearable
+              @keyup.enter="handleQuery"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="工单状态" prop="status" class="w-full !mr-0">
+            <el-select v-model="queryParams.status" clearable>
+              <el-option
+                v-for="dict in getStrDictOptions(DICT_TYPE.REPAIR_ORDER_STATUS)"
+                :key="dict.value as string"
+                :label="dict.label"
+                :value="dict.value"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="问题类型" prop="questionType" class="w-full !mr-0">
+            <el-cascader
+              v-model="queryParams.questionType"
+              filterable
+              clearable
+              :props="{ label: 'name', value: 'id', emitPath: false }"
+              :options="repairStore.issuesTree"
+              placeholder="请选择问题类型"
+              class="w-full"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="请求类型" prop="requestType" class="w-full !mr-0">
+            <el-select v-model="queryParams.requestType" clearable>
+              <el-option
+                v-for="dict in getIntDictOptions(DICT_TYPE.REPAIR_REQUEST_TYPE)"
+                :key="dict.value"
+                :label="dict.label"
+                :value="dict.value"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+      </el-row>
+
+      <!-- 第二行 -->
+      <el-row>
+        <el-col :span="6">
+          <el-form-item label="报修日期" prop="createTime" class="w-full !mr-0">
+            <el-date-picker
+              v-model="queryParams.createTime"
+              type="daterange"
+              range-separator="-"
+              value-format="YYYY-MM-DD"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="时间段" prop="dayNight" class="w-full !mr-0">
+            <el-select v-model="queryParams.dayNight" clearable>
+              <el-option label="日间" :value="1" />
+              <el-option label="夜间" :value="3" />
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="紧急程度" prop="level" class="w-full !mr-0">
+            <el-select v-model="queryParams.level" clearable>
+              <el-option
+                v-for="dict in getIntDictOptions(DICT_TYPE.LEVEL)"
+                :key="dict.value"
+                :label="dict.label"
+                :value="dict.value"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="处理人" prop="dealUserNickName" class="w-full !mr-0">
+            <el-input
+              v-model="queryParams.dealUserNickName"
+              placeholder="请输入处理人名字"
+              clearable
+              @keyup.enter="handleQuery"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
+
+      <!-- 第三行 -->
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
@@ -315,7 +347,12 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { ElMessageBox } from 'element-plus'
+import {
+  ElMessageBox,
+  type CascaderValue,
+  type FormInstance,
+  type ModelValueType
+} from 'element-plus'
 import OrderCreate from './OrderCreate.vue'
 import OrderDispatchForm from './OrderDispatchForm.vue'
 import OrderTransferForm from './OrderTransferForm.vue'
@@ -339,7 +376,6 @@ import {
 } from '@/api/repair/constant'
 import { DICT_TYPE, getIntDictOptions, getStrDictOptions } from '@/utils/dict'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
-import { defaultProps } from '@/utils/tree'
 import { isEmptyVal } from '@/utils/is'
 import { formatDate, formatPast2 } from '@/utils/formatTime'
 import { useEmployeeStoreWithOut } from '@/store/modules/employee'
@@ -364,24 +400,41 @@ const TimerIcon = useIcon({ icon: 'ep:timer' })
 const loading = ref(true)
 const list = ref<RepairOrder[]>([])
 const total = ref(0)
-const queryFormRef = ref()
+const queryFormRef = ref<FormInstance>()
 const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
-  title: undefined as unknown as string,
+  code: undefined as unknown as string,
   status: undefined as unknown as string, // 工单状态
-  dealUserNickName: undefined,
-  questionType: undefined, // 问题类型
+  dealUserNickName: undefined as unknown as string,
+  questionType: undefined as unknown as CascaderValue, // 问题类型（最后一级节点）
   level: undefined, // 紧急程度
   requestType: undefined, // 请求类型
-  dayNight: undefined
+  dayNight: undefined,
+  createTime: '' as ModelValueType
 })
+// 处理 createTime 格式，添加上 00:00 和 59:59 时间
+function handleCreateTime(createTime: ModelValueType): ModelValueType {
+  if (Array.isArray(createTime)) {
+    let [beginTime, endTime] = createTime
+    beginTime = `${beginTime} 00:00:00`
+    endTime = `${endTime} 23:59:59`
+    return [beginTime, endTime]
+  } else {
+    return createTime
+  }
+}
 // 查询
 const getList = async () => {
-  await queryFormRef.value.validate()
+  await queryFormRef.value?.validate()
   loading.value = true
   try {
-    const data = await getRepairOrderPage(queryParams)
+    // 处理 createTime 格式，添加上 00:00 和 59:59 时间
+    const { createTime, ...rest } = queryParams
+    const data = await getRepairOrderPage({
+      ...rest,
+      createTime: handleCreateTime(createTime)
+    })
     list.value = data.list
     total.value = data.total
   } finally {
@@ -395,7 +448,7 @@ const handleQuery = () => {
 }
 // 重置
 const resetQuery = () => {
-  queryFormRef.value.resetFields()
+  queryFormRef.value?.resetFields()
   handleQuery()
 }
 // 添加/修改

@@ -2,14 +2,16 @@ import request from '@/config/axios'
 import { RequsetTypeEnum, OperateMethod, OperateStatus } from './constant'
 import { CommonLevelEnum } from '@/utils/constants'
 import type { PictureItem } from './archive'
+import type { CascaderValue, ModelValueType } from 'element-plus'
 
 export type RepairOrderPage = PageParam &
   Partial<{
     title: string
     status: string
-    questionType: string
+    questionType: CascaderValue
     level: string
     submitUserNickName: string
+    createTime: ModelValueType
   }>
 
 export interface RepairOrder {
