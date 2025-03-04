@@ -1,4 +1,5 @@
 import request from '@/config/axios'
+import type { UserVO } from '@/api/system/user'
 
 // 成员分组 VO
 export interface MemberGroupVO {
@@ -19,6 +20,13 @@ export const getMemberGroupPage = (params: any) => {
 // 查询成员分组详情
 export const getMemberGroup = (id: number) => {
   return request.get({ url: `/operation-group/get?id=${id}` })
+}
+
+// 根据请求类型查询成员分组
+export const getMemberGroupByGroupId = (groupId: string) => {
+  return request.get<UserVO[]>({
+    url: `/operation-group/getGroupUsers?groupId=${groupId}`
+  })
 }
 
 // 新增成员分组

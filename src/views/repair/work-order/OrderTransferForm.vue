@@ -10,40 +10,41 @@
       <el-form-item label="工单编号" prop="code">
         <el-input v-model="formData.code" disabled />
       </el-form-item>
+      <el-form-item label="问题类型" prop="questionType">
+        <el-cascader
+          v-model="formData.questionType"
+          filterable
+          clearable
+          :props="{ label: 'name', value: 'id', emitPath: false }"
+          :options="repairStore.issuesTree"
+          placeholder="请选择问题类型"
+          class="w-full"
+        />
+      </el-form-item>
       <el-form-item label="请求类型" prop="requestType">
-        <el-select v-model="formData.requestType" placeholder="请选择请求类型" class="!w-150px">
+        <el-select
+          v-model="formData.requestType"
+          placeholder="请选择请求类型"
+          @change="onRequestTypeChange"
+        >
           <el-option
             v-for="dict in getDictOptions(DICT_TYPE.REPAIR_REQUEST_TYPE)"
-            :key="dict.value"
+            :key="dict.value as string"
             :label="dict.label"
             :value="dict.value"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="问题类型" prop="questionType">
-        <el-tree-select
-          v-model="formData.questionType"
-          :data="repairStore.issuesTree"
-          :props="defaultProps"
-          check-strictly
-          node-key="id"
-          placeholder="请选择问题类型"
-        />
-      </el-form-item>
       <el-form-item label="转交对象" prop="user">
         <el-select
           v-model="formData.user"
-          placeholder="请选择转交对象"
+          :disabled="memberDisabled"
+          :placeholder="placeholder"
           filterable
           value-key="id"
           clearable
         >
-          <el-option
-            v-for="item in employeeStore.infoEmployees"
-            :key="item.id"
-            :label="item.nickname"
-            :value="item"
-          />
+          <el-option v-for="m in memberOptions" :key="m.value" :label="m.label" :value="m.value" />
         </el-select>
       </el-form-item>
       <el-form-item label="转交说明" prop="remark">
@@ -70,21 +71,18 @@
 </template>
 
 <script setup lang="ts">
+import { useDebounceFn } from '@vueuse/core'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
-import { useEmployeeStoreWithOut } from '@/store/modules/employee'
-import { handleRepairOrder } from '@/api/repair'
+import { handleRepairOrder, getMemberGroupByGroupId } from '@/api/repair'
 import { RequsetTypeEnum, OperateMethod } from '@/api/repair/constant'
-import { defaultProps } from '@/utils/tree'
 import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
 import { DICT_TYPE, getDictOptions } from '@/utils/dict'
-import { type UserVO } from '@/api/system/user'
-import type { UploadUserFile } from 'element-plus'
+import type { UploadUserFile, CascaderValue } from 'element-plus'
 
 defineOptions({
   name: 'OrderTransferForm'
 })
 
-const employeeStore = useEmployeeStoreWithOut()
 const repairStore = useRepairStoreWithOut()
 const message = useMessage()
 
@@ -95,13 +93,13 @@ const formData = ref({
   id: undefined as unknown as number,
   code: undefined as unknown as string,
   requestType: undefined as unknown as RequsetTypeEnum,
-  questionType: undefined as unknown as number,
-  user: undefined as unknown as UserVO,
+  questionType: undefined as unknown as CascaderValue,
+  user: undefined as unknown as OptionItem,
   remark: '',
   picture: [] as UploadUserFile[]
 })
 const formRules = reactive({
-  requestType: [{ required: true, message: '请求类型不能为空', trigger: 'blur' }],
+  requestType: [{ required: true, message: '请求类型不能为空', trigger: ['blur', 'change'] }],
   questionType: [{ required: true, message: '问题类型不能为空', trigger: 'blur' }],
   user: [{ required: true, message: '转交对象不能为空', trigger: 'blur' }],
   remark: [{ required: true, message: '转交说明不能为空', trigger: 'blur' }]
@@ -123,8 +121,8 @@ const resetForm = () => {
     id: undefined as unknown as number,
     code: undefined as unknown as string,
     requestType: undefined as unknown as RequsetTypeEnum,
-    questionType: undefined as unknown as number,
-    user: undefined as unknown as UserVO,
+    questionType: undefined as unknown as CascaderValue,
+    user: undefined as unknown as OptionItem,
     remark: '',
     picture: [] as UploadUserFile[]
   }
@@ -159,4 +157,42 @@ const onConfirm = async () => {
     loading.value = false
   }
 }
+
+//#region 根据请求类型获取指派对象
+const memberOptions = ref<OptionItem[]>([])
+const memberLoading = ref(false)
+const memberDisabled = computed(() => {
+  return memberLoading.value || !formData.value.requestType
+})
+const placeholder = computed(() => {
+  if (!formData.value.requestType) {
+    return '先选择请求类型，再选择指派对象'
+  } else if (memberLoading.value) {
+    return '加载中...'
+  } else {
+    return '请选择指派对象'
+  }
+})
+
+// 切换请求类型
+const onRequestTypeChange = (requestType: string) => {
+  memberLoading.value = true
+  memberOptions.value = []
+  getMemberOptions(requestType)
+}
+
+// 根据请求类型获取指派对象
+const getMemberOptions = useDebounceFn(async (groupId: string) => {
+  try {
+    const members = await getMemberGroupByGroupId(groupId)
+    memberOptions.value = members.map((m) => ({
+      value: m.id,
+      label: m.nickname
+    }))
+    formData.value.user = undefined as unknown as OptionItem
+  } finally {
+    memberLoading.value = false
+  }
+}, 800)
+//#endregion
 </script>

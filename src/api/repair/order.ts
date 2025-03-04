@@ -87,7 +87,7 @@ export interface HandlePayload {
   userNickName?: string
   remark?: string
   requestType?: string // 现场确认时必填
-  questionType?: number // 现场确认时必填
+  questionType?: CascaderValue // 现场确认时必填
   level?: CommonLevelEnum // 现场确认时必填
   pictureList?: PictureItem[] // 上传的图片（已弃用，新需求请使用下面的 picture）
   picture?: string // 以 ';' 号连接的图片名，例：aaa.jpg;bbb.png

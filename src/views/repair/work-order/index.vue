@@ -530,6 +530,7 @@ const openDispatchForm = (row: RepairOrder) => {
 }
 
 // 抢单
+// todo: 需要重构，查询自己所在的请求类型分组并选择对应的问题类型
 const receiveOrder = (id: number) => {
   ElMessageBox.confirm('抢单后将开始记录工单处置时长，是否确定抢单并开始执行工单？', '系统提示', {
     confirmButtonText: '确定',
