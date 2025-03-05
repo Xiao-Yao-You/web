@@ -65,6 +65,17 @@
           />
         </el-select>
       </el-form-item>
+      <el-form-item label="申报日期" prop="createTime">
+        <el-date-picker
+          v-model="queryParams.createTime"
+          type="daterange"
+          range-separator="-"
+          value-format="YYYY-MM-DD"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          class="!w-220px"
+        />
+      </el-form-item>
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
@@ -183,7 +194,8 @@ import ReasonableSuggestionForm from './ReasonableSuggestionForm.vue'
 import ReasonableExamine from './ReasonableExamine.vue'
 import { useUserStore } from '@/store/modules/user'
 import { DICT_TYPE, getDictOptions } from '@/utils/dict'
-import { checkPermi } from '@/utils/permission'
+import { type ModelValueType } from 'element-plus'
+// import { checkPermi } from '@/utils/permission'
 
 /** 合理化建议 列表 */
 defineOptions({ name: 'ReasonableSuggestion' })
@@ -203,21 +215,38 @@ const queryParams = reactive({
   suggestionType: undefined as unknown as number,
   nickname: undefined as unknown as string,
   deptName: undefined as unknown as string,
-  status: undefined as unknown as number
+  status: undefined as unknown as number,
+  createTime: '' as ModelValueType
 })
 const queryFormRef = ref() // 搜索的表单
 const exportLoading = ref(false) // 导出的加载中
 
 // 判断是否只有自己有权限
-const isOnlySelf = (permissions: string[], userId: number) => {
-  return checkPermi(permissions) && userId === userInfo.id
+// const isOnlySelf = (permissions: string[], userId: number) => {
+//   return checkPermi(permissions) && userId === userInfo.id
+// }
+
+// 处理 createTime 格式，添加上 00:00 和 59:59 时间
+function handleCreateTime(createTime: ModelValueType): ModelValueType {
+  if (Array.isArray(createTime)) {
+    let [beginTime, endTime] = createTime
+    beginTime = `${beginTime} 00:00:00`
+    endTime = `${endTime} 23:59:59`
+    return [beginTime, endTime]
+  } else {
+    return createTime
+  }
 }
 
 /** 查询列表 */
 const getList = async () => {
   loading.value = true
   try {
-    const data = await ReasonableSuggestionApi.getPage(queryParams)
+    const { createTime, ...rest } = queryParams
+    const data = await ReasonableSuggestionApi.getPage({
+      ...rest,
+      createTime: handleCreateTime(createTime)
+    })
     list.value = data.list
     total.value = data.total
   } finally {
