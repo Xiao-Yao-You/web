@@ -142,13 +142,15 @@ defineExpose({ open })
 
 // 采纳
 const onResolve = () => {
-  ElMessageBox.confirm('确定采纳该条建议吗？', '系统提示', {
+  ElMessageBox.prompt('请输入采纳原因', '系统提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
+    inputPattern: /\S+/,
+    inputErrorMessage: '原因不能为空',
     beforeClose: (action, instance, done) => {
       if (action === 'confirm') {
         instance.confirmButtonLoading = true
-        examine(AdoptionStatus.Resolve)
+        examine(AdoptionStatus.Resolve, instance.inputValue)
           .then(() => {
             done()
             dialogVisible.value = false
