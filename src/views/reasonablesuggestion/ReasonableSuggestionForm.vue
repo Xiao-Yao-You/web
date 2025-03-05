@@ -39,14 +39,12 @@
       <el-form-item label="手机号" prop="phoneNum">
         <el-input v-model="formData.phoneNum" placeholder="请输入手机号" />
       </el-form-item>
-      <el-form-item label="申报部门" prop="deptId">
-        <el-tree-select
-          v-model="formData.deptId"
-          :data="depts"
-          :props="defaultProps"
-          check-strictly
-          node-key="id"
-          placeholder="请选择归属部门"
+      <el-form-item label="建议部门" prop="deptName">
+        <el-input
+          v-model="formData.deptName"
+          placeholder="想给哪个部门提建议？"
+          maxlength="30"
+          show-word-limit
         />
       </el-form-item>
       <el-form-item label="问题描述" prop="problemDescription">
@@ -99,25 +97,20 @@ import {
   ReasonableSuggestionVO
 } from '@/api/reasonablesuggestion'
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
-import { defaultProps } from '@/utils/tree'
 import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
 import { UserVO } from '@/store/modules/user'
-import { ElMessageBox, type Action } from 'element-plus'
+import { ElMessageBox, type Action, type UploadFiles } from 'element-plus'
 
 /** 合理化建议 表单 */
 defineOptions({ name: 'ReasonableSuggestionForm' })
 
-const { t } = useI18n() // 国际化
-const message = useMessage() // 消息弹窗
+const { t } = useI18n()
+const message = useMessage()
 const emit = defineEmits(['query', 'success'])
 
 const props = defineProps({
   userInfo: {
     type: Object as PropType<UserVO>,
-    required: true
-  },
-  depts: {
-    type: Array as PropType<Tree[]>,
     required: true
   }
 })
@@ -128,26 +121,25 @@ const formLoading = ref(false) // 表单的加载中：1）修改时的数据加
 const formType = ref('') // 表单的类型：create - 新增；update - 修改
 const formData = ref({
   id: undefined,
-  title: undefined,
+  title: '',
   suggestionType: undefined,
-  userId: undefined as unknown as number,
-  nickname: undefined as unknown as string,
-  workNum: undefined as unknown as string,
-  phoneNum: undefined as unknown as string,
-  deptId: undefined as unknown as number,
-  deptName: undefined as unknown as string,
-  problemDescription: undefined,
-  solution: undefined,
-  effectEstimation: undefined,
+  nickname: '',
+  workNum: '',
+  phoneNum: undefined,
+  deptName: '',
+  problemDescription: '',
+  solution: '',
+  effectEstimation: '',
   status: undefined,
   anonymous: Anonymous.No, //默认不匿名
-  filePath: undefined as unknown as string,
-  fileList: []
-})
+  filePath: undefined,
+  fileList: [] as UploadFiles
+} as unknown as ReasonableSuggestionVO)
+
 const formRules = reactive({
   title: [{ required: true, message: '建议主题不能为空', trigger: 'blur' }],
   suggestionType: [{ required: true, message: '建议类型不能为空', trigger: 'change' }],
-  deptId: [{ required: true, message: '部门不能为空', trigger: 'change' }],
+  deptName: [{ required: true, message: '部门不能为空', trigger: 'change' }],
   problemDescription: [{ required: true, message: '问题描述不能为空', trigger: 'blur' }],
   solution: [{ required: true, message: '解决方案不能为空', trigger: 'blur' }]
 })
@@ -182,7 +174,6 @@ const open = async (type: string, id?: number) => {
   } else {
     // 新增
     Object.assign(formData.value, {
-      userId: props.userInfo.id,
       nickname: props.userInfo.nickname,
       workNum: props.userInfo.username,
       phoneNum: props.userInfo.mobile
@@ -193,17 +184,19 @@ defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 
 /** 提交表单 */
 const submitForm = async () => {
-  // 校验表单
   await formRef.value.validate()
-  // 提交请求
   formLoading.value = true
+  // 处理匿名
+  if (!isRealName.value) {
+    formData.value.nickname = '匿名'
+    formData.value.workNum = '匿名'
+  }
   try {
-    const data = formData.value as unknown as ReasonableSuggestionVO
     if (formType.value === 'create') {
-      await ReasonableSuggestionApi.create(data)
+      await ReasonableSuggestionApi.create(formData.value)
       message.success(t('common.createSuccess'))
     } else {
-      await ReasonableSuggestionApi.update(data)
+      await ReasonableSuggestionApi.update(formData.value)
       message.success(t('common.updateSuccess'))
     }
     dialogVisible.value = false
@@ -218,22 +211,21 @@ const submitForm = async () => {
 const resetForm = () => {
   formData.value = {
     id: undefined,
-    title: undefined,
+    title: '',
     suggestionType: undefined,
-    userId: undefined as unknown as number,
-    nickname: undefined as unknown as string,
-    workNum: undefined as unknown as string,
-    phoneNum: undefined as unknown as string,
-    deptId: undefined as unknown as number,
-    deptName: undefined as unknown as string,
-    problemDescription: undefined,
-    solution: undefined,
-    effectEstimation: undefined,
+    nickname: '',
+    workNum: '',
+    phoneNum: undefined,
+    deptName: '',
+    problemDescription: '',
+    solution: '',
+    effectEstimation: '',
     status: undefined,
     anonymous: Anonymous.No,
-    filePath: undefined as unknown as string,
-    fileList: []
-  }
+    filePath: undefined,
+    fileList: [] as UploadFiles
+  } as unknown as ReasonableSuggestionVO
+
   formRef.value?.resetFields()
 }
 </script>

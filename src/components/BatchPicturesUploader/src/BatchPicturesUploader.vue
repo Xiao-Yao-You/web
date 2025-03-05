@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useIcon } from '@/hooks/web/useIcon'
 import { useUpload } from '@/components/UploadFile/src/useUpload'
-import type { UploadProps, UploadUserFile } from 'element-plus'
+import type { UploadProps, UploadUserFile, UploadFile } from 'element-plus'
 
 defineOptions({
   name: 'BatchPicturesUploader'
@@ -20,7 +20,7 @@ const props = withDefaults(
   }
 )
 
-const fileList = defineModel<UploadUserFile[]>('fileList', {
+const fileList = defineModel<Array<UploadUserFile | UploadFile>>('fileList', {
   type: Array,
   default: () => [],
   get(value) {

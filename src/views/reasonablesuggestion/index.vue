@@ -68,14 +68,14 @@
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
-        <el-button
+        <!-- <el-button
           v-hasPermi="['reasonableSuggestion::create']"
           plain
           type="primary"
           @click="openForm('create')"
         >
           <Icon icon="ep:plus" class="mr-5px" /> 新增
-        </el-button>
+        </el-button> -->
         <el-button
           v-hasPermi="['reasonableSuggestion::allRead']"
           plain
@@ -102,30 +102,29 @@
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
       <el-table-column label="序号" type="index" width="80" />
-      <el-table-column label="建议主题" align="center" prop="title" width="250" />
-      <el-table-column label="审核状态" align="center" prop="status">
+      <el-table-column label="建议主题" prop="title" width="250" />
+      <el-table-column label="审核状态" prop="status">
         <template #default="{ row: { status } }">
           <dict-tag :type="DICT_TYPE.ADOPTION_STATUS" :value="status" />
         </template>
       </el-table-column>
-      <el-table-column label="建议类型" align="center" prop="suggestionType">
+      <el-table-column label="建议类型" prop="suggestionType">
         <template #default="{ row: { suggestionType } }">
           <dict-tag :type="DICT_TYPE.SUGGESTION_TYPE" :value="suggestionType" />
         </template>
       </el-table-column>
-      <!-- <el-table-column label="申报人" align="center" prop="nickname" />
-      <el-table-column label="申报人工号" align="center" prop="workNum" /> -->
-      <el-table-column label="手机号" align="center" prop="phoneNum" />
-      <el-table-column label="申报部门" align="center" prop="deptName" />
+      <el-table-column label="申报人" prop="nickname" />
+      <el-table-column label="申报人工号" prop="workNum" />
+      <el-table-column label="手机号" prop="phoneNum" />
+      <el-table-column label="申报部门" prop="deptName" />
       <el-table-column
         label="申报时间"
-        align="center"
         prop="createTime"
         :formatter="dateFormatter"
         width="180px"
       />
-      <el-table-column label="操作" width="200px">
-        <template #default="{ row: { id, userId, status } }">
+      <el-table-column label="操作" align="center" width="100px">
+        <template #default="{ row: { id, status } }">
           <el-button
             v-hasPermi="['reasonableSuggestion::examine']"
             link
@@ -134,7 +133,7 @@
           >
             审核
           </el-button>
-          <el-button
+          <!-- <el-button
             v-if="isOnlySelf(['reasonableSuggestion::delete'], userId)"
             link
             type="primary"
@@ -142,8 +141,8 @@
             @click="openForm('update', id)"
           >
             编辑
-          </el-button>
-          <el-button
+          </el-button> -->
+          <!-- <el-button
             v-if="isOnlySelf(['reasonableSuggestion::delete'], userId)"
             link
             type="danger"
@@ -151,7 +150,7 @@
             @click="handleDelete(id)"
           >
             删除
-          </el-button>
+          </el-button> -->
         </template>
       </el-table-column>
     </el-table>
@@ -168,7 +167,6 @@
   <ReasonableSuggestionForm
     ref="formRef"
     :user-info="userInfo"
-    :depts="depts"
     @success="getList"
     @query="getList"
   />
@@ -180,18 +178,12 @@
 <script setup lang="ts">
 import { dateFormatter } from '@/utils/formatTime'
 import download from '@/utils/download'
-import {
-  AdoptionStatus,
-  ReasonableSuggestionApi,
-  ReasonableSuggestionVO
-} from '@/api/reasonablesuggestion'
+import { ReasonableSuggestionApi, ReasonableSuggestionVO } from '@/api/reasonablesuggestion'
 import ReasonableSuggestionForm from './ReasonableSuggestionForm.vue'
 import ReasonableExamine from './ReasonableExamine.vue'
 import { useUserStore } from '@/store/modules/user'
 import { DICT_TYPE, getDictOptions } from '@/utils/dict'
 import { checkPermi } from '@/utils/permission'
-import { getDeptsByUserId } from '@/api/system/dept'
-import { handleTree } from '@/utils/tree'
 
 /** 合理化建议 列表 */
 defineOptions({ name: 'ReasonableSuggestion' })
@@ -207,12 +199,11 @@ const total = ref(0) // 列表的总页数
 const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
-  title: undefined,
-  suggestionType: undefined,
-  nickname: undefined,
-  deptName: undefined,
-  status: undefined,
-  filePath: undefined
+  title: undefined as unknown as string,
+  suggestionType: undefined as unknown as number,
+  nickname: undefined as unknown as string,
+  deptName: undefined as unknown as string,
+  status: undefined as unknown as number
 })
 const queryFormRef = ref() // 搜索的表单
 const exportLoading = ref(false) // 导出的加载中
@@ -232,13 +223,6 @@ const getList = async () => {
   } finally {
     loading.value = false
   }
-}
-
-// 查询用户所在部门
-const depts = ref<Tree[]>([])
-const getUserDepts = async () => {
-  const deptList = await getDeptsByUserId(userInfo.id)
-  depts.value = handleTree(deptList || [])
 }
 
 /** 搜索按钮操作 */
@@ -309,6 +293,5 @@ const handleRead = async () => {
 /** 初始化 **/
 onMounted(() => {
   getList()
-  getUserDepts()
 })
 </script>

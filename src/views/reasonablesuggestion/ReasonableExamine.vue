@@ -7,10 +7,10 @@
       <el-descriptions-item label="建议类型">
         {{ getDictLabel(DICT_TYPE.SUGGESTION_TYPE, detail.suggestionType) }}
       </el-descriptions-item>
-      <el-descriptions-item v-if="isRealName" label="申报人">
+      <el-descriptions-item label="申报人">
         {{ detail.nickname }}
       </el-descriptions-item>
-      <el-descriptions-item v-if="isRealName" label="申报人工号">
+      <el-descriptions-item label="申报人工号">
         {{ detail.workNum }}
       </el-descriptions-item>
       <el-descriptions-item label="手机号">
@@ -94,8 +94,6 @@ const detail = ref({
   fileList: [],
   remark: ''
 })
-
-const isRealName = computed(() => detail.value.anonymous === Anonymous.No)
 
 const pictures = computed(() => {
   return detail.value.filePath?.split(';') || []

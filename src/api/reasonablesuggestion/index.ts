@@ -1,5 +1,5 @@
 import request from '@/config/axios'
-import type { UploadFiles } from 'element-plus'
+import type { UploadUserFile, UploadFile } from 'element-plus'
 
 // 是否匿名
 export enum Anonymous {
@@ -21,19 +21,17 @@ export interface ReasonableSuggestionVO {
   id: number // 主键
   title: string // 建议主题
   suggestionType: number // 建议类型
-  userId: number // 申报人id
   nickname: string // 申报人
   workNum: string // 申报人工号
-  phoneNum: string // 手机号
-  deptId: number // 申报部门_id
+  phoneNum?: string // 手机号
   deptName: string // 申报部门
   problemDescription: string // 问题描述
   solution: string // 解决方案
   effectEstimation: string // 效果预估
   status: number // 建议状态
-  anonymous: number // 是否匿名
-  filePath: string // 附件地址
-  fileList: UploadFiles
+  anonymous: Anonymous // 是否匿名
+  filePath?: string // 附件地址
+  fileList?: Array<UploadUserFile | UploadFile>
 }
 
 // 合理化建议 API
@@ -60,7 +58,7 @@ export const ReasonableSuggestionApi = {
   },
 
   // 新增合理化建议
-  create: async (data: ReasonableSuggestionVO) => {
+  create: async (data: Omit<ReasonableSuggestionVO, 'id' | 'status'>) => {
     return await request.post({ url: `/reasonableSuggestion/create`, data })
   },
 

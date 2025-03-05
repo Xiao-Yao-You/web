@@ -128,7 +128,7 @@ export const RepairSourceType = {
   '2': '线下'
 }
 
-// 领单方式
+// 领单方式（已创建字典，注意更新）
 export const OrderTakeType = {
   Assign: 0,
   Active: 1,
