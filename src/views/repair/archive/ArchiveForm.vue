@@ -73,7 +73,7 @@
         <el-input
           v-model="formData.serialNumber"
           placeholder="请输入序列号"
-          maxlength="20"
+          maxlength="60"
           show-word-limit
         />
       </el-form-item>
