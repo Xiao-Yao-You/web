@@ -167,7 +167,7 @@
           <dict-tag v-else :type="DICT_TYPE.LEVEL" :value="level" />
         </template>
       </el-table-column>
-      <el-table-column label="请求类型" prop="requestType" width="80">
+      <el-table-column label="请求类型" prop="requestType" width="110">
         <template #default="scope">
           {{ getRequestTypeLabel(scope.row.requestType) || '待定' }}
         </template>
