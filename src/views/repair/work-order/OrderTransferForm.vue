@@ -41,10 +41,10 @@
           :disabled="memberDisabled"
           :placeholder="placeholder"
           filterable
-          value-key="id"
+          value-key="value"
           clearable
         >
-          <el-option v-for="m in memberOptions" :key="m.value" :label="m.label" :value="m.value" />
+          <el-option v-for="m in memberOptions" :key="m.value" :label="m.label" :value="m" />
         </el-select>
       </el-form-item>
       <el-form-item label="转交说明" prop="remark">
@@ -140,8 +140,8 @@ const onConfirm = async () => {
   const { user, picture, ...rest } = formData.value
   const data = {
     ...rest,
-    userId: user.id,
-    userNickName: user.nickname,
+    userId: user.value as number,
+    userNickName: user.label,
     operateMethod: OperateMethod.Transfer,
     picture: picture
       .map((p) => p.url)

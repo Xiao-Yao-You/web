@@ -31,10 +31,10 @@
           :disabled="memberDisabled"
           :placeholder="placeholder"
           filterable
-          value-key="id"
+          value-key="value"
           clearable
         >
-          <el-option v-for="m in memberOptions" :key="m.value" :label="m.label" :value="m.value" />
+          <el-option v-for="m in memberOptions" :key="m.value" :label="m.label" :value="m" />
         </el-select>
       </el-form-item>
       <el-form-item label="指派说明" prop="remark">
