@@ -47,12 +47,28 @@
                 <el-descriptions-item label="处理状态：">
                   {{ OperateType[record.operateType] }}
                 </el-descriptions-item>
-                <el-descriptions-item :label="`${index ? '处理' : '报修'}人：`">
-                  {{ record.operateUserNickName }}
-                </el-descriptions-item>
-                <el-descriptions-item :label="`${index ? '说明：' : '描述：'}`">
-                  {{ index ? record.remark || '无' : info.description }}
-                </el-descriptions-item>
+                <template v-if="index === info.recordList.length - 1">
+                  <el-descriptions-item label="报修人：">
+                    {{ record.operateUserNickName }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="描述：">
+                    {{ info.description || '无' }}
+                  </el-descriptions-item>
+                </template>
+                <template v-else>
+                  <el-descriptions-item label="当前处理人：">
+                    {{ record.operateUserNickName }}
+                  </el-descriptions-item>
+                  <el-descriptions-item
+                    v-if="showUserNickName(record.operateType)"
+                    label="待处理人："
+                  >
+                    {{ record.userNickName }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="说明：">
+                    {{ record.remark || '无' }}
+                  </el-descriptions-item>
+                </template>
                 <el-descriptions-item
                   label="图片："
                   :label-class-name="record.picture ? 'block' : ''"
@@ -100,6 +116,11 @@ const activeName = ref('info') // info-工单信息, workflow-处理流程
 
 const info = ref({} as RepairOrder)
 
+// 派单和转交显示待处理人
+const showUserNickName = (operateType) => {
+  return [OperateType.PAIDAN, OperateType.ZHUANJIAO].includes(operateType)
+}
+
 const open = async (id: number) => {
   info.value = {} as RepairOrder
   visible.value = true
@@ -108,7 +129,11 @@ const open = async (id: number) => {
     target: document.querySelector('.el-dialog__body') as HTMLElement
   })
   try {
-    info.value = await getRepairOrder(id)
+    const detail = await getRepairOrder(id)
+    info.value = {
+      ...detail,
+      recordList: detail.recordList?.reverse() || []
+    }
   } finally {
     loadingInstance.close()
   }
