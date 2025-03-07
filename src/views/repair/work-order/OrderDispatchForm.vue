@@ -18,7 +18,7 @@
           @change="onRequestTypeChange"
         >
           <el-option
-            v-for="dict in getDictOptions(DICT_TYPE.REPAIR_REQUEST_TYPE)"
+            v-for="dict in groupStore.groupOptions"
             :key="dict.value as string"
             :label="dict.label"
             :value="dict.value"
@@ -58,13 +58,14 @@
 import { useDebounceFn } from '@vueuse/core'
 import { handleRepairOrder, getMemberGroupByGroupId } from '@/api/repair'
 import { RequsetTypeEnum, OperateMethod } from '@/api/repair/constant'
-import { DICT_TYPE, getDictOptions } from '@/utils/dict'
+import { useGroupStoreWithOut } from '@/store/modules/group'
 
 defineOptions({
   name: 'OrderDispatchForm'
 })
 
 const message = useMessage()
+const groupStore = useGroupStoreWithOut()
 
 const dialogVisible = ref(false)
 const loading = ref(false)

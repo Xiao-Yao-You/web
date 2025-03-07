@@ -379,6 +379,7 @@ import { useRepairStoreWithOut } from '@/store/modules/repair'
 import { isEmptyVal } from '@/utils/is'
 import { formatDate, formatPast2 } from '@/utils/formatTime'
 import { useEmployeeStoreWithOut } from '@/store/modules/employee'
+import { useGroupStoreWithOut } from '@/store/modules/group'
 import { useIcon } from '@/hooks/web/useIcon'
 import { useUserStore } from '@/store/modules/user'
 import { useCountDown } from '@/hooks/web/useCountDown'
@@ -392,6 +393,7 @@ defineOptions({
 const message = useMessage()
 const repairStore = useRepairStoreWithOut()
 const employeeStore = useEmployeeStoreWithOut()
+const groupStore = useGroupStoreWithOut()
 const PauseIcon = useIcon({ icon: 'ep:video-pause' })
 const ResumeIcon = useIcon({ icon: 'ep:video-play' })
 const TimerIcon = useIcon({ icon: 'ep:timer' })
@@ -742,6 +744,7 @@ onMounted(() => {
   repairStore.fetchIssuesAll()
   repairStore.fetchLocationsAll()
   employeeStore.fetchInfoEmployees()
+  groupStore.fetchAllGroups()
   getList()
 })
 </script>
