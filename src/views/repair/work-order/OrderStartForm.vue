@@ -23,12 +23,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item
-        v-if="requestType === RequsetTypeEnum.Hardware"
-        label="二维码标签号"
-        prop="labelCode"
-        ref="labelRef"
-      >
+      <el-form-item label="二维码标签号" prop="labelCode" ref="labelRef">
         <el-input
           v-model="formData.labelCode"
           placeholder="请输入二维码标签号"
@@ -96,20 +91,7 @@ const formRules = reactive({
   picture: [{ required: true, message: '现场图片不能为空', trigger: ['blur', 'change'] }],
   remark: [{ required: true, message: '确认说明不能为空', trigger: 'blur' }],
   questionType: [{ type: 'array', required: true, message: '问题类型不能为空', trigger: 'blur' }],
-  level: [{ required: true, message: '紧急程度不能为空', trigger: 'blur' }],
-  labelCode: [
-    { required: true, message: '二维码标签号不能为空', trigger: 'blur' },
-    {
-      validator(_rule, value: string, callback) {
-        if (!Number.isInteger(+value)) {
-          callback(new Error('请输入数字类型的标签号'))
-        } else {
-          callback()
-        }
-      },
-      trigger: 'change'
-    }
-  ]
+  level: [{ required: true, message: '紧急程度不能为空', trigger: 'blur' }]
 })
 
 const requestType = ref(undefined as unknown as RequsetTypeEnum)
