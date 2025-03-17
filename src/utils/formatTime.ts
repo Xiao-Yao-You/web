@@ -199,6 +199,25 @@ export function formatPast2(ms: number): string {
 }
 
 /**
+ * @description 将毫秒，转换成 HH:mm:ss 格式
+ * @param ms 毫秒
+ * @returns {string} 字符串
+ */
+export function formatMs(ms: number): string {
+  let hours: number | string = Math.floor(ms / 3600000)
+  let minutes: number | string = Math.floor((ms % 3600000) / 60000)
+  let seconds: number | string = Math.floor((ms % 60000) / 1000)
+
+  // 格式化为两位数
+  hours = hours < 10 ? '0' + hours : hours
+  minutes = minutes < 10 ? '0' + minutes : minutes
+  seconds = seconds < 10 ? '0' + seconds : seconds
+
+  // 返回格式化后的时间字符串
+  return `${hours}:${minutes}:${seconds}`
+}
+
+/**
  * element plus 的时间 Formatter 实现，使用 YYYY-MM-DD HH:mm:ss 格式
  *
  * @param row 行数据

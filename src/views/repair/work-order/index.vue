@@ -184,22 +184,22 @@
       </el-table-column>
       <el-table-column label="响应时长" prop="allocationConsume" width="120">
         <template #default="{ row: { allocationConsume } }">
-          {{ allocationConsume ? formatPast2(allocationConsume) : '' }}
+          {{ allocationConsume ? formatMs(allocationConsume) : '' }}
         </template>
       </el-table-column>
       <el-table-column label="个人处置时长" prop="dealConsume" width="120">
         <template #default="{ row: { dealConsume } }">
-          {{ dealConsume ? formatPast2(dealConsume) : '' }}
+          {{ dealConsume ? formatMs(dealConsume) : '' }}
         </template>
       </el-table-column>
       <el-table-column label="挂起时长" prop="hangUpConsume" width="120">
         <template #default="{ row: { hangUpConsume } }">
-          {{ hangUpConsume ? formatPast2(hangUpConsume) : '' }}
+          {{ hangUpConsume ? formatMs(hangUpConsume) : '' }}
         </template>
       </el-table-column>
       <el-table-column label="处置总时长" prop="completeConsume" width="120">
         <template #default="{ row: { completeConsume } }">
-          {{ completeConsume ? formatPast2(completeConsume) : '' }}
+          {{ completeConsume ? formatMs(completeConsume) : '' }}
         </template>
       </el-table-column>
       <el-table-column label="任务类型" prop="type" width="100">
@@ -377,7 +377,7 @@ import {
 import { DICT_TYPE, getIntDictOptions, getStrDictOptions } from '@/utils/dict'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
 import { isEmptyVal } from '@/utils/is'
-import { formatDate, formatPast2 } from '@/utils/formatTime'
+import { formatDate, formatMs } from '@/utils/formatTime'
 import { useEmployeeStoreWithOut } from '@/store/modules/employee'
 import { useGroupStoreWithOut } from '@/store/modules/group'
 import { useIcon } from '@/hooks/web/useIcon'
