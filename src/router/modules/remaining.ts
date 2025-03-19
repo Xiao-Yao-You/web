@@ -573,6 +573,31 @@ const remainingRouter: AppRouteRecordRaw[] = [
         component: () => import('@/views/crm/product/detail/index.vue')
       }
     ]
+  },
+
+  // 运维工单
+  {
+    path: '/repair',
+    component: Layout,
+    name: 'Repair',
+    meta: {
+      hidden: true
+    },
+    children: [
+      {
+        path: 'statistics/individual/:month',
+        name: 'IndividualReport',
+        component: () => import('@/views/repair/statistics/IndividualReport.vue'),
+        meta: {
+          title: '个人统计报表',
+          noCache: true,
+          hidden: true,
+          canTo: true,
+          icon: '',
+          activeMenu: '/repair/statistics'
+        }
+      }
+    ]
   }
 ]
 
