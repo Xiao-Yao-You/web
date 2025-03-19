@@ -124,12 +124,12 @@
 <script setup lang="ts">
 import { getAll } from '@/api/system/user'
 import { createRepairOrder, getArchiveByLabelCode } from '@/api/repair'
-import { RequsetTypeEnum, OperateMethod, RepairSourceType } from '@/api/repair/constant'
+import { OperateMethod, RepairSourceType } from '@/api/repair/constant'
 import { isMobilePhone } from '@/utils/is'
 import { CommonLevelEnum } from '@/utils/constants'
 import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
-import type { ElFormItem, FormInstance, UploadUserFile, ElCascader } from 'element-plus'
+import type { ElFormItem, FormInstance, FormRules, UploadUserFile, ElCascader } from 'element-plus'
 
 defineOptions({
   name: 'OrderCreate'
@@ -155,13 +155,13 @@ const formData = ref({
   location: '',
   submitUserId: undefined as unknown as number,
   submitUserMobile: undefined as unknown as string,
-  requestType: undefined as unknown as RequsetTypeEnum,
+  requestType: undefined as unknown as string,
   questionType: undefined as unknown as number,
   level: undefined as unknown as CommonLevelEnum,
   description: '',
   picture: [] as UploadUserFile[]
 })
-const formRules = reactive({
+const formRules = reactive<FormRules>({
   title: [{ required: true, message: '工单标题不能为空', trigger: 'blur' }],
   labelCode: [{ required: true, message: '二维码标签不能为空', trigger: 'blur' }],
   deviceName: [{ required: true, message: '设备名称不能为空', trigger: 'blur' }],
@@ -311,7 +311,7 @@ const resetForm = () => {
     location: '',
     submitUserId: undefined as unknown as number,
     submitUserMobile: undefined as unknown as string,
-    requestType: undefined as unknown as RequsetTypeEnum,
+    requestType: undefined as unknown as string,
     questionType: undefined as unknown as number,
     level: undefined as unknown as CommonLevelEnum,
     description: '',

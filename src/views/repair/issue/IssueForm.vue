@@ -31,7 +31,7 @@
         <el-select v-model="formData.type" placeholder="选择请求类型">
           <el-option
             v-for="dict in getDictOptions(DICT_TYPE.REPAIR_REQUEST_TYPE)"
-            :key="dict.value"
+            :key="dict.value as string"
             :label="dict.label"
             :value="dict.value"
           />
@@ -80,7 +80,6 @@ import {
   type RepairIssue,
   type IssuePayload
 } from '@/api/repair'
-import { RequsetTypeEnum } from '@/api/repair/constant'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
 import { defaultProps } from '@/utils/tree'
 import { DICT_TYPE, getDictOptions } from '@/utils/dict'
@@ -101,7 +100,7 @@ const formData = ref({
   id: undefined as unknown as number,
   name: '', // 问题名称
   parentId: 0, // 父级问题
-  type: undefined as unknown as RequsetTypeEnum, // 问题类型
+  type: undefined as unknown as string, // 问题类型
   deviceTypeId: undefined as unknown as number, // 设备类型
   description: '', // 问题描述
   solution: '' // 解决方案
@@ -181,7 +180,7 @@ const resetForm = () => {
     id: undefined as unknown as number,
     name: '',
     parentId: 0,
-    type: undefined as unknown as RequsetTypeEnum,
+    type: undefined as unknown as string,
     deviceTypeId: undefined as unknown as number,
     description: '',
     solution: ''

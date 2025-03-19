@@ -57,7 +57,7 @@
 <script setup lang="ts">
 import { useDebounceFn } from '@vueuse/core'
 import { handleRepairOrder, getMemberGroupByGroupId } from '@/api/repair'
-import { RequsetTypeEnum, OperateMethod } from '@/api/repair/constant'
+import { OperateMethod } from '@/api/repair/constant'
 import { useGroupStoreWithOut } from '@/store/modules/group'
 
 defineOptions({
@@ -74,7 +74,7 @@ const formData = ref({
   id: undefined as unknown as number,
   code: undefined as unknown as string,
   repairer: undefined as unknown as OptionItem,
-  requestType: undefined as unknown as RequsetTypeEnum,
+  requestType: undefined as unknown as string,
   remark: ''
 })
 const formRules = reactive({
@@ -95,7 +95,7 @@ const resetForm = () => {
     id: undefined as unknown as number,
     code: undefined as unknown as string,
     repairer: undefined as unknown as OptionItem,
-    requestType: undefined as unknown as RequsetTypeEnum,
+    requestType: undefined as unknown as string,
     remark: ''
   }
 }

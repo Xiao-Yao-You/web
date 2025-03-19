@@ -74,7 +74,7 @@
 import { useDebounceFn } from '@vueuse/core'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
 import { handleRepairOrder, getMemberGroupByGroupId } from '@/api/repair'
-import { RequsetTypeEnum, OperateMethod } from '@/api/repair/constant'
+import { OperateMethod } from '@/api/repair/constant'
 import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
 import { useGroupStoreWithOut } from '@/store/modules/group'
 import type { UploadUserFile, CascaderValue } from 'element-plus'
@@ -93,7 +93,7 @@ const formRef = ref()
 const formData = ref({
   id: undefined as unknown as number,
   code: undefined as unknown as string,
-  requestType: undefined as unknown as RequsetTypeEnum,
+  requestType: undefined as unknown as string,
   questionType: undefined as unknown as CascaderValue,
   user: undefined as unknown as OptionItem,
   remark: '',
@@ -121,7 +121,7 @@ const resetForm = () => {
   formData.value = {
     id: undefined as unknown as number,
     code: undefined as unknown as string,
-    requestType: undefined as unknown as RequsetTypeEnum,
+    requestType: undefined as unknown as string,
     questionType: undefined as unknown as CascaderValue,
     user: undefined as unknown as OptionItem,
     remark: '',

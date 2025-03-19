@@ -62,12 +62,12 @@
 
 <script setup lang="ts">
 import { handleRepairOrder, type RepairOrder } from '@/api/repair'
-import { RequsetTypeEnum, OperateMethod, getRequestTypeLabel } from '@/api/repair/constant'
+import { OperateMethod, getRequestTypeLabel } from '@/api/repair/constant'
 import { CommonLevelEnum } from '@/utils/constants'
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
 import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
-import type { UploadUserFile } from 'element-plus'
+import type { UploadUserFile, FormRules } from 'element-plus'
 
 defineOptions({
   name: 'OrderTransferForm'
@@ -87,14 +87,14 @@ const formData = ref({
   level: undefined as unknown as CommonLevelEnum,
   labelCode: undefined as undefined | string
 })
-const formRules = reactive({
+const formRules = reactive<FormRules>({
   picture: [{ required: true, message: '现场图片不能为空', trigger: ['blur', 'change'] }],
   remark: [{ required: true, message: '确认说明不能为空', trigger: 'blur' }],
   questionType: [{ type: 'array', required: true, message: '问题类型不能为空', trigger: 'blur' }],
   level: [{ required: true, message: '紧急程度不能为空', trigger: 'blur' }]
 })
 
-const requestType = ref(undefined as unknown as RequsetTypeEnum)
+const requestType = ref(undefined as unknown as string)
 const requestTypeLabel = computed(() => getRequestTypeLabel(requestType.value))
 
 const open = (row: RepairOrder) => {

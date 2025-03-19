@@ -1,5 +1,4 @@
 import request from '@/config/axios'
-import { RequsetTypeEnum } from './constant'
 
 export interface IssuesAllParams {
   name?: string // 问题类型
@@ -11,7 +10,7 @@ export type RepairIssue = {
   id: number
   name: string
   parentId?: number
-  type: RequsetTypeEnum
+  type: string // “字典管理”中的请求类型
   deviceTypeId: number
   deviceTypeName?: string
   description: string
@@ -21,7 +20,7 @@ export type RepairIssue = {
 export type IssuePayload = {
   name: string
   parentId?: number
-  type: RequsetTypeEnum
+  type: string // “字典管理”中的请求类型
   deviceTypeId: number
   description?: string
   solution?: string

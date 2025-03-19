@@ -1,5 +1,5 @@
 import request from '@/config/axios'
-import { RequsetTypeEnum, OperateMethod, OperateStatus } from './constant'
+import { OperateMethod, OperateStatus } from './constant'
 import { CommonLevelEnum } from '@/utils/constants'
 import type { PictureItem } from './archive'
 import type { CascaderValue, ModelValueType } from 'element-plus'
@@ -27,7 +27,7 @@ export interface RepairOrder {
   submitUserId: number // 报修人
   submitUserNickName: string
   submitUserMobile: string // 报修人电话
-  requestType: RequsetTypeEnum // 请求（问题）类型
+  requestType: string // “字典管理”中的请求类型
   questionType: number // 问题管理中的某个具体问题的 id
   level: CommonLevelEnum // 紧急程度
   desc: string
