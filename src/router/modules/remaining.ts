@@ -587,7 +587,7 @@ const remainingRouter: AppRouteRecordRaw[] = [
       {
         path: 'statistics/individual/:month',
         name: 'IndividualReport',
-        component: () => import('@/views/repair/statistics/IndividualReport.vue'),
+        component: () => import('@/views/repair/statistics/Individual.vue'),
         meta: {
           title: '个人统计报表',
           noCache: true,
