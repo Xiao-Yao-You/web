@@ -1,4 +1,5 @@
 import { toNumber } from 'lodash-es'
+import { isNullOrUnDef } from './is'
 
 /**
  *
@@ -248,6 +249,13 @@ export const formatToFraction = (num: number | string | undefined): string => {
   if (typeof num === 'undefined') return '0.00'
   const parsedNumber = typeof num === 'string' ? parseFloat(num) : num
   return (parsedNumber / 100.0).toFixed(2)
+}
+
+// 将0-1的小数转成百分比
+export const formatToPercent = (num?: number | string): string => {
+  if (isNullOrUnDef(num)) return '0.00%'
+  const parsedNumber = typeof num === 'string' ? parseFloat(num) : num
+  return (parsedNumber * 100.0).toFixed(2) + '%'
 }
 
 /**
