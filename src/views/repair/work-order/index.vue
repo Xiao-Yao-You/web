@@ -732,7 +732,11 @@ const exportLoading = ref(false)
 const openExportModal = async () => {
   exportLoading.value = true
   try {
-    const blob = await exportRepairOrder(queryParams)
+    const { createTime, ...rest } = queryParams
+    const blob = await exportRepairOrder({
+      ...rest,
+      createTime: handleCreateTime(createTime)
+    })
     download.excel(blob, '工单列表.xls')
   } finally {
     exportLoading.value = false
