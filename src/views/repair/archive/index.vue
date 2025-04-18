@@ -7,7 +7,6 @@
       ref="queryFormRef"
       :inline="true"
       label-width="100px"
-      :rules="{ ip1: [{ pattern: isIPV4, message: 'IP 格式不正确' }] }"
     >
       <el-form-item label="设备名称" prop="name">
         <el-input
