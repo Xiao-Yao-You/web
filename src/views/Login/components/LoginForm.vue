@@ -326,9 +326,8 @@ const handleLogin = async (params) => {
     loginLoading.value = true
     loginData.loginForm.captchaVerification = params.captchaVerification
     const res = await LoginApi.login(loginData.loginForm)
-    if (!res) {
-      return
-    }
+    if (!res) return
+
     loading.value = ElLoading.service({
       lock: true,
       text: '正在加载系统中...',
@@ -355,7 +354,7 @@ const handleLogin = async (params) => {
   }
 }
 
-//#region 社交登录
+// #region 社交登录
 // const doSocialLogin = async (type: number) => {
 //   if (type === 0) {
 //     message.error('此方式未配置')
@@ -391,7 +390,7 @@ const handleLogin = async (params) => {
 //     window.location.href = res
 //   }
 // }
-//#endregion 社交登录
+// #endregion 社交登录
 
 watch(
   () => currentRoute.value,

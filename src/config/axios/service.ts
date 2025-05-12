@@ -9,11 +9,12 @@ import axios, {
 import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 import qs from 'qs'
 import { config } from '@/config/axios/config'
-import { getAccessToken, getRefreshToken, getTenantId, removeToken, setToken } from '@/utils/auth'
+import { getAccessToken, getRefreshToken, getTenantId, removeToken } from '@/utils/auth'
 import errorCode from './errorCode'
 
 import { resetRouter } from '@/router'
 import { deleteUserCache } from '@/hooks/web/useCache'
+import { refreshToken } from './utils'
 
 const tenantEnable = import.meta.env.VITE_APP_TENANT_ENABLE
 const { result_code, base_url, request_timeout } = config
@@ -120,14 +121,12 @@ service.interceptors.response.use(
       if (!isRefreshToken) {
         isRefreshToken = true
         // 1. 如果获取不到刷新令牌，则只能执行登出操作
-        if (!getRefreshToken()) {
-          return handleAuthorized()
-        }
+        if (!getRefreshToken()) return handleAuthorized()
+
         // 2. 进行刷新访问令牌
         try {
-          const refreshTokenRes = await refreshToken()
+          await refreshToken()
           // 2.1 刷新成功，则回放队列的请求 + 当前请求
-          setToken(refreshTokenRes.data.data)
           config.headers!.Authorization = 'Bearer ' + getAccessToken()
           requestList.forEach((cb: any) => {
             cb()
@@ -212,17 +211,11 @@ service.interceptors.response.use(
   }
 )
 
-const refreshToken = async () => {
-  axios.defaults.headers.common['tenant-id'] = getTenantId()
-  return await axios.post(base_url + '/system/auth/refresh-token?refreshToken=' + getRefreshToken())
-}
 const handleAuthorized = () => {
   const { t } = useI18n()
   if (!isRelogin.show) {
     // 如果已经到重新登录页面则不进行弹窗提示
-    if (window.location.href.includes('login?redirect=')) {
-      return
-    }
+    if (window.location.href.includes('login?redirect=')) return
     isRelogin.show = true
     ElMessageBox.confirm(t('sys.api.timeoutMessage'), t('common.confirmTitle'), {
       showCancelButton: false,
