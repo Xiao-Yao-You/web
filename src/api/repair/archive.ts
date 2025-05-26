@@ -195,8 +195,8 @@ export const deleteRepairArchive = (id: number) => {
 }
 
 // 导出运维设备档案 Excel
-export const exportRepairArchive = (params) => {
-  return request.download({ url: '/operation-device/export-excel', params })
+export const exportRepairArchive = (/* params */) => {
+  return request.download({ url: '/operation-device/export-excel' })
 }
 
 // 报废设备

@@ -123,14 +123,10 @@
           <Icon icon="ep:refresh" />
           老系统同步
         </el-button>
-        <!-- <el-button
-          type="success"
-          plain
-          @click="handleExport"
-          :loading="exportLoading"
-        >
-          <Icon icon="ep:download" class="mr-5px" /> 导出
-        </el-button> -->
+        <el-button plain type="success" :loading="exportLoading" @click="openExportModal">
+          <Icon class="mr-5px" icon="ep:download" />
+          导出所有设备
+        </el-button>
       </el-form-item>
     </el-form>
   </ContentWrap>
@@ -289,6 +285,7 @@ import {
   getRepairArchivePage,
   deleteRepairArchive,
   syncOldDevice,
+  exportRepairArchive,
   type RepairArchive
 } from '@/api/repair'
 import { UsingStatus, CompanyEnum, UsingStatusOptions } from '@/api/repair/constant'
@@ -296,8 +293,8 @@ import ArchiveForm from './ArchiveForm.vue'
 import ScrapForm from './ScrapForm.vue'
 import DistributeForm from './DistributeForm.vue'
 import ArchiveDetail from './ArchiveDetail.vue'
-import { isIPV4 } from '@/utils/is'
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
+import download from '@/utils/download'
 // import OldArchiveTable from './OldArchiveTable.vue'
 // import { useEmitt } from '@/hooks/web/useEmitt'
 
@@ -433,6 +430,19 @@ const syncOldArchives = () => {
     loading.value = false
   })
 }
+
+/** 导出 */
+const exportLoading = ref(false)
+const openExportModal = async () => {
+  exportLoading.value = true
+  try {
+    const blob = await exportRepairArchive(/* queryParams */)
+    download.excel(blob, '设备档案.xls')
+  } finally {
+    exportLoading.value = false
+  }
+}
+// #endregion
 
 /** 初始化 **/
 onMounted(() => {
