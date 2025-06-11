@@ -120,7 +120,7 @@
   <!-- 自动刷新 -->
   <div class="auto-refresh my-3 text-right">
     <span>{{ timer }} 后刷新</span>
-    <el-button
+    <!-- <el-button
       class="ml-12px"
       type="info"
       size="small"
@@ -136,7 +136,7 @@
     </el-button>
     <el-button type="primary" size="small" round :icon="TimerIcon" plain @click="onRefresh">
       立即刷新
-    </el-button>
+    </el-button> -->
   </div>
 
   <!-- 列表 -->
@@ -385,6 +385,7 @@ import { useUserStore } from '@/store/modules/user'
 import { useCountDown } from '@/hooks/web/useCountDown'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import download from '@/utils/download'
+import type { Action } from 'element-plus'
 
 defineOptions({
   name: 'RepairWorkOrder'
@@ -461,16 +462,32 @@ const openForm = () => {
 // #endregion
 
 // #region 二、工单处理
+const refreshPrompt = (cb: () => void) => {
+  ElMessageBox.confirm('请注意：工单状态可能有延时，请确认后操作！', '系统提示', {
+    confirmButtonText: '刷新工单',
+    cancelButtonText: '继续操作',
+    type: 'warning',
+    distinguishCancelAndClose: true,
+    closeOnClickModal: false,
+    closeOnPressEscape: false
+  })
+    .then(() => {
+      onRefresh()
+    })
+    .catch((action: Action) => {
+      if (action === 'cancel') cb()
+    })
+}
 const handleCommand = (command: string, row: RepairOrder) => {
   switch (command) {
     case OperateMethod.Dispatch:
-      openDispatchForm(row)
+      refreshPrompt(() => openDispatchForm(row))
       break
     case OperateMethod.Receive:
       receiveOrder(row.id)
       break
     case OperateMethod.Transfer:
-      openTransferForm(row)
+      refreshPrompt(() => openTransferForm(row))
       break
     case OperateMethod.Restart:
       restart(row)
@@ -488,7 +505,7 @@ const handleCommand = (command: string, row: RepairOrder) => {
       handleRevoke(row.id)
       break
     case OperateMethod.Close:
-      handleClose(row.id)
+      refreshPrompt(() => handleClose(row.id))
       break
     default:
       break
