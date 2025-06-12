@@ -256,7 +256,7 @@ const formData = ref({
   needCheckFlag: CommonStatusEnum.ENABLE,
   pictureList: undefined as unknown as UploadFiles,
   accessoryList: [] as AccessoryItem[],
-  antivirusInstalled: undefined as number | undefined
+  antivirusInstalled: undefined as number | undefined // 0-（计算机）已安装，1-（计算机）未安装，undefined-（其他设备）暂未分配
 })
 const formRules = reactive({
   name: [{ required: true, message: '设备名称不能为空', trigger: 'blur' }],
@@ -293,10 +293,9 @@ const onDeviceTypeChange = (e: OptionItem<number>) => {
   formData.value.model = undefined as unknown as string
   getModelOptions(e.value)
 
-  // 如果不是计算机类型，则重置杀毒软件安装状态
-  if (e.value !== COMPUTER_TYPE_ID.value) {
-    formData.value.antivirusInstalled = undefined
-  }
+  // 是不是计算机类型 ? 默认未安装（0） : 暂未分配（undefined）
+  formData.value.antivirusInstalled =
+    e.value === COMPUTER_TYPE_ID.value ? CommonStatusEnum.DISABLE : undefined
 }
 
 /** 删除设备配置项 */
