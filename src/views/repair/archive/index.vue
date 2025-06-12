@@ -103,6 +103,19 @@
           class="!w-240px"
         />
       </el-form-item>
+      <el-form-item label="安装杀毒软件" prop="antivirusInstalled">
+        <el-select
+          v-model="queryParams.antivirusInstalled"
+          placeholder="计算机是否安装杀毒软件"
+          clearable
+          filterable
+          value-key="value"
+          class="!w-240px"
+        >
+          <el-option label="已安装" :value="CommonStatusEnum.ENABLE" />
+          <el-option label="未安装" :value="CommonStatusEnum.DISABLE" />
+        </el-select>
+      </el-form-item>
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
@@ -173,6 +186,11 @@
       <el-table-column label="设备位置" align="center" prop="location" width="100">
         <template #default="{ row: { location } }">
           {{ location || '暂未分配' }}
+        </template>
+      </el-table-column>
+      <el-table-column label="杀毒软件" align="center" prop="antivirusInstalled" width="100">
+        <template #default="{ row: { antivirusInstalled } }">
+          {{ antivirusInstalled === null ? '暂未分配' : antivirusInstalled ? '未安装' : '已安装' }}
         </template>
       </el-table-column>
       <el-table-column label="使用部门" align="center" prop="deptName" width="100">
@@ -275,6 +293,7 @@ export type QueryParams = {
   company: undefined
   deviceType: OptionItem<number> | undefined
   status: undefined | string
+  antivirusInstalled: OptionItem<number> | undefined
 }
 </script>
 
@@ -295,6 +314,7 @@ import DistributeForm from './DistributeForm.vue'
 import ArchiveDetail from './ArchiveDetail.vue'
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import download from '@/utils/download'
+import { CommonStatusEnum } from '@/utils/constants'
 // import OldArchiveTable from './OldArchiveTable.vue'
 // import { useEmitt } from '@/hooks/web/useEmitt'
 
@@ -322,7 +342,8 @@ const queryParams = reactive<QueryParams>({
   macAddress1: undefined,
   company: undefined,
   deviceType: undefined,
-  status: undefined
+  status: undefined,
+  antivirusInstalled: undefined
 })
 
 /** 设备类型筛选项（移除“软件系统”选项，该项只在报修时才有） */

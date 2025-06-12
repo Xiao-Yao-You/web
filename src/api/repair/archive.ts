@@ -76,6 +76,7 @@ export interface RepairArchive {
   distributePictureList: PictureItem[] // 现场图片
   scrapPictureList: PictureItem[] // 报废图片
   accessoryList: AccessoryItem[]
+  antivirusInstalled: number | undefined // 是否安装杀毒软件
 }
 
 export type ArchivePayload = {

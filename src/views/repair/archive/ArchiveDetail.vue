@@ -12,14 +12,17 @@
     <el-tabs v-model="activeTab">
       <el-tab-pane label="基础信息" name="basic">
         <el-descriptions :column="2" border>
+          <el-descriptions-item label="设备名称" :span="2"> {{ info.name }} </el-descriptions-item>
           <el-descriptions-item label="设备编码"> {{ info.code }} </el-descriptions-item>
-          <el-descriptions-item label="设备名称"> {{ info.name }} </el-descriptions-item>
           <el-descriptions-item label="设备类型">
-            {{ info.deviceTypeName || '/' }}
+            {{ info.deviceTypeName || '-' }}
           </el-descriptions-item>
           <el-descriptions-item label="设备型号"> {{ info.modelName }}</el-descriptions-item>
           <el-descriptions-item label="序列号">
-            {{ info.serialNumber || '/' }}
+            {{ info.serialNumber || '-' }}
+          </el-descriptions-item>
+          <el-descriptions-item label="编码规则">
+            {{ info.numberNameStr || '-' }}
           </el-descriptions-item>
           <el-descriptions-item label="二维码编号">
             {{ info.labelCode }}
@@ -33,25 +36,35 @@
               打印
             </el-button>
           </el-descriptions-item>
-          <el-descriptions-item label="编码规则">
-            {{ info.numberNameStr || '/' }}
-          </el-descriptions-item>
-          <el-descriptions-item label="MAC 地址1"> {{ info.macAddress1 }} </el-descriptions-item>
-          <el-descriptions-item label="MAC 地址2" min-width="110">
-            {{ info.macAddress2 || '/' }}
-          </el-descriptions-item>
           <el-descriptions-item label="所属公司">
             {{ getDictLabel(DICT_TYPE.ASSETS_COMPANY, info.company) }}
+          </el-descriptions-item>
+          <el-descriptions-item label="杀毒软件">
+            {{
+              info.antivirusInstalled === null
+                ? '暂未分配'
+                : info.antivirusInstalled
+                  ? '未安装'
+                  : '已安装'
+            }}
+          </el-descriptions-item>
+          <el-descriptions-item label="MAC 地址1">
+            {{ info.macAddress1 || '-' }}
+          </el-descriptions-item>
+          <el-descriptions-item label="MAC 地址2" min-width="110">
+            {{ info.macAddress2 || '-' }}
           </el-descriptions-item>
           <el-descriptions-item label="影响程度">
             {{ getDictLabel(DICT_TYPE.LEVEL, info.effectLevel) }}
           </el-descriptions-item>
-          <el-descriptions-item label="资产编号"> {{ info.assetNumber }} </el-descriptions-item>
+          <el-descriptions-item label="资产编号">
+            {{ info.assetNumber || '-' }}
+          </el-descriptions-item>
           <el-descriptions-item label="生产日期"> {{ info.manufactureDate }} </el-descriptions-item>
           <el-descriptions-item label="质保日期">
-            {{ info.warrantyDate || '/' }}
+            {{ info.warrantyDate || '-' }}
           </el-descriptions-item>
-          <el-descriptions-item label="设备配置" :span="2">
+          <el-descriptions-item label="设备配置" :span="2" :rowspan="2">
             <el-table :data="info.accessoryList">
               <el-table-column prop="accessoryDesc" label="配件" />
               <el-table-column prop="model" label="型号" />
@@ -85,7 +98,7 @@
           <el-descriptions-item label="所在地点"> {{ info.address }} </el-descriptions-item>
           <el-descriptions-item label="设备位置"> {{ info.location }} </el-descriptions-item>
           <el-descriptions-item label="IP 地址1"> {{ info.ip1 }} </el-descriptions-item>
-          <el-descriptions-item label="IP 地址2"> {{ info.ip2 || '/' }} </el-descriptions-item>
+          <el-descriptions-item label="IP 地址2"> {{ info.ip2 || '-' }} </el-descriptions-item>
           <el-descriptions-item label="登记人"> {{ info.registerUserName }} </el-descriptions-item>
           <el-descriptions-item label="登记时间">
             {{ formatDate(info.registerDate) }}
@@ -143,8 +156,8 @@ const open = async (id: number, sysType: SysTab) => {
         await getRepairArchive(id)
       Object.assign(info.value, {
         ...rest,
-        manufactureDate: manufactureDate?.join('.') ?? '/',
-        warrantyDate: warrantyDate?.join('.') ?? '/',
+        manufactureDate: manufactureDate?.join('.') ?? '-',
+        warrantyDate: warrantyDate?.join('.') ?? '-',
         devicePictureList: devicePictureList || [],
         distributePictureList: distributePictureList || []
       })

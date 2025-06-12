@@ -153,7 +153,24 @@
         />
       </el-form-item>
       <el-form-item label="是否巡检" prop="needCheckFlag">
-        <el-switch v-model="formData.needCheckFlag" :active-value="0" :inactive-value="1" />
+        <el-switch
+          v-model="formData.needCheckFlag"
+          :active-value="0"
+          :inactive-value="1"
+          inline-prompt
+          active-text="是"
+          inactive-text="否"
+        />
+      </el-form-item>
+      <el-form-item v-if="isComputer" label="杀毒软件" prop="antivirusInstalled">
+        <el-switch
+          v-model="formData.antivirusInstalled"
+          :active-value="0"
+          :inactive-value="1"
+          inline-prompt
+          active-text="已安装"
+          inactive-text="未安装"
+        />
       </el-form-item>
       <el-form-item label="设备照片" prop="pictureList">
         <BatchPicturesUploader
@@ -238,7 +255,8 @@ const formData = ref({
   warrantyDate: '',
   needCheckFlag: CommonStatusEnum.ENABLE,
   pictureList: undefined as unknown as UploadFiles,
-  accessoryList: [] as AccessoryItem[]
+  accessoryList: [] as AccessoryItem[],
+  antivirusInstalled: undefined as number | undefined
 })
 const formRules = reactive({
   name: [{ required: true, message: '设备名称不能为空', trigger: 'blur' }],
@@ -253,6 +271,10 @@ const formRules = reactive({
 })
 const formRef = ref() // 表单 Ref
 const configRef = ref()
+
+/** 是否是计算机（用于安转杀毒软件表单项判断） */
+const COMPUTER_TYPE_ID = ref(import.meta.env.PROD ? 50 : 47)
+const isComputer = computed(() => formData.value.deviceType?.value === COMPUTER_TYPE_ID.value)
 
 /** 切换设备类型，跟换对应设备型号 */
 const modelLoading = ref(false)
@@ -270,6 +292,11 @@ const getModelOptions = async (deviceTypeId: number) => {
 const onDeviceTypeChange = (e: OptionItem<number>) => {
   formData.value.model = undefined as unknown as string
   getModelOptions(e.value)
+
+  // 如果不是计算机类型，则重置杀毒软件安装状态
+  if (e.value !== COMPUTER_TYPE_ID.value) {
+    formData.value.antivirusInstalled = undefined
+  }
 }
 
 /** 删除设备配置项 */
@@ -380,7 +407,8 @@ const resetForm = () => {
     warrantyDate: '',
     needCheckFlag: CommonStatusEnum.ENABLE,
     pictureList: [] as UploadFiles,
-    accessoryList: [] as AccessoryItem[]
+    accessoryList: [] as AccessoryItem[],
+    antivirusInstalled: undefined
   }
   formRef.value?.resetFields()
 }
