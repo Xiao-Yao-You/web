@@ -596,6 +596,20 @@ const remainingRouter: AppRouteRecordRaw[] = [
           icon: '',
           activeMenu: '/repair/statistics'
         }
+      },
+      {
+        path: 'statistics/group-order/:month/:groupId',
+        name: 'GroupOrderReport',
+        component: () => import('@/views/repair/statistics/GroupOrder.vue'),
+        meta: {
+          title: '工单分组统计报表',
+
+          noCache: true,
+          hidden: true,
+          canTo: true,
+          icon: '',
+          activeMenu: '/repair/statistics'
+        }
       }
     ]
   }
