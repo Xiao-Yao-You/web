@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { useSpeechSynthesis } from '@vueuse/core'
+import { useSpeechSynthesis, useWebSocket } from '@vueuse/core'
 import { useIcon } from '@/hooks/web/useIcon'
 import { getNewRepairOrder } from '@/api/repair'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { useWebSocket } from '@vueuse/core'
 import { getAccessToken } from '@/utils/auth'
 
 defineOptions({
@@ -103,7 +102,7 @@ const query = async () => {
   }
 }
 
-// 首次进入页面查询一次，主动获取工单嘴型情况（Websocket 只会在工单发生变化的时候推送）
+// 首次进入页面查询一次，主动获取工单最新情况（Websocket 只会在工单发生变化的时候推送）
 onMounted(() => {
   query()
 })

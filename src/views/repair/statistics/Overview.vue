@@ -20,12 +20,14 @@
   <ContentWrap :title="title">
     <el-table v-loading="loading" :data="list" stripe show-overflow-tooltip>
       <el-table-column label="月份" prop="reportMonth" />
-      <el-table-column label="报表" prop="reportTitle" />
+      <el-table-column label="报表">
+        <template #default="{ row: { reportTitle, groupName } }">
+          {{ reportTitle || groupName }}
+        </template>
+      </el-table-column>
       <el-table-column label="操作">
         <template #default="{ row }">
-          <router-link :to="`/repair/statistics/individual/${row.reportMonth}`">
-            <el-button link type="primary">详情</el-button>
-          </router-link>
+          <el-button link type="primary" @click="openDetail(row)">详情</el-button>
           <!-- <el-button link type="warning">导出</el-button> -->
         </template>
       </el-table-column>
@@ -40,7 +42,13 @@
 </template>
 
 <script setup lang="ts">
-import { getIndividualPage, createIndividualReport } from '@/api/statistics'
+import {
+  createIndividualReport,
+  createGroupReport,
+  createAssetsReport,
+  getIndividualPage,
+  getGroupPage
+} from '@/api/statistics'
 import { propTypes } from '@/utils/propTypes'
 
 defineOptions({
@@ -57,15 +65,15 @@ const TabPaneInfo = {
     query: getIndividualPage,
     create: createIndividualReport
   },
-  order: {
+  groupOrder: {
     title: '工单统计月度报表',
-    query: getIndividualPage,
-    create: createIndividualReport
+    query: getGroupPage,
+    create: createGroupReport
   },
   assets: {
     title: '资产统计月度报表',
     query: getIndividualPage,
-    create: createIndividualReport
+    create: createAssetsReport
   },
   exception: {
     title: '异常统计月度报表',
@@ -73,6 +81,8 @@ const TabPaneInfo = {
     create: createIndividualReport
   }
 }
+
+const message = useMessage()
 
 // 当月即之后的月份禁用
 const handleDisabledDate = (time: Date) => {
@@ -110,6 +120,8 @@ const queryList = async () => {
 // 生成统计报告
 const reportMonth = ref(undefined)
 const createReport = async () => {
+  if (!reportMonth.value) return message.alertWarning('请选择需要的年月')
+
   try {
     loading.value = true
     await TabPaneInfo[props.tab].create(reportMonth.value)
@@ -130,6 +142,40 @@ const refreshReport = async () => {
 watchEffect(() => {
   if (props.tab) refreshReport()
 })
+
+// 打开详情
+const router = useRouter()
+// const route = useRoute()
+const openDetail = (row: any) => {
+  let path = ''
+  switch (props.tab) {
+    case 'individual':
+      path = `/repair/statistics/individual/${row.reportMonth}`
+      break
+    case 'groupOrder':
+      path = `/repair/statistics/group-order/${row.reportMonth}/${row.groupId}`
+      break
+    case 'assets':
+      break
+    case 'exception':
+      break
+
+    default:
+      break
+  }
+  if (path) {
+    router.push({
+      path
+    })
+  }
+  // router.push({
+  //   path: route.path,
+  //   query: {
+  //     ...route.query,
+  //     reportMonth: row.reportMonth
+  //   }
+  // })
+}
 
 onMounted(() => {
   queryList()
