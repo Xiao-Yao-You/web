@@ -144,3 +144,7 @@ export const OldCompanyTransfer = {
   [CompanyEnum.HengKe]: 24,
   [CompanyEnum.XuanDa]: 25
 }
+
+export const COMPUTER_TYPE_ID = import.meta.env.PROD ? 50 : 47 // 计算机类型
+export const IPC_TYPE_ID = import.meta.env.PROD ? 56 : 53 // IPC 工控主机类型
+export const PC_TYPES = [COMPUTER_TYPE_ID, IPC_TYPE_ID]

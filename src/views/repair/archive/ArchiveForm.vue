@@ -217,7 +217,7 @@ import {
 import { BatchPicturesUploader } from '@/components/BatchPicturesUploader'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
 import { CommonStatusEnum, CommonLevelEnum } from '@/utils/constants'
-import { PictureType, CompanyEnum, UsingStatus } from '@/api/repair/constant'
+import { PictureType, CompanyEnum, UsingStatus, PC_TYPES } from '@/api/repair/constant'
 import { dateTransfer } from '@/views/system/meeting/subscribe/hook/useMeetingStatus'
 import { getSceneCodeAll } from '@/api/system/scenecode'
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
@@ -273,8 +273,7 @@ const formRef = ref() // 表单 Ref
 const configRef = ref()
 
 /** 是否是计算机（用于安转杀毒软件表单项判断） */
-const COMPUTER_TYPE_ID = ref(import.meta.env.PROD ? 50 : 47)
-const isComputer = computed(() => formData.value.deviceType?.value === COMPUTER_TYPE_ID.value)
+const isComputer = computed(() => PC_TYPES.includes(formData.value.deviceType?.value))
 
 /** 切换设备类型，跟换对应设备型号 */
 const modelLoading = ref(false)
@@ -294,8 +293,9 @@ const onDeviceTypeChange = (e: OptionItem<number>) => {
   getModelOptions(e.value)
 
   // 是不是计算机类型 ? 默认未安装（0） : 暂未分配（undefined）
-  formData.value.antivirusInstalled =
-    e.value === COMPUTER_TYPE_ID.value ? CommonStatusEnum.DISABLE : undefined
+  formData.value.antivirusInstalled = PC_TYPES.includes(e.value)
+    ? CommonStatusEnum.DISABLE
+    : undefined
 }
 
 /** 删除设备配置项 */
