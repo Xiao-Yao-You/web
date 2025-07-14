@@ -58,6 +58,22 @@
           />
         </el-select>
       </el-form-item>
+      <el-form-item label="使用部门" prop="deptId">
+        <el-select
+          v-model="queryParams.deptId"
+          placeholder="请选择使用部门"
+          clearable
+          class="!w-240px"
+          filterable
+        >
+          <el-option
+            v-for="item in deptStore.topDeptOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item label="设备型号" prop="modelName">
         <el-input
           v-model="queryParams.modelName"
@@ -290,16 +306,18 @@ export type QueryParams = {
   assetNumber: undefined
   ip1: undefined
   macAddress1: undefined
-  company: undefined
+  company: undefined | number
   deviceType: OptionItem<number> | undefined
   status: undefined | string
   antivirusInstalled: OptionItem<number> | undefined
+  deptId: undefined | number
 }
 </script>
 
 <script setup lang="ts">
 import { dateFormatter } from '@/utils/formatTime'
 import { useRepairStoreWithOut } from '@/store/modules/repair'
+import { useDeptStoreWithOut } from '@/store/modules/department'
 import {
   getRepairArchivePage,
   deleteRepairArchive,
@@ -325,6 +343,7 @@ const message = useMessage() // 消息弹窗
 const { t } = useI18n() // 国际化
 
 const repairStore = useRepairStoreWithOut()
+const deptStore = useDeptStoreWithOut()
 
 const loading = ref(true) // 列表的加载中
 const list = ref<RepairArchive[]>([]) // 列表的数据
@@ -343,7 +362,8 @@ const queryParams = reactive<QueryParams>({
   company: undefined,
   deviceType: undefined,
   status: undefined,
-  antivirusInstalled: undefined
+  antivirusInstalled: undefined,
+  deptId: undefined
 })
 
 /** 设备类型筛选项（移除“软件系统”选项，该项只在报修时才有） */
