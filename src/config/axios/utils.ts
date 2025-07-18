@@ -2,9 +2,11 @@ import axios from 'axios'
 import { getRefreshToken, getTenantId, setToken } from '@/utils/auth'
 import { config } from '@/config/axios/config'
 import { useCache, CACHE_KEY } from '@/hooks/web/useCache'
+import useSocket, { generateUrl } from '@/hooks/web/useSocket'
 
 const { base_url } = config
 const { wsCache } = useCache()
+const { reconnect } = useSocket()
 
 // 运维工单管理员登录
 export const loginForRepair = async () => {
@@ -43,6 +45,9 @@ export const refreshToken = async () => {
         if (msg === '无效的刷新令牌' && username === 'repairAdmin') {
           const tokens = await loginForRepair()
           setToken(tokens)
+
+          // * websocket 重新连接
+          reconnect(generateUrl(tokens.accessToken))
         }
       }
       break

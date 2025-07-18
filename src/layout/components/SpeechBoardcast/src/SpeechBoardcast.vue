@@ -3,8 +3,7 @@ import { useSpeechSynthesis } from '@vueuse/core'
 import { useIcon } from '@/hooks/web/useIcon'
 import { getNewRepairOrder } from '@/api/repair'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { useWebSocket } from '@vueuse/core'
-import { getAccessToken } from '@/utils/auth'
+import useSocket from '@/hooks/web/useSocket'
 
 defineOptions({
   name: 'SpeechBoardcast'
@@ -34,15 +33,7 @@ const play = (content?: string) => {
 // #endregion
 
 // #region WebSocket
-const { data } = useWebSocket(
-  (import.meta.env.VITE_BASE_URL + '/infra/ws').replace('http', 'ws') +
-    '?token=' +
-    getAccessToken(),
-  {
-    autoReconnect: false,
-    heartbeat: true
-  }
-)
+const { data } = useSocket()
 
 // 监听接收到的数据
 const timer = ref<null | number>(null)
