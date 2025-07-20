@@ -349,6 +349,7 @@
 import { storeToRefs } from 'pinia'
 import {
   ElMessageBox,
+  ElCheckbox,
   type CascaderValue,
   type FormInstance,
   type ModelValueType
@@ -380,24 +381,26 @@ import { isEmptyVal } from '@/utils/is'
 import { formatDate, formatMs } from '@/utils/formatTime'
 import { useEmployeeStoreWithOut } from '@/store/modules/employee'
 import { useGroupStoreWithOut } from '@/store/modules/group'
-import { useIcon } from '@/hooks/web/useIcon'
+// import { useIcon } from '@/hooks/web/useIcon'
 import { useUserStore } from '@/store/modules/user'
 import { useCountDown } from '@/hooks/web/useCountDown'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import download from '@/utils/download'
+import { useCache } from '@/hooks/web/useCache'
 import type { Action } from 'element-plus'
 
 defineOptions({
   name: 'RepairWorkOrder'
 })
 
+const { wsCache } = useCache()
 const message = useMessage()
 const repairStore = useRepairStoreWithOut()
 const employeeStore = useEmployeeStoreWithOut()
 const groupStore = useGroupStoreWithOut()
-const PauseIcon = useIcon({ icon: 'ep:video-pause' })
-const ResumeIcon = useIcon({ icon: 'ep:video-play' })
-const TimerIcon = useIcon({ icon: 'ep:timer' })
+// const PauseIcon = useIcon({ icon: 'ep:video-pause' })
+// const ResumeIcon = useIcon({ icon: 'ep:video-play' })
+// const TimerIcon = useIcon({ icon: 'ep:timer' })
 
 // #region 一、表单查询
 const loading = ref(true)
@@ -462,32 +465,60 @@ const openForm = () => {
 // #endregion
 
 // #region 二、工单处理
+const isPromptHidden = ref(false) // 是否隐藏弹框提示
+const setIsPromptHidden = () => {
+  if (isPromptHidden.value) wsCache.set('isPromptHidden', true, { exp: 24 * 3600 * 7 })
+  isPromptHidden.value = false
+}
+const getIsPromptHidden = () => {
+  return wsCache.get('isPromptHidden')
+}
 const refreshPrompt = (cb: () => void) => {
-  ElMessageBox.confirm('请注意：工单状态可能有延时，请确认后操作！', '系统提示', {
-    confirmButtonText: '刷新工单',
-    cancelButtonText: '继续操作',
+  ElMessageBox({
+    title: '系统提示',
+    message: () =>
+      h('div', [
+        h('p', '请注意：工单状态可能有延时，请确认后操作！'),
+        h(ElCheckbox, {
+          label: '7 天内不再提示',
+          modelValue: isPromptHidden.value,
+          'onUpdate:modelValue': (val: boolean) => {
+            isPromptHidden.value = val
+          }
+        })
+      ]),
+    confirmButtonText: '继续操作',
+    showCancelButton: true,
+    cancelButtonText: '刷新工单',
     type: 'warning',
     distinguishCancelAndClose: true,
     closeOnClickModal: false,
     closeOnPressEscape: false
   })
     .then(() => {
-      onRefresh()
+      cb()
+      setIsPromptHidden()
     })
     .catch((action: Action) => {
-      if (action === 'cancel') cb()
+      if (action === 'cancel') {
+        onRefresh()
+        setIsPromptHidden()
+      } else if (action === 'close') {
+        isPromptHidden.value = false
+      }
     })
 }
 const handleCommand = (command: string, row: RepairOrder) => {
+  const hidden = getIsPromptHidden()
   switch (command) {
     case OperateMethod.Dispatch:
-      refreshPrompt(() => openDispatchForm(row))
+      hidden ? openDispatchForm(row) : refreshPrompt(() => openDispatchForm(row))
       break
     case OperateMethod.Receive:
       receiveOrder(row.id)
       break
     case OperateMethod.Transfer:
-      refreshPrompt(() => openTransferForm(row))
+      hidden ? openTransferForm(row) : refreshPrompt(() => openTransferForm(row))
       break
     case OperateMethod.Restart:
       restart(row)
@@ -505,7 +536,7 @@ const handleCommand = (command: string, row: RepairOrder) => {
       handleRevoke(row.id)
       break
     case OperateMethod.Close:
-      refreshPrompt(() => handleClose(row.id))
+      hidden ? handleClose(row.id) : refreshPrompt(() => handleClose(row.id))
       break
     default:
       break
