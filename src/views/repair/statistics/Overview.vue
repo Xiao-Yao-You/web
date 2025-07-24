@@ -28,7 +28,7 @@
       <el-table-column label="操作">
         <template #default="{ row }">
           <el-button link type="primary" @click="openDetail(row)">详情</el-button>
-          <!-- <el-button link type="warning">导出</el-button> -->
+          <el-button link type="danger" @click="handleDelete(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -47,7 +47,9 @@ import {
   createGroupReport,
   createAssetsReport,
   getIndividualPage,
-  getGroupPage
+  getGroupPage,
+  deleteIndividualReport,
+  type ReportInfo
 } from '@/api/statistics'
 import { propTypes } from '@/utils/propTypes'
 
@@ -63,26 +65,31 @@ const TabPaneInfo = {
   individual: {
     title: '人工统计月度报表',
     query: getIndividualPage,
-    create: createIndividualReport
+    create: createIndividualReport,
+    delete: deleteIndividualReport
   },
   groupOrder: {
     title: '工单统计月度报表',
     query: getGroupPage,
-    create: createGroupReport
+    create: createGroupReport,
+    delete: deleteIndividualReport
   },
   assets: {
     title: '资产统计月度报表',
     query: getIndividualPage,
-    create: createAssetsReport
+    create: createAssetsReport,
+    delete: deleteIndividualReport
   },
   exception: {
     title: '异常统计月度报表',
     query: getIndividualPage,
-    create: createIndividualReport
+    create: createIndividualReport,
+    delete: deleteIndividualReport
   }
 }
 
 const message = useMessage()
+const { t } = useI18n()
 
 // 当月即之后的月份禁用
 const handleDisabledDate = (time: Date) => {
@@ -103,7 +110,7 @@ const queryParams = reactive({
   pageSize: 20
 })
 const total = ref(0)
-const list = ref<any[]>([])
+const list = ref<ReportInfo[]>([])
 const title = computed(() => TabPaneInfo[props.tab].title)
 
 // 查询报告
@@ -175,6 +182,15 @@ const openDetail = (row: any) => {
   //     reportMonth: row.reportMonth
   //   }
   // })
+}
+
+// 删除报表
+const handleDelete = async (row: ReportInfo) => {
+  await message.delConfirm()
+  await TabPaneInfo[props.tab].delete(row.reportMonth)
+  message.success(t('common.delSuccess'))
+  // 刷新列表
+  await refreshReport()
 }
 
 onMounted(() => {
