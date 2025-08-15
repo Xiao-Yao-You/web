@@ -258,7 +258,9 @@
             <!-- :disabled="row.status === UsingStatus.Scrap" -->
             报废
           </el-button>
-          <el-button link type="danger" @click="handleDelete(row.id)"> 删除 </el-button>
+          <el-button link type="danger" color="#fab6b6" @click="handleDelete(/* row.id */)">
+            删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -439,11 +441,12 @@ const openForm = (type: string, id?: number) => {
 }
 
 /** 删除按钮操作 */
-const handleDelete = async (id: number) => {
-  await message.delConfirm()
-  await deleteRepairArchive(id)
-  message.success(t('common.delSuccess'))
-  await getList()
+const handleDelete = async (/* id: number */) => {
+  return message.alertWarning('为防止误删，此功能暂时关闭！')
+  // await message.delConfirm()
+  // await deleteRepairArchive(id)
+  // message.success(t('common.delSuccess'))
+  // await getList()
 }
 
 /** 详情 */
