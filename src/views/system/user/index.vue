@@ -39,7 +39,7 @@
               class="!w-200px"
             />
           </el-form-item>
-          <el-form-item label="手机" prop="mobile">
+          <!-- <el-form-item label="手机" prop="mobile">
             <el-input
               v-model="queryParams.mobile"
               placeholder="请输入手机号码"
@@ -47,7 +47,7 @@
               @keyup.enter="handleQuery"
               class="!w-180px"
             />
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item label="状态" prop="status">
             <el-select
               v-model="queryParams.status"
@@ -116,7 +116,7 @@
               {{ row.deptList.map((d) => d.name || '').join('、') }}
             </template>
           </el-table-column>
-          <el-table-column label="手机号码" align="center" prop="mobile" />
+          <!-- <el-table-column label="手机号码" align="center" prop="mobile" /> -->
           <el-table-column label="状态" prop="status" align="center">
             <template #default="scope">
               <el-switch

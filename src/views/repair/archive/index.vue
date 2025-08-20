@@ -258,7 +258,7 @@
             <!-- :disabled="row.status === UsingStatus.Scrap" -->
             报废
           </el-button>
-          <el-button link type="danger" color="#fab6b6" @click="handleDelete(/* row.id */)">
+          <el-button link type="danger" style="color: #fab6b6" @click="handleDelete(/* row.id */)">
             删除
           </el-button>
         </template>
