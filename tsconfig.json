@@ -30,11 +30,19 @@
       ]
     },
     "types": [
+      "eslint",
+      "lodash-es",
+      "node",
+      "nprogress",
+      "qrcode",
+      "qs",
       "@intlify/unplugin-vue-i18n/types",
+      "@intlify/unplugin-vue-i18n/types.d.ts",
       "vite/client",
       "element-plus/global",
-      "@types/qrcode",
-      "vite-plugin-svg-icons/client"
+      "element-plus/global.d.ts",
+      "vite-plugin-svg-icons/client",
+      "vite-plugin-svg-icons/client.d.ts"
     ],
     "outDir": "target", // 请保留这个属性，防止tsconfig.json文件报错
     "typeRoots": [
