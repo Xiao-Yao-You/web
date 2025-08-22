@@ -173,6 +173,8 @@ import { queryUserTenantByName } from '@/api/system/tenant'
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
 import type { FormRules } from 'element-plus'
 import { debounce } from 'min-dash'
+import { zxcvbn } from '@zxcvbn-ts/core'
+import { CACHE_KEY, useCache } from '@/hooks/web/useCache'
 
 defineOptions({ name: 'LoginForm' })
 
@@ -181,11 +183,13 @@ const { t } = useI18n()
 const iconOfficle = useIcon({ icon: 'ep:office-building' })
 const iconAvatar = useIcon({ icon: 'ep:avatar' })
 const iconLock = useIcon({ icon: 'ep:lock' })
-const formLogin = ref()
-const { validForm } = useFormValid(formLogin)
 const { /* setLoginState, */ getLoginState } = useLoginState()
 const { currentRoute, push } = useRouter()
 const permissionStore = usePermissionStore()
+const { wsCache } = useCache()
+
+const formLogin = ref()
+const { validForm } = useFormValid(formLogin)
 const redirect = ref<string>('')
 const loginLoading = ref(false)
 const verify = ref()
@@ -333,19 +337,27 @@ const handleLogin = async (params) => {
       text: '正在加载系统中...',
       background: 'rgba(0, 0, 0, 0.7)'
     })
+
+    // 保存 token
+    authUtil.setToken(res)
+
+    // 检测并保存密码强度
+    const pwdStrength = zxcvbn(loginData.loginForm.password).score
+    wsCache.set(CACHE_KEY.PWD_STRENGTH, pwdStrength)
+
+    // 记住我（加密保存）
     if (loginData.loginForm.rememberMe) {
       authUtil.setLoginForm(loginData.loginForm)
     } else {
       authUtil.removeLoginForm()
     }
-    authUtil.setToken(res)
-    if (!redirect.value) {
-      redirect.value = '/'
-    }
+
+    if (!redirect.value) redirect.value = '/'
     // 判断是否为SSO登录
     if (redirect.value.indexOf('sso') !== -1) {
       window.location.href = window.location.href.replace('/login?redirect=', '')
     } else {
+      // 将密码强度结果传递给路由
       push({ path: redirect.value || permissionStore.addRouters[0].path })
     }
   } finally {

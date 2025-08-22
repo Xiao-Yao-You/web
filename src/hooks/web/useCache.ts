@@ -10,12 +10,15 @@ export const CACHE_KEY = {
   // 用户相关
   ROLE_ROUTERS: 'roleRouters',
   USER: 'user',
+  PWD_STRENGTH: 'pwdStrength',
+
   // 系统设置
   IS_DARK: 'isDark',
   LANG: 'lang',
   THEME: 'theme',
   LAYOUT: 'layout',
   DICT_CACHE: 'dictCache',
+
   // 登录表单
   LoginForm: 'loginForm',
   TenantId: 'tenantId'

@@ -480,12 +480,20 @@ export default {
     Dormitory: 'Dormitory'
   },
   position: {
-    Headquarter: '指挥部',
-    Factory: '厂区',
-    Dormitory: '生活区'
+    Headquarter: 'Headquarter',
+    Factory: 'Factory',
+    Dormitory: 'Dormitory'
   },
   company: {
     HengKe: 'Jiangsu Hengke Advanced Materials Co.Ltd',
     XuanDa: 'JIANGSU XUANDA POLYMER MATERIALS CO.,LTD'
+  },
+  strengthenPwd: {
+    title: 'Password Strength Warning',
+    description:
+      'Your password is weak, it is recommended to change it now to ensure account security',
+    errorMessage: 'Password strength is too weak!',
+    confirm: 'Change Password',
+    cancel: 'Later'
   }
 }

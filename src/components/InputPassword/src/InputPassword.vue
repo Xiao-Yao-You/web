@@ -53,6 +53,7 @@ const getPasswordStrength = computed(() => {
   const zxcvbnRef = zxcvbn(unref(valueRef)) as ZxcvbnResult
   return value ? zxcvbnRef.score : -1
 })
+defineExpose({ pwdStrength: getPasswordStrength })
 
 const getIconName = computed(() => (unref(textType) === 'password' ? 'ep:hide' : 'ep:view'))
 </script>

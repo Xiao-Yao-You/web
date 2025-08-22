@@ -480,5 +480,12 @@ export default {
   company: {
     HengKe: '江苏恒科新材料',
     XuanDa: '江苏轩达高分子材料'
+  },
+  strengthenPwd: {
+    title: '密码强度提示',
+    description: '检测到您的密码强度较弱，建议立即修改以保障账户安全！',
+    errorMessage: '密码强度过低！',
+    confirm: '前往修改',
+    cancel: '稍后再说'
   }
 }

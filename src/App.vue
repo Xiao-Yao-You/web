@@ -4,15 +4,18 @@ import { useAppStore } from '@/store/modules/app'
 import { useDesign } from '@/hooks/web/useDesign'
 import { CACHE_KEY, useCache } from '@/hooks/web/useCache'
 import routerSearch from '@/components/RouterSearch/index.vue'
+import StrengthenPwdDialog from '@/components/StrengthenPwdDialog'
 
 defineOptions({ name: 'APP' })
 
 const { getPrefixCls } = useDesign()
 const prefixCls = getPrefixCls('app')
 const appStore = useAppStore()
-const currentSize = computed(() => appStore.getCurrentSize)
+// const currentSize = computed(() => appStore.getCurrentSize)
 const greyMode = computed(() => appStore.getGreyMode)
 const { wsCache } = useCache()
+
+const dialogVisible = ref(false)
 
 // 根据浏览器当前主题设置系统主题色
 const setDefaultTheme = () => {
@@ -24,12 +27,15 @@ const setDefaultTheme = () => {
 }
 setDefaultTheme()
 </script>
+
 <template>
-  <ConfigGlobal :size="currentSize">
+  <ConfigGlobal>
     <RouterView :class="greyMode ? `${prefixCls}-grey-mode` : ''" />
     <routerSearch />
+    <StrengthenPwdDialog v-model:visible="dialogVisible" />
   </ConfigGlobal>
 </template>
+
 <style lang="scss">
 $prefix-cls: #{$namespace}-app;
 
